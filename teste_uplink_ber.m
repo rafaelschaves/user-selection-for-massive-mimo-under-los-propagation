@@ -21,7 +21,7 @@ commcell.nUsers          = K;                                              % Num
 commcell.radius          = 500;                                            % Cell's raidus (circumradius) in meters
 commcell.bsHeight        = 30;                                             % Height of base station in meters
 commcell.userHeight      = [1 2];                                          % Height of user terminals in meters ([min max])
-commcell.nPaths          = 1;                                              % Number of Multipaths
+commcell.nPaths          = [];                                             % Number of Multipaths
 commcell.frequency       = 2e9;                                            % Carrier frequency in Hz 
 commcell.meanShadowFad   = 0;                                              % Shadow fading mean in dB
 commcell.stdDevShadowFad = 8;                                              % Shadow fading standard deviation in dB
@@ -66,7 +66,7 @@ for monte_carlo = 1:MONTE_CARLO
     
     % Transmission power calculation
     
-    Ps = norm(s(:),2)^2/(K*N);                                         % Transmitted signal's power
+    Ps = norm(s(:),2)^2/(K*N);                                             % Transmitted signal's power
     
     for snr_index = 1:n_snr
         
