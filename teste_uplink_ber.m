@@ -4,10 +4,10 @@ clc;
 
 addpath('./functions/')
 
-MONTE_CARLO = 100;                                                         % Size of the Monte Carlo ensemble
+MONTE_CARLO = 1000;                                                         % Size of the Monte Carlo ensemble
 
 B = 4;                                                                     % Number of bits in each symbol
-N = 10000;                                                                 % Number of blocks in the transmission
+N = 1000;                                                                 % Number of blocks in the transmission
 
 M = 500;                                                                   % Number of antennas at the base station
 K = 5;                                                                     % Number of users at the cell
@@ -103,4 +103,4 @@ for monte_carlo = 1:MONTE_CARLO
     
 end
 
-save(['ber_' decpar.precoder '_M_'  num2str(M) '_K_' num2str(K) '_MC_' num2str(MONTE_CARLO) '.mat'],'ber','H','D');
+save(['ber_' decpar.precoder '_M_'  num2str(M) '_K_' num2str(K) '_N_' num2str(N) '_MC_' num2str(MONTE_CARLO) '.mat'],'ber','H','D');
