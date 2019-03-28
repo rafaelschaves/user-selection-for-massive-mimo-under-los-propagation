@@ -4,10 +4,10 @@ clc;
 
 addpath('./functions/')
 
-MONTE_CARLO = 1000;                                                         % Size of the Monte Carlo ensemble
+MONTE_CARLO = 1000;                                                        % Size of the Monte Carlo ensemble
 
 B = 4;                                                                     % Number of bits in each symbol
-N = 1000;                                                                 % Number of blocks in the transmission
+N = 1000;                                                                  % Number of blocks in the transmission
 
 M = 500;                                                                   % Number of antennas at the base station
 K = 5;                                                                     % Number of users at the cell
@@ -28,9 +28,6 @@ commcell.stdDevShadowFad = 8;                                              % Sha
 commcell.city            = 'large';                                        % Type of city
 
 % Initialization
-
-b = zeros(B*N,K);                                                          % Message in bits
-s = zeros(K,N);                                                            % Message modulated in 2^B-QAM
 
 b_hat = zeros(B*N,K);                                                      % Estimated message in bits
 
@@ -59,14 +56,7 @@ for monte_carlo = 1:MONTE_CARLO
     
     % Signal generation for each user
     
-    for k = 1:K
-        b(:,k) = randi([0 1],B*N,1);                                       % Message in bits of the kth user
-        s(k,:) = qammod(b(:,k),2^B,'InputType','bit').';                   % Message modulated in 2^B-QAM for the kth user
-    end
-    
-    % Transmission power calculation
-    
-    Ps = norm(s(:),2)^2/(K*N);                                             % Transmitted signal's power
+    [s,Ps] = usersTransmitter(K,N,B);
     
     for snr_index = 1:n_snr
         
