@@ -2,10 +2,12 @@ clear;
 close all;
 clc;
 
-MONTE_CARLO = 10000;                                                       % Size of the Monte Carlo ensemble
+addpath('./functions/')
+
+MONTE_CARLO = 100;                                                         % Size of the Monte Carlo ensemble
 
 B = 4;                                                                     % Number of bits in each symbol
-N = 100000;                                                                   % Number of blocks in the transmission
+N = 10000;                                                                 % Number of blocks in the transmission
 
 M = 500;                                                                   % Number of antennas at the base station
 K = 5;                                                                     % Number of users at the cell
@@ -14,22 +16,16 @@ snr_db = -20:1:10;                                                         % SNR
 snr    = 10.^(snr_db/10);                                                  % SNR
 n_snr  = length(snr_db);
 
-commcell.array_type  = 'linear';
-commcell.antenna     = M;                                                  % Number of Antennas
-commcell.user        = K;                                                  % Number of Users
-commcell.multipath   = 2;                                                  % Number of Multipaths
-commcell.radius      = 500;                                                % Cell's raidus (circumradius) in meters
-commcell.bs_height   = 30;                                                 % Height of base station in meters
-commcell.user_height = [1 2];                                              % Height of user terminals in meters ([min max])
-
-c   = 3e8;                                                                 % Light speed
-f_c = 2e9;                                                                 % Carrier frequency in Hz
-
-propagation.lambda             = c/f_c;                                    % Wavelength of transmitted signal
-propagation.ref_distance       = 1000;                                     % Reference distance for path loss calculation
-propagation.mean_shadow_fad    = 0;                                        % Shadow fading mean in dB
-propagation.std_dev_shadow_fad = 8;                                        % Shadow fading standard deviation in dB
-propagation.path_loss_exponent = 3.8;                                      % Decay exponent
+commcell.nAntennas       = M;                                              % Number of Antennas
+commcell.nUsers          = K;                                              % Number of Users
+commcell.radius          = 500;                                            % Cell's raidus (circumradius) in meters
+commcell.bsHeight        = 30;                                             % Height of base station in meters
+commcell.userHeight      = [1 2];                                          % Height of user terminals in meters ([min max])
+commcell.nPaths          = 1;                                              % Number of Multipaths
+commcell.frequency       = 2e9;                                            % Carrier frequency in Hz 
+commcell.meanShadowFad   = 0;                                              % Shadow fading mean in dB
+commcell.stdDevShadowFad = 8;                                              % Shadow fading standard deviation in dB
+commcell.city            = 'large';                                        % Type of city
 
 % Initialization
 
@@ -53,7 +49,7 @@ for monte_carlo = 1:MONTE_CARLO
     
     monte_carlo
     
-    [H(:,:,monte_carlo), beta] = massiveMIMOChannel(commcell,propagation,'rich');
+    [H(:,:,monte_carlo), beta] = massiveMIMOChannel(commcell,'rayleigh');
     
     H(:,:,monte_carlo) = H(:,:,monte_carlo)*sqrt(diag(1./beta));           % We do not need take the large-scale fading into consideration in a BER analyse
     
