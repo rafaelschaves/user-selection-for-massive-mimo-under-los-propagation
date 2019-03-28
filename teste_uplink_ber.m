@@ -4,7 +4,7 @@ clc;
 
 addpath('./functions/')
 
-MONTE_CARLO = 1000;                                                         % Size of the Monte Carlo ensemble
+MONTE_CARLO = 10000;                                                         % Size of the Monte Carlo ensemble
 
 B = 4;                                                                     % Number of bits in each symbol
 N = 1000;                                                                 % Number of blocks in the transmission
