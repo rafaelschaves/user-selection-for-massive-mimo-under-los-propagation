@@ -4,7 +4,7 @@ clc;
 
 addpath('./functions/')
 
-MONTE_CARLO = 1000;                                                        % Size of the Monte Carlo ensemble
+MONTE_CARLO = 10000;                                                         % Size of the Monte Carlo ensemble
 
 B = 4;                                                                     % Number of bits in each symbol
 N = 1000;                                                                  % Number of blocks in the transmission
@@ -21,7 +21,7 @@ commcell.nUsers          = K;                                              % Num
 commcell.radius          = 500;                                            % Cell's raidus (circumradius) in meters
 commcell.bsHeight        = 30;                                             % Height of base station in meters
 commcell.userHeight      = [1 2];                                          % Height of user terminals in meters ([min max])
-commcell.nPaths          = [];                                             % Number of Multipaths
+commcell.nPaths          = 1;                                             % Number of Multipaths
 commcell.frequency       = 2e9;                                            % Carrier frequency in Hz 
 commcell.meanShadowFad   = 0;                                              % Shadow fading mean in dB
 commcell.stdDevShadowFad = 8;                                              % Shadow fading standard deviation in dB
