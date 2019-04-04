@@ -1,6 +1,4 @@
-function [message_sym,power_sym,varargout] = userTX(n_user, ...
-                                                              n_block, ...
-                                                              n_bit)
+function [message_sym,power_sym,varargout] = userTX(n_user,n_block,n_bit)
 
 constellation_size = 2^n_bit;                                              % Constellation size
 

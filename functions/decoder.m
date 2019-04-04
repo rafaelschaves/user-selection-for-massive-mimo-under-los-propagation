@@ -1,43 +1,54 @@
-function [s_hat,varargout] = decoder(y,H,decoder_parameters)
+function [signal_hat,varargout] = decoder(rx_signal,chnl_mtx,decpar)
 
 % Initialization
 
-decoding = upper(decoder_parameters.precoder);
+decoder   = upper(decpar.decoder);
+ref_power = decpar.power;
 
-M = size(H,1);                                                             % Number of antennas at base station
-% K = size(H,2);                                                             % Number of users
+n_antenna = size(chnl_mtx,1);                                              % Number of antennas at base station
+n_user    = size(chnl_mtx,2);                                              % Number of users in the cell
+n_block   = size(rx_signal,2);                                             % Number of transmitted blocks
 
-switch decoding
+switch decoder
     
     case 'MF'
         
-        Q     = H'/M;                                                      % MF decoding matrix
-        s_hat = Q*y;                                                       % MF decoded signal
+        decod_mtx  = chnl_mtx'/n_antenna;                                  % MF decoding matrix
+        signal_hat = decod_mtx*rx_signal;                                  % MF decoded signal
         
-        varargout{1} = Q;
-        % varargout{2} = norm(s_hat,2)/M;
+        power_signal_hat = norm(signal_hat(:),2)^2/(n_user*n_block);       % Received signal power calculation
         
-    % case 'MF-SIC'
-    %    
-    %     for k = 1:K
-    %        
-    %     end
+        signal_hat = sqrt(ref_power/power_signal_hat)*signal_hat;          % Received signal power normalization
+        
+        varargout{1} = decod_mtx;
+        varargout{2} = power_signal_hat;
         
     case 'ZF'
         
-        Q = (H'*H)\H';                                                     % ZF decoding matrix
-        s_hat = Q*y;                                                       % ZF decoded signal
+        decod_mtx  = (chnl_mtx'*chnl_mtx)\chnl_mtx';                       % ZF decoding matrix
+        signal_hat = decod_mtx*rx_signal;                                  % ZF decoded signal
         
-        varargout{1} = Q;
-        % varargout{2} = norm(s_hat,2)/M;
+        power_signal_hat = norm(signal_hat(:),2)^2/(n_user*n_block);       % Received signal power calculation
+        
+        signal_hat = sqrt(ref_power/power_signal_hat)*signal_hat;          % Received signal power normalization
+        
+        varargout{1} = decod_mtx;
+        varargout{2} = power_signal_hat;
         
     case 'MMSE'
         
-        Q = (H'*H + 1/snr*eye(M))\H';                                      % MMSE decoding matrix
-        s_hat = Q*y;                                                       % MMSE decoded signal
+        I_M = eye(n_antenna);
+        snr = decpar.snr;
         
-        varargout{1} = Q;
-        % varargout{2} = norm(s_hat,2)/M;
+        decod_mtx  = (chnl_mtx'*chnl_mtx + I_M/snr)\chnl_mtx';             % MMSE decoding matrix
+        signal_hat = decod_mtx*rx_signal;                                  % MMSE decoded signal
+        
+        power_signal_hat = norm(signal_hat(:),2)^2/(n_user*n_block);       % Received signal power calculation
+        
+        signal_hat = sqrt(ref_power/power_signal_hat)*signal_hat;          % Received signal power normalization
+
+        varargout{1} = decod_mtx;
+        varargout{2} = power_signal_hat;
               
     otherwise
         
