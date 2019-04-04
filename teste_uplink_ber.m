@@ -4,10 +4,10 @@ clc;
 
 addpath('./functions/')
 
-MONTE_CARLO = 10000;                                                         % Size of the Monte Carlo ensemble
+MONTE_CARLO = 1;                                                       % Size of the Monte Carlo ensemble
 
 B = 4;                                                                     % Number of bits in each symbol
-N = 1000;                                                                  % Number of blocks in the transmission
+N = 750;                                                                   % Number of blocks in the transmission
 
 M = 500;                                                                   % Number of antennas at the base station
 K = 5;                                                                     % Number of users at the cell
@@ -32,54 +32,25 @@ commcell.city            = 'large';                                        % Typ
 b_hat = zeros(B*N,K);                                                      % Estimated message in bits
 
 H = zeros(M,K,MONTE_CARLO);                                                % Channel matrix
-D = zeros(K,K,MONTE_CARLO);                                                % Correlation matrix
-
-I_K = eye(K);                                                              % Eye matrix
 
 ber = zeros(n_snr,K,MONTE_CARLO);                                          % Bit-error rate
 
-% Decoder parameters
+for mc_idx = 1:MONTE_CARLO
     
-decpar.precoder = 'mf';
-
-for monte_carlo = 1:MONTE_CARLO
+    mc_idx
     
-    monte_carlo
+    [s,Ps,b] = userTX(K,N,B);                                              % Signal generation for each user
     
-    [H(:,:,monte_carlo), beta] = massiveMIMOChannel(commcell,'rayleigh');
+    % Decoder parameters
     
-    H(:,:,monte_carlo) = H(:,:,monte_carlo)*sqrt(diag(1./beta));           % We do not need take the large-scale fading into consideration in a BER analyse
+    decpar.decoder = 'mf';
+    decpar.power    = Ps;
     
-    % Correlation between user's channel
-    
-    D(:,:,monte_carlo) = H(:,:,monte_carlo)'*H(:,:,monte_carlo)/M;
-    
-    % Signal generation for each user
-    
-    [s,Ps] = usersTransmitter(K,N,B);
-    
-    for snr_index = 1:n_snr
+    for snr_idx = 1:n_snr
         
-        % Noise power calculation
-        
-        v  = randn(M,N) + 1i*randn(M,N);
-        Pv = norm(v(:),2)^2/(M*N);
-        
-        % Received signal
-        
-        y = H(:,:,monte_carlo)*s + sqrt((Ps/Pv)/snr(snr_index))*v;
-        
-        % Decoding received signal
-        
-        s_hat = decoder(y,H(:,:,monte_carlo),decpar);
-        
-        % Received signal power calculation
-        
-        Ps_hat = norm(s_hat(:),2)^2/(K*N);
-        
-        % Received signal power normalization
-        
-        s_hat = sqrt(Ps/Ps_hat)*s_hat;
+        [y,H(:,:,mc_idx)] = channel(s,Ps,snr(snr_idx),commcell,'rayleigh');
+                                                           
+        s_hat = decoder(y,H(:,:,mc_idx),decpar);                           % Decoding received signal
         
         % Signal decodification for each user
         
@@ -87,10 +58,10 @@ for monte_carlo = 1:MONTE_CARLO
             b_hat(:,k) = qamdemod(s_hat(k,:).',2^B,'OutputType','bit');
         end
         
-        [~,ber(snr_index,:,monte_carlo)] = biterr(b_hat,b,[],'column-wise');
+        [~,ber(snr_idx,:,mc_idx)] = biterr(b_hat,b,[],'column-wise');
         
     end
     
 end
 
-save(['ber_' decpar.precoder '_M_'  num2str(M) '_K_' num2str(K) '_N_' num2str(N) '_MC_' num2str(MONTE_CARLO) '.mat'],'ber','H','D');
+% save(['ber_' decpar.precoder '_M_'  num2str(M) '_K_' num2str(K) '_N_' num2str(N) '_MC_' num2str(MONTE_CARLO) '.mat'],'ber','H','D');
