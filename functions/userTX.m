@@ -1,4 +1,4 @@
-function [message_sym,power_sym,varargout] = userTX(n_user,n_block,n_bit)
+function [message_sym,pow_sym,varargout] = userTX(n_user,n_block,n_bit)
 
 constellation_size = 2^n_bit;                                              % Constellation size
 
@@ -11,9 +11,8 @@ for k = 1:n_user
                               'InputType','bit').';                        % Message modulated in 2^B-QAM for the kth user
 end
     
-power_sym = norm(message_sym(:),2)^2/(n_user*n_block);                     % Transmitted signal's power
+pow_sym = norm(message_sym(:),2)^2/(n_user*n_block);                       % Transmitted signal's power
 
 varargout{1} = message_bit;
 
 end
-
