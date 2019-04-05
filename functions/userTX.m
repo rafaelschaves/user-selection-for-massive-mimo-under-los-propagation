@@ -1,18 +1,19 @@
-function [message_sym,pow_sym,varargout] = userTX(n_user,n_block,n_bit)
+function [tx_signal,pow_tx_signal,varargout] = userTX(n_user,n_block,n_bit)
 
-constellation_size = 2^n_bit;                                              % Constellation size
+% Initialization
 
-message_bit = zeros(n_bit*n_block,n_user);                                 % Message in bits
-message_sym = zeros(n_user,n_block);                                       % Message modulated in 2^B-QAM
+tx_bit    = zeros(n_bit*n_block,n_user);                                   % Message in bits
+tx_signal = zeros(n_user,n_block);                                         % Message modulated in 2^B-QAM
+
+const_size = 2^n_bit;                                                      % Constellation size
 
 for k = 1:n_user
-    message_bit(:,k) = randi([0 1],n_bit*n_block,1);                       % Message in bits of the kth user
-    message_sym(k,:) = qammod(message_bit(:,k),constellation_size, ...
-                              'InputType','bit').';                        % Message modulated in 2^B-QAM for the kth user
+    tx_bit(:,k) = randi([0 1],n_bit*n_block,1);                            % Message in bits of the kth user
+    tx_signal(k,:) = qammod(tx_bit(:,k),const_size,'InputType','bit').';   % Message modulated in 2^B-QAM for the kth user
 end
     
-pow_sym = norm(message_sym(:),2)^2/(n_user*n_block);                       % Transmitted signal's power
+pow_tx_signal = norm(tx_signal(:),2)^2/(n_user*n_block);                   % Transmitted signal's power
 
-varargout{1} = message_bit;
+varargout{1} = tx_bit;
 
 end

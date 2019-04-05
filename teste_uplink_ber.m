@@ -4,7 +4,7 @@ clc;
 
 addpath('./functions/')
 
-OUTER_MC = 10000;                                                              % Size of the outer Monte Carlo ensemble (Varies the channel realizarions)
+OUTER_MC = 10000;                                                          % Size of the outer Monte Carlo ensemble (Varies the channel realizarions)
 INNER_MC = 200;                                                            % Size of the inner Monte Carlo ensemble (Varies the messages for one channel realization)
 
 B = 4;                                                                     % Number of bits in each symbol
@@ -32,9 +32,9 @@ commcell.city            = 'large';                                        % Typ
 
 b_hat = zeros(B*N,K);                                                      % Estimated message in bits
 
-H = zeros(M,K,OUTER_MC);                                                % Channel matrix
+H = zeros(M,K,OUTER_MC);                                                   % Channel matrix
 
-ber = zeros(n_snr,K,INNER_MC,OUTER_MC);                                          % Bit-error rate
+ber = zeros(n_snr,K,INNER_MC,OUTER_MC);                                    % Bit-error rate
 
 for out_mc = 1:OUTER_MC
     out_mc
@@ -46,18 +46,17 @@ for out_mc = 1:OUTER_MC
     for inn_mc = 1:INNER_MC
         inn_mc
         
-        [s,Ps,b] = userTX(K,N,B);                                              % Signal generation for each user
+        [s,Ps,b] = userTX(K,N,B);                                          % Signal generation for each user
         
-       
-    % Decoder parameters
+        % Decoder parameters
     
-    decpar.decoder = 'mf';
-    decpar.power    = Ps;
+        decpar.decoder = 'mf';
+        decpar.power    = Ps;
         
         for snr_idx = 1:n_snr
             y = channel(s,Ps,H(:,:,out_mc),snr(snr_idx),'uplink');
             
-            s_hat = decoder(y,H(:,:,out_mc),decpar);                           % Decoding received signal
+            s_hat = decoder(y,H(:,:,out_mc),decpar);                       % Decoding received signal
             
             % Signal decodification for each user
             
