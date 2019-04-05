@@ -4,7 +4,7 @@ clc;
 
 addpath('./functions/')
 
-OUTER_MC = 1;                                                          % Size of the outer Monte Carlo ensemble (Varies the channel realizarions)
+OUTER_MC = 10000;                                                          % Size of the outer Monte Carlo ensemble (Varies the channel realizarions)
 INNER_MC = 200;                                                            % Size of the inner Monte Carlo ensemble (Varies the messages for one channel realization)
 
 B = 4;                                                                     % Number of bits in each symbol
@@ -39,14 +39,14 @@ ber = zeros(n_snr,K,INNER_MC,OUTER_MC);                                    % Bit
 for out_mc = 1:OUTER_MC
     out_mc
     
-    [H(:,:,out_mc), beta] = massiveMIMOChannel(commcell,'rayleigh');
+    [H(:,:,out_mc),beta] = massiveMIMOChannel(commcell,'rayleigh');
     
     H(:,:,out_mc) = H(:,:,out_mc)*sqrt(diag(1./beta));
     
     for inn_mc = 1:INNER_MC
         inn_mc
         
-        [s,Ps,b] = userTX(K,N,B);                                          % Signal generation for each user
+        [s,Ps,b] = userTX(K,N,B);                                          % Transmitted signals by each user
         
         % Decoder parameters
     
@@ -58,9 +58,12 @@ for out_mc = 1:OUTER_MC
             
             b_hat = baseStationRX(y,H(:,:,out_mc),decpar,B);               % Base station receiver
             
-            [~,ber(snr_idx,:,inn_mc,out_mc)] = biterr(b_hat,b,[],'column-wise'); % Bit-error rate calculation
+            [~,ber(snr_idx,:,inn_mc,out_mc)] = biterr(b_hat, ...           % Estimated bits at the base station
+                                                      b, ...               % Transmitted bits by users
+                                                      [], ...
+                                                      'column-wise');      % Bit-error rate calculation
         end
     end
 end
 
-% save(['ber_' decpar.decoder '_M_'  num2str(M) '_K_' num2str(K) '_N_' num2str(N) '_MC_' num2str(MONTE_CARLO) '.mat'],'ber','H');
+save(['ber_' decpar.decoder '_M_'  num2str(M) '_K_' num2str(K) '_N_' num2str(N) '_MC_' num2str(MONTE_CARLO) '.mat'],'ber','H');
