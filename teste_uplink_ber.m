@@ -4,7 +4,7 @@ clc;
 
 addpath('./functions/')
 
-OUTER_MC = 10000;                                                          % Size of the outer Monte Carlo ensemble (Varies the channel realizarions)
+OUTER_MC = 1;                                                          % Size of the outer Monte Carlo ensemble (Varies the channel realizarions)
 INNER_MC = 200;                                                            % Size of the inner Monte Carlo ensemble (Varies the messages for one channel realization)
 
 B = 4;                                                                     % Number of bits in each symbol
@@ -54,19 +54,13 @@ for out_mc = 1:OUTER_MC
         decpar.power    = Ps;
         
         for snr_idx = 1:n_snr
-            y = channel(s,Ps,H(:,:,out_mc),snr(snr_idx),'uplink');
+            y = channel(s,Ps,H(:,:,out_mc),snr(snr_idx),'uplink');         % Channel
             
-            s_hat = decoder(y,H(:,:,out_mc),decpar);                       % Decoding received signal
+            b_hat = baseStationRX(y,H(:,:,out_mc),decpar,B);               % Base station receiver
             
-            % Signal decodification for each user
-            
-            for k = 1:K
-                b_hat(:,k) = qamdemod(s_hat(k,:).',2^B,'OutputType','bit');
-            end
-            
-            [~,ber(snr_idx,:,inn_mc,out_mc)] = biterr(b_hat,b,[],'column-wise');
+            [~,ber(snr_idx,:,inn_mc,out_mc)] = biterr(b_hat,b,[],'column-wise'); % Bit-error rate calculation
         end
     end
 end
 
-save(['ber_' decpar.decoder '_M_'  num2str(M) '_K_' num2str(K) '_N_' num2str(N) '_MC_' num2str(MONTE_CARLO) '.mat'],'ber','H');
+% save(['ber_' decpar.decoder '_M_'  num2str(M) '_K_' num2str(K) '_N_' num2str(N) '_MC_' num2str(MONTE_CARLO) '.mat'],'ber','H');
