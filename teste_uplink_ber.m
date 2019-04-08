@@ -43,15 +43,12 @@ for out_mc = 1:OUTER_MC
     
     H(:,:,out_mc) = H(:,:,out_mc)*sqrt(diag(1./beta));
     
-    for inn_mc = 1:INNER_MC
-        inn_mc
-        
+    for inn_mc = 1:INNER_MC        
         [s,Ps,b] = userTX(K,N,B);                                          % Transmitted signals by each user
         
         % Decoder parameters
-    
-        decpar.decoder = 'mf';
-        decpar.power    = Ps;
+            
+        decpar = struct('decoder','mf','power',Ps);
         
         for snr_idx = 1:n_snr
             y = channel(s,Ps,H(:,:,out_mc),snr(snr_idx),'uplink');         % Channel
