@@ -15,7 +15,17 @@ fontsize  = 20;
 
 BIN_WIDTH_CDF  = 0.005;
 
-legend_text = {'No selection', 'ICI-based selection'};
+BAR_SIZE = 0.4;
+
+% NS - No selection
+% RS - Random selection
+% ICIBS - ICI-based selection
+
+legend_text = {'NS', 'RS', 'ICIBS'};
+location = 'northwest';
+
+cat = categorical(legend_text);
+cat = reordercats(cat,legend_text);
 
 root_rate_fit = './figures/rate/fit';
 root_erg_rate = './figures/rate/erg_cap';
@@ -49,7 +59,9 @@ for k = 1:K
     
     xlabel('Interchannel inteference','fontname',fontname,'fontsize',fontsize);
     ylabel('Rate (b/s/Hz)','fontname',fontname,'fontsize',fontsize);
-
+    
+    legend({'Data','Fitted curve'},'fontname',fontname,'fontsize',fontsize);
+    
     set(gca,'fontname',fontname,'fontsize',fontsize);
     
     xlim([0 0.4]);
@@ -60,7 +72,8 @@ for k = 1:K
 end
 
 [values, edges] = histcounts(sum(rate),'binwidth',BIN_WIDTH_CDF,'normalization','cdf');
-[values_prime, edges_prime] = histcounts(sum(rate_prime),'binwidth',BIN_WIDTH_CDF,'normalization','cdf');
+[values_random, edges_random] = histcounts(sum(rate_random),'binwidth',BIN_WIDTH_CDF,'normalization','cdf');
+[values_ici_based, edges_ici_based] = histcounts(sum(rate_ici_based),'binwidth',BIN_WIDTH_CDF,'normalization','cdf');
 
 figure;
 
@@ -68,12 +81,13 @@ set(gcf,'position',[0 0 800 600]);
 
 plot(edges,[values 1],'-','color',colours(1,:),'linewidth',linewidth);
 hold on;
-plot(edges_prime,[values_prime 1],'-','color',colours(2,:),'linewidth',linewidth);
+plot(edges_random,[values_random 1],'-','color',colours(2,:),'linewidth',linewidth);
+plot(edges_ici_based,[values_ici_based 1],'-','color',colours(3,:),'linewidth',linewidth);
 
 xlabel('Sum-rate (b/s/Hz)','fontname',fontname,'fontsize',fontsize);
 ylabel('Outage Probability','fontname',fontname,'fontsize',fontsize);
 
-legend(legend_text,'fontname',fontname,'fontsize',fontsize,'location','southeast');
+legend(legend_text,'fontname',fontname,'fontsize',fontsize,'location',location);
 
 set(gca,'fontname',fontname,'fontsize',fontsize);
 
@@ -87,10 +101,9 @@ figure;
 
 set(gcf,'position',[0 0 800 600]);
 
-cat = categorical({'No selection','ICI-based selection'});
+bar(cat,[sum(mean(rate,2)) sum(mean(rate_random,2)) sum(mean(rate_ici_based,2))],BAR_SIZE);
 
-bar(cat,[sum(mean(rate,2)) sum(mean(rate_prime,2))],0.4);
-
+xlabel('Algorithms','fontname',fontname,'fontsize',fontsize);
 ylabel('Average sum-rate (b/s/Hz)','fontname',fontname,'fontsize',fontsize);
 
 set(gca,'fontname',fontname,'fontsize',fontsize);
@@ -100,7 +113,8 @@ saveas(gcf,[root_erg_rate 'sum_rate_M_' num2str(M) '_K_' num2str(K)],'png');
 saveas(gcf,[root_erg_rate 'sum_rate_M_' num2str(M) '_K_' num2str(K)],'epsc2');
 
 [values, edges] = histcounts(mean(rate),'binwidth',BIN_WIDTH_CDF,'normalization','cdf');
-[values_prime, edges_prime] = histcounts(mean(rate_prime),'binwidth',BIN_WIDTH_CDF,'normalization','cdf');
+[values_random, edges_random] = histcounts(mean(rate_random),'binwidth',BIN_WIDTH_CDF,'normalization','cdf');
+[values_ici_based, edges_ici_based] = histcounts(mean(rate_ici_based),'binwidth',BIN_WIDTH_CDF,'normalization','cdf');
 
 figure;
 
@@ -108,12 +122,13 @@ set(gcf,'position',[0 0 800 600]);
 
 plot(edges,[values 1],'-','color',colours(1,:),'linewidth',linewidth);
 hold on;
-plot(edges_prime,[values_prime 1],'-','color',colours(2,:),'linewidth',linewidth);
+plot(edges_random,[values_random 1],'-','color',colours(2,:),'linewidth',linewidth);
+plot(edges_ici_based,[values_ici_based 1],'-','color',colours(3,:),'linewidth',linewidth);
 
 xlabel('Rate per terminal (b/s/Hz)','fontname',fontname,'fontsize',fontsize);
 ylabel('Outage Probability','fontname',fontname,'fontsize',fontsize);
 
-legend(legend_text,'fontname',fontname,'fontsize',fontsize,'location','southeast');
+legend(legend_text,'fontname',fontname,'fontsize',fontsize,'location',location);
 
 set(gca,'fontname',fontname,'fontsize',fontsize);
 
@@ -127,10 +142,9 @@ figure;
 
 set(gcf,'position',[0 0 800 600]);
 
-cat = categorical({'No selection','ICI-based selection'});
+bar(cat,[mean(mean(rate,2)) mean(mean(rate_random,2)) mean(mean(rate_ici_based,2))],BAR_SIZE);
 
-bar(cat,[mean(mean(rate,2)) mean(mean(rate_prime,2))],0.4);
-
+xlabel('Algorithms','fontname',fontname,'fontsize',fontsize);
 ylabel('Average rate per terminal (b/s/Hz)','fontname',fontname,'fontsize',fontsize);
 
 set(gca,'fontname',fontname,'fontsize',fontsize);
