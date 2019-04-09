@@ -197,34 +197,3 @@ saveas(gcf,[root_erg_rate 'avg_rate_ter_M_' num2str(M) '_K_' num2str(K)],'png');
 saveas(gcf,[root_erg_rate 'avg_rate_ter_M_' num2str(M) '_K_' num2str(K)],'epsc2');
 
 % save(['ber_' decpar.decoder '_M_'  num2str(M) '_K_' num2str(K) '_N_' num2str(N) '_MC_' num2str(MONTE_CARLO) '.mat'],'ber','H');
-
-function [gamma] = sinr(H,snr)
-
-M = size(H,1);
-
-h_norm = vecnorm(H,2)';
-H_norm = repmat(h_norm',M,1);
-
-H_n = H./H_norm;
-
-D = H_n'*H;
-
-pow_interference = sum(abs(D).^2,2) - h_norm.^2;
-
-gamma = h_norm.^2./(1./snr + pow_interference);
-
-end
-
-function [psi] = ici(H)
-
-M = size(H,1);
-
-h_norm = vecnorm(H,2);
-H_norm = repmat(h_norm,M,1);
-
-H_n = H./H_norm;
-
-D_n = H_n'*H_n;
-
-psi = sum(abs(D_n),2) - 1;
-end
