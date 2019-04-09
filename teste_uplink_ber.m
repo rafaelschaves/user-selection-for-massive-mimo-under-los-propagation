@@ -36,7 +36,7 @@ H = zeros(M,K,OUTER_MC);                                                   % Cha
 
 ber = zeros(n_snr,K,INNER_MC,OUTER_MC);                                    % Bit-error rate
 
-for out_mc = 1:OUTER_MC
+parfor out_mc = 1:OUTER_MC
     out_mc
     
     [H(:,:,out_mc),beta] = massiveMIMOChannel(commcell,'rayleigh');
@@ -63,4 +63,4 @@ for out_mc = 1:OUTER_MC
     end
 end
 
-save(['ber_' decpar.decoder '_M_'  num2str(M) '_K_' num2str(K) '_N_' num2str(N) '_MC_' num2str(MONTE_CARLO) '.mat'],'ber','H');
+save(['ber_mf_M_'  num2str(M) '_K_' num2str(K) '_N_' num2str(N) '_MC_' num2str(OUTER_MC) '.mat'],'ber','H');
