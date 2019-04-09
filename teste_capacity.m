@@ -100,15 +100,23 @@ function [gamma] = sinr_prime(H,snr)
 M = size(H,1);
 
 h_norm = vecnorm(H,2)';
-H_norm = repmat(h_norm,M,1);
+H_norm = repmat(h_norm',M,1);
 
 H_n = H./H_norm;
 
 D = H_n'*H;
 
-int = sum(abs(D),2) - h_norm';
+k = 1;
 
-gamma = (h_nrom.^2/(1/snr + sum(abs(int).^2))';
+h_k = H(:,k);
+
+H(:,k) = [];
+
+gamma2 = norm(h_k,2)^2/(1/snr + sum(abs(h_k'*H).^2/norm(h_k,2)^2));
+
+pow_interference = sum(abs(D).^2,2) - h_norm.^2;
+
+gamma = h_norm.^2./(1./snr + pow_interference);
 
 end
 
