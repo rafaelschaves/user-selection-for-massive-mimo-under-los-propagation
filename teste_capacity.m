@@ -31,8 +31,10 @@ commcell.city            = 'large';                                        % Typ
 
 H = zeros(M,K,OUTER_MC);                                                   % Channel matrix
 
-sinr = zeros(K,OUTER_MC);
-rate = zeros(K,OUTER_MC);
+gamma = zeros(K,OUTER_MC);
+gamma_prime = zeros(K,OUTER_MC);
+rate  = zeros(K,OUTER_MC);
+psi   = zeros(K,OUTER_MC);
 
 for out_mc = 1:OUTER_MC
     out_mc
@@ -41,13 +43,85 @@ for out_mc = 1:OUTER_MC
     
     H(:,:,out_mc) = H(:,:,out_mc)*sqrt(diag(1./beta));
     
+    psi(:,out_mc) = ici(H(:,:,out_mc));
+    
+    gamma_prime(:,out_mc) = sinr_prime(H(:,:,out_mc),snr); 
+    
     for k = 1:K
-        H_aux      = H(:,:,out_mc);
-        H_aux(:,k) = [];
-        
-        sinr(k,out_mc) = real(norm(H(:,k,out_mc),2)^2/(1/snr + sum(H(:,k,out_mc)'*H_aux/norm(H(:,k,out_mc),2)^2)));
-        rate(k,out_mc) = log(1+sinr(k,out_mc));
+        gamma(k,out_mc) = sinr(H(:,:,out_mc),k,snr);
+        rate(k,out_mc) = log(1+gamma(k,out_mc));
     end
 end
 
+% Ploting Figures
+
+linewidth = 2;
+fontname  = 'Times New Roman';
+fontsize  = 20;
+
+BIN_WIDTH_CDF  = 0.005;
+
+% root_erg_cap  = './Figures/Capacity/erg_cap';
+% root_out_prob = './Figures/Capacity/out_prob';
+
+[values, edges] = histcounts(sum(rate),'binwidth',BIN_WIDTH_CDF,'normalization','cdf');
+
+figure;
+
+set(gcf,'position',[0 0 800 600]);
+
+plot(edges,[values 1],'linewidth',linewidth);
+
+xlabel('Capacity (b/s/Hz)','fontname',fontname,'fontsize',fontsize);
+ylabel('Outage Probability','fontname',fontname,'fontsize',fontsize);
+
+set(gca,'fontname',fontname,'fontsize',fontsize);
+
+ylim([0 1]);
+
+% saveas(gcf,[root_out_prob '_M_' num2str(M(m))],'fig');
+% saveas(gcf,[root_out_prob '_M_' num2str(M(m))],'png');
+% saveas(gcf,[root_out_prob '_M_' num2str(M(m))],'epsc2');
+
 % save(['ber_' decpar.decoder '_M_'  num2str(M) '_K_' num2str(K) '_N_' num2str(N) '_MC_' num2str(MONTE_CARLO) '.mat'],'ber','H');
+
+function [gamma] = sinr(H,k,snr)
+
+h_k = H(:,k);
+
+H(:,k) = [];
+
+gamma = norm(h_k,2)^2/(1/snr + sum(abs(h_k'*H).^2/norm(h_k,2)^2));
+
+end
+
+function [gamma] = sinr_prime(H,snr)
+
+M = size(H,1);
+
+h_norm = vecnorm(H,2)';
+H_norm = repmat(h_norm,M,1);
+
+H_n = H./H_norm;
+
+D = H_n'*H;
+
+int = sum(abs(D),2) - h_norm';
+
+gamma = (h_nrom.^2/(1/snr + sum(abs(int).^2))';
+
+end
+
+function [psi] = ici(H)
+
+M = size(H,1);
+
+h_norm = vecnorm(H,2);
+H_norm = repmat(h_norm,M,1);
+
+H_n = H./H_norm;
+
+D_n = H_n'*H_n;
+
+psi = sum(abs(D_n),2) - 1;
+end
