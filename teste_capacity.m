@@ -25,19 +25,24 @@ commcell.city            = 'large';                                        % Typ
 
 % Initialization
 
-H = zeros(M,K,OUTER_MC);                                                   % Channel matrix
+H = zeros(M,K,MC);                                                         % Channel matrix
 
-user_idx = zeros(OUTER_MC,1);
+user_idx_ici_based = zeros(MC,1);
+user_idx_random = zeros(MC,1);
 
-gamma = zeros(K,OUTER_MC);
-rate  = zeros(K,OUTER_MC);
-psi   = zeros(K,OUTER_MC);
+gamma = zeros(K,MC);
+rate  = zeros(K,MC);
+psi   = zeros(K,MC);
 
-gamma_prime = zeros(K-1,OUTER_MC);
-rate_prime  = zeros(K-1,OUTER_MC);
-psi_prime   = zeros(K-1,OUTER_MC);
+gamma_ici_based = zeros(K-1,MC);
+rate_ici_based  = zeros(K-1,MC);
+psi_ici_based   = zeros(K-1,MC);
 
-for out_mc = 1:OUTER_MC
+gamma_random = zeros(K-1,MC);
+rate_random  = zeros(K-1,MC);
+psi_random   = zeros(K-1,MC);
+
+for out_mc = 1:MC
     out_mc
     
     [H(:,:,out_mc),beta] = massiveMIMOChannel(commcell,'rayleigh');
@@ -48,17 +53,30 @@ for out_mc = 1:OUTER_MC
     rate(:,out_mc)  = log2(1 + gamma(:,out_mc));
     psi(:,out_mc)   = ici(H(:,:,out_mc));
     
+    % Removing user randomly
+    
+    user_idx_random(out_mc) = randi([1 K]);
+    
+    H_random = H(:,:,out_mc);
+    H_random(:,user_idx_random(out_mc)) = [];
+    
+    gamma_random(:,out_mc) = sinr(H_random,snr); 
+    rate_random(:,out_mc)  = log2(1 + gamma_random(:,out_mc));
+    psi_random(:,out_mc)   = ici(H_random);
+    
     % Removing user based in ICI
     
-    [~,user_idx(out_mc)] = max(psi(:,out_mc));
+    [~,user_idx_ici_based(out_mc)] = max(psi(:,out_mc));
     
-    H_aux = H(:,:,out_mc);
-    H_aux(:,user_idx(out_mc)) = [];
+    H_ici_based = H(:,:,out_mc);
+    H_ici_based(:,user_idx_ici_based(out_mc)) = [];
     
-    gamma_prime(:,out_mc) = sinr(H_aux,snr); 
-    rate_prime(:,out_mc)  = log2(1 + gamma_prime(:,out_mc));
-    psi_prime(:,out_mc)   = ici(H_aux);
+    gamma_ici_based(:,out_mc) = sinr(H_ici_based,snr); 
+    rate_ici_based(:,out_mc)  = log2(1 + gamma_ici_based(:,out_mc));
+    psi_ici_based(:,out_mc)   = ici(H_ici_based);
 end
 
 save(['./results/rate_mf_M_' num2str(M) '_K_' num2str(K) '_MC_' num2str(MC) '.mat'], ...
-      'gamma','rate','psi','gamma_prime','rate_prime','psi_prime','user_idx');
+      'gamma','rate','psi', ...
+      'gamma_random','rate_random','psi_random', ...
+      'gamma_ici_based','rate_ici_based','psi_ici_based','user_idx_ici_based');
