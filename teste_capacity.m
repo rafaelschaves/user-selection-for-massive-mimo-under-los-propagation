@@ -31,10 +31,15 @@ commcell.city            = 'large';                                        % Typ
 
 H = zeros(M,K,OUTER_MC);                                                   % Channel matrix
 
+user_idx = zeros(OUTER_MC,1);
+
 gamma = zeros(K,OUTER_MC);
-gamma_prime = zeros(K,OUTER_MC);
 rate  = zeros(K,OUTER_MC);
 psi   = zeros(K,OUTER_MC);
+
+gamma_prime = zeros(K-1,OUTER_MC);
+rate_prime  = zeros(K-1,OUTER_MC);
+psi_prime   = zeros(K-1,OUTER_MC);
 
 for out_mc = 1:OUTER_MC
     out_mc
@@ -42,15 +47,21 @@ for out_mc = 1:OUTER_MC
     [H(:,:,out_mc),beta] = massiveMIMOChannel(commcell,'rayleigh');
     
     H(:,:,out_mc) = H(:,:,out_mc)*sqrt(diag(1./beta));
+        
+    gamma(:,out_mc) = sinr(H(:,:,out_mc),snr); 
+    rate(:,out_mc)  = log2(1 + gamma(:,out_mc));
+    psi(:,out_mc)   = ici(H(:,:,out_mc));
     
-    psi(:,out_mc) = ici(H(:,:,out_mc));
+    % Removing user based in ICI
     
-    gamma_prime(:,out_mc) = sinr_prime(H(:,:,out_mc),snr); 
+    [~,user_idx(out_mc)] = max(psi(:,out_mc));
     
-    for k = 1:K
-        gamma(k,out_mc) = sinr(H(:,:,out_mc),k,snr);
-        rate(k,out_mc) = log(1+gamma(k,out_mc));
-    end
+    H_aux = H(:,:,out_mc);
+    H_aux(:,user_idx(out_mc)) = [];
+    
+    gamma_prime(:,out_mc) = sinr(H_aux,snr); 
+    rate_prime(:,out_mc)  = log2(1 + gamma_prime(:,out_mc));
+    psi_prime(:,out_mc)   = ici(H_aux);
 end
 
 % Ploting Figures
@@ -61,41 +72,133 @@ fontsize  = 20;
 
 BIN_WIDTH_CDF  = 0.005;
 
-% root_erg_cap  = './Figures/Capacity/erg_cap';
-% root_out_prob = './Figures/Capacity/out_prob';
+legend_text = {'No selection', 'ICI-based selection'};
+
+root_rate_fit = './figures/rate/fit';
+root_erg_rate = './figures/rate/erg_cap';
+root_out_prob = './figures/rate/out_prob';
+
+colours = get(gca,'colororder');
+close;
+
+p = zeros(3,K);
+
+psi_range = (0:0.01:0.4);
+
+f = zeros(K,length(psi_range));
+
+for k = 1:K
+    curvefit = fit(psi(k,:)',rate(k,:)','poly2');
+    
+    p(1,k) = curvefit.p1;
+    p(2,k) = curvefit.p2;
+    p(3,k) = curvefit.p3;
+    
+    f(k,:) = p(1,k)*psi_range.^2 + p(2,k)*psi_range + p(3,k);
+    
+    figure;
+    
+    set(gcf,'position',[0 0 800 600]);
+    
+    plot(psi(k,:),rate(k,:),'.','color',colours(1,:),'linewidth',linewidth);
+    hold on;
+    plot(psi_range,f(k,:),'-','color',colours(2,:),'linewidth',linewidth);
+    
+    xlabel('Interchannel inteference','fontname',fontname,'fontsize',fontsize);
+    ylabel('Rate (b/s/Hz)','fontname',fontname,'fontsize',fontsize);
+
+    set(gca,'fontname',fontname,'fontsize',fontsize);
+    
+    xlim([0 0.4]);
+    
+    saveas(gcf,[root_rate_fit '_M_' num2str(M) '_' num2str(k) '_user'],'fig');
+    saveas(gcf,[root_rate_fit '_M_' num2str(M) '_' num2str(k) '_user'],'png');
+    saveas(gcf,[root_rate_fit '_M_' num2str(M) '_' num2str(k) '_user'],'epsc2');
+end
 
 [values, edges] = histcounts(sum(rate),'binwidth',BIN_WIDTH_CDF,'normalization','cdf');
+[values_prime, edges_prime] = histcounts(sum(rate_prime),'binwidth',BIN_WIDTH_CDF,'normalization','cdf');
 
 figure;
 
 set(gcf,'position',[0 0 800 600]);
 
-plot(edges,[values 1],'linewidth',linewidth);
+plot(edges,[values 1],'-','color',colours(1,:),'linewidth',linewidth);
+hold on;
+plot(edges_prime,[values_prime 1],'-','color',colours(2,:),'linewidth',linewidth);
 
-xlabel('Capacity (b/s/Hz)','fontname',fontname,'fontsize',fontsize);
+xlabel('Sum-rate (b/s/Hz)','fontname',fontname,'fontsize',fontsize);
 ylabel('Outage Probability','fontname',fontname,'fontsize',fontsize);
+
+legend(legend_text,'fontname',fontname,'fontsize',fontsize,'location','southeast');
 
 set(gca,'fontname',fontname,'fontsize',fontsize);
 
 ylim([0 1]);
 
-% saveas(gcf,[root_out_prob '_M_' num2str(M(m))],'fig');
-% saveas(gcf,[root_out_prob '_M_' num2str(M(m))],'png');
-% saveas(gcf,[root_out_prob '_M_' num2str(M(m))],'epsc2');
+saveas(gcf,[root_out_prob 'sum_rate_M_' num2str(M) '_K_' num2str(K)],'fig');
+saveas(gcf,[root_out_prob 'sum_rate_M_' num2str(M) '_K_' num2str(K)],'png');
+saveas(gcf,[root_out_prob 'sum_rate_M_' num2str(M) '_K_' num2str(K)],'epsc2');
+
+figure;
+
+set(gcf,'position',[0 0 800 600]);
+
+cat = categorical({'No selection','ICI-based selection'});
+
+bar(cat,[sum(mean(rate,2)) sum(mean(rate_prime,2))],0.4);
+
+ylabel('Average sum-rate (b/s/Hz)','fontname',fontname,'fontsize',fontsize);
+
+set(gca,'fontname',fontname,'fontsize',fontsize);
+
+saveas(gcf,[root_erg_rate 'sum_rate_M_' num2str(M) '_K_' num2str(K)],'fig');
+saveas(gcf,[root_erg_rate 'sum_rate_M_' num2str(M) '_K_' num2str(K)],'png');
+saveas(gcf,[root_erg_rate 'sum_rate_M_' num2str(M) '_K_' num2str(K)],'epsc2');
+
+[values, edges] = histcounts(mean(rate),'binwidth',BIN_WIDTH_CDF,'normalization','cdf');
+[values_prime, edges_prime] = histcounts(mean(rate_prime),'binwidth',BIN_WIDTH_CDF,'normalization','cdf');
+
+figure;
+
+set(gcf,'position',[0 0 800 600]);
+
+plot(edges,[values 1],'-','color',colours(1,:),'linewidth',linewidth);
+hold on;
+plot(edges_prime,[values_prime 1],'-','color',colours(2,:),'linewidth',linewidth);
+
+xlabel('Rate per terminal (b/s/Hz)','fontname',fontname,'fontsize',fontsize);
+ylabel('Outage Probability','fontname',fontname,'fontsize',fontsize);
+
+legend(legend_text,'fontname',fontname,'fontsize',fontsize,'location','southeast');
+
+set(gca,'fontname',fontname,'fontsize',fontsize);
+
+ylim([0 1]);
+
+saveas(gcf,[root_out_prob 'avg_rate_ter_M_' num2str(M) '_K_' num2str(K)],'fig');
+saveas(gcf,[root_out_prob 'avg_rate_ter_M_' num2str(M) '_K_' num2str(K)],'png');
+saveas(gcf,[root_out_prob 'avg_rate_ter_M_' num2str(M) '_K_' num2str(K)],'epsc2');
+
+figure;
+
+set(gcf,'position',[0 0 800 600]);
+
+cat = categorical({'No selection','ICI-based selection'});
+
+bar(cat,[mean(mean(rate,2)) mean(mean(rate_prime,2))],0.4);
+
+ylabel('Average rate per terminal (b/s/Hz)','fontname',fontname,'fontsize',fontsize);
+
+set(gca,'fontname',fontname,'fontsize',fontsize);
+
+saveas(gcf,[root_erg_rate 'avg_rate_ter_M_' num2str(M) '_K_' num2str(K)],'fig');
+saveas(gcf,[root_erg_rate 'avg_rate_ter_M_' num2str(M) '_K_' num2str(K)],'png');
+saveas(gcf,[root_erg_rate 'avg_rate_ter_M_' num2str(M) '_K_' num2str(K)],'epsc2');
 
 % save(['ber_' decpar.decoder '_M_'  num2str(M) '_K_' num2str(K) '_N_' num2str(N) '_MC_' num2str(MONTE_CARLO) '.mat'],'ber','H');
 
-function [gamma] = sinr(H,k,snr)
-
-h_k = H(:,k);
-
-H(:,k) = [];
-
-gamma = norm(h_k,2)^2/(1/snr + sum(abs(h_k'*H).^2/norm(h_k,2)^2));
-
-end
-
-function [gamma] = sinr_prime(H,snr)
+function [gamma] = sinr(H,snr)
 
 M = size(H,1);
 
@@ -105,14 +208,6 @@ H_norm = repmat(h_norm',M,1);
 H_n = H./H_norm;
 
 D = H_n'*H;
-
-k = 1;
-
-h_k = H(:,k);
-
-H(:,k) = [];
-
-gamma2 = norm(h_k,2)^2/(1/snr + sum(abs(h_k'*H).^2/norm(h_k,2)^2));
 
 pow_interference = sum(abs(D).^2,2) - h_norm.^2;
 
