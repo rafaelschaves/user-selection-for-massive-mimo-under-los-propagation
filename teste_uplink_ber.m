@@ -36,7 +36,7 @@ H = zeros(M,K,OUTER_MC);                                                   % Cha
 
 ber = zeros(n_snr,K,INNER_MC,OUTER_MC);                                    % Bit-error rate
 
-parfor out_mc = 1:OUTER_MC
+for out_mc = 1:OUTER_MC
     out_mc
     
     [H(:,:,out_mc),beta] = massiveMIMOChannel(commcell,'rayleigh');
