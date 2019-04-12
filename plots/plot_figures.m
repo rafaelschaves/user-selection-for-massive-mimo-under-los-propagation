@@ -19,9 +19,10 @@ BAR_SIZE = 0.4;
 
 % NS - No selection
 % RS - Random selection
+% SOS - Semi-orthogonal selection
 % ICIBS - ICI-based selection
 
-legend_text = {'NS', 'RS', 'ICIBS'};
+legend_text = {'NS','RS','SOS','ICIBS'};
 location = 'northwest';
 
 cat = categorical(legend_text);
@@ -110,6 +111,7 @@ end
 
 [values_u,edges_u]             = histcounts(sum(rate_u),'binwidth',BIN_WIDTH_CDF,'normalization','cdf');
 [values_rs_u,edges_rs_u]       = histcounts(sum(rate_rs_u),'binwidth',BIN_WIDTH_CDF,'normalization','cdf');
+[values_sos_u,edges_sos_u]     = histcounts(sum(rate_sos_u),'binwidth',BIN_WIDTH_CDF,'normalization','cdf');
 [values_icibs_u,edges_icibs_u] = histcounts(sum(rate_icibs_u),'binwidth',BIN_WIDTH_CDF,'normalization','cdf');
 
 figure;
@@ -119,7 +121,8 @@ set(gcf,'position',[0 0 800 600]);
 plot(edges_u,[values_u 1],'-','color',colours(1,:),'linewidth',linewidth);
 hold on;
 plot(edges_rs_u,[values_rs_u 1],'-','color',colours(2,:),'linewidth',linewidth);
-plot(edges_icibs_u,[values_icibs_u 1],'-','color',colours(3,:),'linewidth',linewidth);
+plot(edges_sos_u,[values_sos_u 1],'-','color',colours(3,:),'linewidth',linewidth);
+plot(edges_icibs_u,[values_icibs_u 1],'-','color',colours(4,:),'linewidth',linewidth);
 
 xlabel('Uplink sum-rate (b/s/Hz)','fontname',fontname,'fontsize',fontsize);
 ylabel('Outage probability','fontname',fontname,'fontsize',fontsize);
@@ -136,6 +139,7 @@ saveas(gcf,[root_out_prob 'uplink_sum_rate_M_' num2str(M) '_K_' num2str(K)],'eps
 
 [values_d,edges_d]              = histcounts(sum(rate_d),'binwidth',BIN_WIDTH_CDF,'normalization','cdf');
 [values_rs_d,edges_rs_d]        = histcounts(sum(rate_rs_d),'binwidth',BIN_WIDTH_CDF,'normalization','cdf');
+[values_sos_d,edges_sos_d]        = histcounts(sum(rate_sos_d),'binwidth',BIN_WIDTH_CDF,'normalization','cdf');
 [values_icibs_d, edges_icibs_d] = histcounts(sum(rate_icibs_d),'binwidth',BIN_WIDTH_CDF,'normalization','cdf');
 
 figure;
@@ -145,7 +149,8 @@ set(gcf,'position',[0 0 800 600]);
 plot(edges_d,[values_d 1],'-','color',colours(1,:),'linewidth',linewidth);
 hold on;
 plot(edges_rs_d,[values_rs_d 1],'-','color',colours(2,:),'linewidth',linewidth);
-plot(edges_icibs_d,[values_icibs_d 1],'-','color',colours(3,:),'linewidth',linewidth);
+plot(edges_sos_d,[values_sos_d 1],'-','color',colours(3,:),'linewidth',linewidth);
+plot(edges_icibs_d,[values_icibs_d 1],'-','color',colours(4,:),'linewidth',linewidth);
 
 xlabel('Downlink sum-rate (b/s/Hz)','fontname',fontname,'fontsize',fontsize);
 ylabel('Outage probability','fontname',fontname,'fontsize',fontsize);
@@ -160,7 +165,7 @@ saveas(gcf,[root_out_prob 'downlink_sum_rate_M_' num2str(M) '_K_' num2str(K)],'f
 saveas(gcf,[root_out_prob 'downlink_sum_rate_M_' num2str(M) '_K_' num2str(K)],'png');
 saveas(gcf,[root_out_prob 'downlink_sum_rate_M_' num2str(M) '_K_' num2str(K)],'epsc2');
 
-bar_sum_u = [sum(mean(rate_u,2)) sum(mean(rate_rs_u,2)) sum(mean(rate_icibs_u,2))];
+bar_sum_u = [sum(mean(rate_u,2)) sum(mean(rate_rs_u,2)) sum(mean(rate_sos_u,2)) sum(mean(rate_icibs_u,2))];
 
 figure;
 
@@ -177,7 +182,7 @@ saveas(gcf,[root_erg_rate 'uplink_sum_rate_M_' num2str(M) '_K_' num2str(K)],'fig
 saveas(gcf,[root_erg_rate 'uplink_sum_rate_M_' num2str(M) '_K_' num2str(K)],'png');
 saveas(gcf,[root_erg_rate 'uplink_sum_rate_M_' num2str(M) '_K_' num2str(K)],'epsc2');
 
-bar_sum_d = [sum(mean(rate_d,2)) sum(mean(rate_rs_d,2)) sum(mean(rate_icibs_d,2))];
+bar_sum_d = [sum(mean(rate_d,2)) sum(mean(rate_rs_d,2)) sum(mean(rate_sos_d,2)) sum(mean(rate_icibs_d,2))];
 
 figure;
 
@@ -196,6 +201,7 @@ saveas(gcf,[root_erg_rate 'downlink_sum_rate_M_' num2str(M) '_K_' num2str(K)],'e
 
 [values_u,edges_u]             = histcounts(mean(rate_u),'binwidth',BIN_WIDTH_CDF,'normalization','cdf');
 [values_rs_u,edges_rs_u]       = histcounts(mean(rate_rs_u),'binwidth',BIN_WIDTH_CDF,'normalization','cdf');
+[values_sos_u,edges_sos_u]     = histcounts(mean(rate_sos_u),'binwidth',BIN_WIDTH_CDF,'normalization','cdf');
 [values_icibs_u,edges_icibs_u] = histcounts(mean(rate_icibs_u),'binwidth',BIN_WIDTH_CDF,'normalization','cdf');
 
 figure;
@@ -205,7 +211,8 @@ set(gcf,'position',[0 0 800 600]);
 plot(edges_u,[values_u 1],'-','color',colours(1,:),'linewidth',linewidth);
 hold on;
 plot(edges_rs_u,[values_rs_u 1],'-','color',colours(2,:),'linewidth',linewidth);
-plot(edges_icibs_u,[values_icibs_u 1],'-','color',colours(3,:),'linewidth',linewidth);
+plot(edges_sos_u,[values_sos_u 1],'-','color',colours(3,:),'linewidth',linewidth);
+plot(edges_icibs_u,[values_icibs_u 1],'-','color',colours(4,:),'linewidth',linewidth);
 
 xlabel('Uplink rate per terminal (b/s/Hz)','fontname',fontname,'fontsize',fontsize);
 ylabel('Outage probability','fontname',fontname,'fontsize',fontsize);
@@ -222,6 +229,7 @@ saveas(gcf,[root_out_prob 'uplink_avg_rate_ter_M_' num2str(M) '_K_' num2str(K)],
 
 [values_d, edges_d]             = histcounts(mean(rate_d),'binwidth',BIN_WIDTH_CDF,'normalization','cdf');
 [values_rs_d, edges_rs_d]       = histcounts(mean(rate_rs_d),'binwidth',BIN_WIDTH_CDF,'normalization','cdf');
+[values_sos_d, edges_sos_d]       = histcounts(mean(rate_sos_d),'binwidth',BIN_WIDTH_CDF,'normalization','cdf');
 [values_icibs_d, edges_icibs_d] = histcounts(mean(rate_icibs_d),'binwidth',BIN_WIDTH_CDF,'normalization','cdf');
 
 figure;
@@ -231,7 +239,8 @@ set(gcf,'position',[0 0 800 600]);
 plot(edges_d,[values_d 1],'-','color',colours(1,:),'linewidth',linewidth);
 hold on;
 plot(edges_rs_d,[values_rs_d 1],'-','color',colours(2,:),'linewidth',linewidth);
-plot(edges_icibs_d,[values_icibs_d 1],'-','color',colours(3,:),'linewidth',linewidth);
+plot(edges_sos_d,[values_sos_d 1],'-','color',colours(3,:),'linewidth',linewidth);
+plot(edges_icibs_d,[values_icibs_d 1],'-','color',colours(4,:),'linewidth',linewidth);
 
 xlabel('Downlink rate per terminal (b/s/Hz)','fontname',fontname,'fontsize',fontsize);
 ylabel('Outage probability','fontname',fontname,'fontsize',fontsize);
@@ -246,7 +255,7 @@ saveas(gcf,[root_out_prob 'downlink_avg_rate_ter_M_' num2str(M) '_K_' num2str(K)
 saveas(gcf,[root_out_prob 'downlink_avg_rate_ter_M_' num2str(M) '_K_' num2str(K)],'png');
 saveas(gcf,[root_out_prob 'downlink_avg_rate_ter_M_' num2str(M) '_K_' num2str(K)],'epsc2');
 
-bar_u = [mean(mean(rate_u,2)) mean(mean(rate_rs_u,2)) mean(mean(rate_icibs_u,2))];
+bar_u = [mean(mean(rate_u,2)) mean(mean(rate_rs_u,2)) mean(mean(rate_sos_u,2)) mean(mean(rate_icibs_u,2))];
 
 figure;
 
@@ -263,7 +272,7 @@ saveas(gcf,[root_erg_rate 'uplink_avg_rate_ter_M_' num2str(M) '_K_' num2str(K)],
 saveas(gcf,[root_erg_rate 'uplink_avg_rate_ter_M_' num2str(M) '_K_' num2str(K)],'png');
 saveas(gcf,[root_erg_rate 'uplink_avg_rate_ter_M_' num2str(M) '_K_' num2str(K)],'epsc2');
 
-bar_d = [mean(mean(rate_d,2)) mean(mean(rate_rs_d,2)) mean(mean(rate_icibs_d,2))];
+bar_d = [mean(mean(rate_d,2)) mean(mean(rate_rs_d,2)) mean(mean(rate_sos_d,2)) mean(mean(rate_icibs_d,2))];
 
 figure;
 
