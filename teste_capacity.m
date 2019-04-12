@@ -28,19 +28,29 @@ commcell.city            = 'large';                                        % Typ
 H = zeros(M,K,MC);                                                         % Channel matrix
 
 user_idx_ici_based = zeros(MC,1);
-user_idx_random = zeros(MC,1);
+user_idx_rs = zeros(MC,1);
 
-gamma = zeros(K,MC);
-rate  = zeros(K,MC);
-psi   = zeros(K,MC);
+gamma_u = zeros(K,MC);
+gamma_d = zeros(K,MC);
 
-gamma_ici_based = zeros(K-1,MC);
-rate_ici_based  = zeros(K-1,MC);
-psi_ici_based   = zeros(K-1,MC);
+gamma_rs_u = zeros(K-1,MC);
+gamma_rs_d = zeros(K-1,MC);
 
-gamma_random = zeros(K-1,MC);
-rate_random  = zeros(K-1,MC);
-psi_random   = zeros(K-1,MC);
+gamma_icibs_u = zeros(K-1,MC);
+gamma_icibs_d = zeros(K-1,MC);
+
+rate_u  = zeros(K,MC);
+rate_d  = zeros(K,MC);
+
+rate_rs_u  = zeros(K-1,MC);
+rate_rs_d  = zeros(K-1,MC);
+
+rate_icibs_u  = zeros(K-1,MC);
+rate_icibs_d  = zeros(K-1,MC);
+
+psi       = zeros(K,MC);
+psi_rs    = zeros(K-1,MC);
+psi_icibs = zeros(K-1,MC);
 
 for out_mc = 1:MC
     out_mc
@@ -48,21 +58,24 @@ for out_mc = 1:MC
     [H(:,:,out_mc),beta] = massiveMIMOChannel(commcell,'rayleigh');
     
     H(:,:,out_mc) = H(:,:,out_mc)*sqrt(diag(1./beta));
-        
-    gamma(:,out_mc) = sinr(H(:,:,out_mc),snr); 
-    rate(:,out_mc)  = log2(1 + gamma(:,out_mc));
+            
+    [rate_u(:,out_mc),gamma_u(:,out_mc)] = rateCalculation(H(:,:,out_mc),snr,'uplink');
+    [rate_d(:,out_mc),gamma_d(:,out_mc)] = rateCalculation(H(:,:,out_mc),snr,'downlink');
+    
     psi(:,out_mc)   = ici(H(:,:,out_mc));
+
     
     % Removing user randomly
     
-    user_idx_random(out_mc) = randi([1 K]);
+    user_idx_rs(out_mc) = randi([1 K]);
     
-    H_random = H(:,:,out_mc);
-    H_random(:,user_idx_random(out_mc)) = [];
+    H_rs = H(:,:,out_mc);
+    H_rs(:,user_idx_rs(out_mc)) = [];
     
-    gamma_random(:,out_mc) = sinr(H_random,snr); 
-    rate_random(:,out_mc)  = log2(1 + gamma_random(:,out_mc));
-    psi_random(:,out_mc)   = ici(H_random);
+    [rate_rs_u(:,out_mc),gamma_rs_u(:,out_mc)] = rateCalculation(H_rs,snr,'uplink');
+    [rate_rs_d(:,out_mc),gamma_rs_d(:,out_mc)] = rateCalculation(H_rs,snr,'downlink');
+    
+    psi_rs(:,out_mc)   = ici(H_rs);
     
     % Removing user based in ICI
     
@@ -71,12 +84,14 @@ for out_mc = 1:MC
     H_ici_based = H(:,:,out_mc);
     H_ici_based(:,user_idx_ici_based(out_mc)) = [];
     
-    gamma_ici_based(:,out_mc) = sinr(H_ici_based,snr); 
-    rate_ici_based(:,out_mc)  = log2(1 + gamma_ici_based(:,out_mc));
-    psi_ici_based(:,out_mc)   = ici(H_ici_based);
+    [rate_icibs_u(:,out_mc),gamma_icibs_u(:,out_mc)] = rateCalculation(H_ici_based,snr,'uplink');
+    [rate_icibs_d(:,out_mc),gamma_icibs_d(:,out_mc)] = rateCalculation(H_ici_based,snr,'downlink');
+
+    psi_icibs(:,out_mc)   = ici(H_ici_based);
 end
 
-save(['./results/rate_mf_M_' num2str(M) '_K_' num2str(K) '_MC_' num2str(MC) '.mat'], 'H', ...
-      'gamma','rate','psi', ...
-      'gamma_random','rate_random','psi_random', ...
-      'gamma_ici_based','rate_ici_based','psi_ici_based','user_idx_ici_based');
+save(['./results/rate_mf_M_' num2str(M) '_K_' num2str(K) '_MC_' num2str(MC) '.mat'], ...
+      'H', ...
+      'gamma_u','rate_u','gamma_d','rate_d','psi', ...
+      'gamma_rs_u','rate_rs_u','gamma_rs_d','rate_rs_d','psi_rs','user_idx_rs', ...
+      'gamma_icibs_u','rate_icibs_u','gamma_icibs_d','rate_icibs_d','psi_icibs','user_idx_ici_based');
