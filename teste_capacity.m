@@ -8,6 +8,7 @@ MC = 10000;                                                                % Siz
 
 M = 500;                                                                   % Number of antennas at the base station
 K = 5;                                                                     % Number of users at the cell
+L = 4;
 
 snr_db = 0;                                                                % SNR in dB
 snr    = 10.^(snr_db/10);                                                  % SNR
@@ -23,44 +24,52 @@ commcell.meanShadowFad   = 0;                                              % Sha
 commcell.stdDevShadowFad = 8;                                              % Shadow fading standard deviation in dB
 commcell.city            = 'large';                                        % Type of city
 
+linkprop.bsPower         = 10;                                             % in Watts
+linkprop.userPower       = 200e-3;                                         % in Watts
+linkprop.AntennaGainBS   = 0;                                              % in dBi
+linkprop.AntennaGainUser = 0;                                              % in dBi
+linkprop.noiseFigureBS   = 9;                                              % in dB
+linkprop.noiseFigureUser = 9 ;                                             % in dB
+linkprop.bandwidth       = 20e6;                                           % in Hz
+
+[snr_u,snr_d] = linkBudgetCalculation(linkprop);
+
 % Initialization
 
 H = zeros(M,K,MC);                                                         % Channel matrix
 
-idx_aux = zeros(K-1,MC);
-
-user_idx_rs    = zeros(MC,1);
-user_idx_sos   = zeros(MC,1);
-user_idx_icibs = zeros(MC,1);
+user_set_rs    = zeros(L,MC);
+user_set_sos   = zeros(L,MC);
+user_set_icibs = zeros(L,MC);
 
 gamma_u = zeros(K,MC);
 gamma_d = zeros(K,MC);
 
-gamma_rs_u = zeros(K-1,MC);
-gamma_rs_d = zeros(K-1,MC);
+gamma_rs_u = zeros(L,MC);
+gamma_rs_d = zeros(L,MC);
 
-gamma_sos_u = zeros(K-1,MC);
-gamma_sos_d = zeros(K-1,MC);
+gamma_sos_u = zeros(L,MC);
+gamma_sos_d = zeros(L,MC);
 
-gamma_icibs_u = zeros(K-1,MC);
-gamma_icibs_d = zeros(K-1,MC);
+gamma_icibs_u = zeros(L,MC);
+gamma_icibs_d = zeros(L,MC);
 
 rate_u  = zeros(K,MC);
 rate_d  = zeros(K,MC);
 
-rate_rs_u  = zeros(K-1,MC);
-rate_rs_d  = zeros(K-1,MC);
+rate_rs_u  = zeros(L,MC);
+rate_rs_d  = zeros(L,MC);
 
-rate_sos_u  = zeros(K-1,MC);
-rate_sos_d  = zeros(K-1,MC);
+rate_sos_u  = zeros(L,MC);
+rate_sos_d  = zeros(L,MC);
 
-rate_icibs_u  = zeros(K-1,MC);
-rate_icibs_d  = zeros(K-1,MC);
+rate_icibs_u  = zeros(L,MC);
+rate_icibs_d  = zeros(L,MC);
 
 psi       = zeros(K,MC);
-psi_rs    = zeros(K-1,MC);
-psi_sos   = zeros(K-1,MC);
-psi_icibs = zeros(K-1,MC);
+psi_rs    = zeros(L,MC);
+psi_sos   = zeros(L,MC);
+psi_icibs = zeros(L,MC);
 
 for out_mc = 1:MC
     out_mc
@@ -78,55 +87,18 @@ for out_mc = 1:MC
     
     % Random Selection
     
-    user_idx_rs(out_mc) = randi([1 K]);
-    
-    H_rs = H(:,:,out_mc);
-    H_rs(:,user_idx_rs(out_mc)) = [];
+    [user_set_rs(:,out_mc),H_rs] = userScheduling(H(:,:,out_mc),L, ...
+                                                  'random selection');
     
     [rate_rs_u(:,out_mc),gamma_rs_u(:,out_mc)] = rateCalculation(H_rs,snr,'uplink');
     [rate_rs_d(:,out_mc),gamma_rs_d(:,out_mc)] = rateCalculation(H_rs,snr,'downlink');
     
-    psi_rs(:,out_mc)   = ici(H_rs);
-    
+    psi_rs(:,out_mc) = ici(H_rs);
+
     % Semi-orthogonal Selection
     
-    g_i = [];
-    
-    I_M = eye(M);
-    
-     H_aux = H(:,:,out_mc);
-     
-    for i = 1:K-1
-        if(i == 1)
-            G = H(:,:,out_mc);
-            g_norm = vecnorm(G,2);
-            
-            [~,idx_aux(i,out_mc)] = max(g_norm);
-            
-            g_i = [g_i G(:,idx_aux(i,out_mc))/norm(G(:,idx_aux(i,out_mc)),2)];
-            
-            H_aux(:,idx_aux(i,out_mc)) = zeros(M,1);
-        else
-            P = I_M - sum(g_i*g_i.',2);
-            G = P*H_aux;
-            
-            g_norm = vecnorm(G,2);
-            
-            [~,idx_aux(i,out_mc)] = max(g_norm);
-            
-            g_i = [g_i G(:,idx_aux(i,out_mc))/norm(G(:,idx_aux(i,out_mc)),2)];
-            
-            H_aux(:,idx_aux(i,out_mc)) = zeros(M,1);
-        end
-    end
-    
-    aux = 1:K;
-    aux(idx_aux(:,out_mc)) = [];
-    
-    user_idx_sos(out_mc) = aux;
-    
-    H_sos = H(:,:,out_mc);
-    H_sos(:,user_idx_sos(out_mc)) = [];
+    [user_set_sos(:,out_mc),H_sos] = userScheduling(H(:,:,out_mc),L, ...
+                                                    'semi-orthogonal selection');
     
     [rate_sos_u(:,out_mc),gamma_sos_u(:,out_mc)] = rateCalculation(H_sos,snr,'uplink');
     [rate_sos_d(:,out_mc),gamma_sos_d(:,out_mc)] = rateCalculation(H_sos,snr,'downlink');
@@ -135,10 +107,8 @@ for out_mc = 1:MC
     
     % ICI-based Selection
     
-    [~,user_idx_icibs(out_mc)] = max(psi(:,out_mc));
-    
-    H_icibs = H(:,:,out_mc);
-    H_icibs(:,user_idx_icibs(out_mc)) = [];
+    [user_set_icibs(:,out_mc),H_icibs] = userScheduling(H(:,:,out_mc),L, ...
+                                                      'ici-based selection');
     
     [rate_icibs_u(:,out_mc),gamma_icibs_u(:,out_mc)] = rateCalculation(H_icibs,snr,'uplink');
     [rate_icibs_d(:,out_mc),gamma_icibs_d(:,out_mc)] = rateCalculation(H_icibs,snr,'downlink');
@@ -146,9 +116,9 @@ for out_mc = 1:MC
     psi_icibs(:,out_mc)   = ici(H_icibs);
 end
 
-save(['./results/rate_mf_M_' num2str(M) '_K_' num2str(K) '_MC_' num2str(MC) '.mat'], ...
+save(['./results/rate_mf_M_' num2str(M) '_K_' num2str(K) '_L_' num2str(L) '_MC_' num2str(MC) '.mat'], ...
       'H', ...
       'gamma_u','rate_u','gamma_d','rate_d','psi', ...
-      'gamma_rs_u','rate_rs_u','gamma_rs_d','rate_rs_d','psi_rs','user_idx_rs', ...
-      'gamma_sos_u','rate_sos_u','gamma_sos_d','rate_sos_d','psi_sos','user_idx_sos', ...
-      'gamma_icibs_u','rate_icibs_u','gamma_icibs_d','rate_icibs_d','psi_icibs','user_idx_icibs');
+      'gamma_rs_u','rate_rs_u','gamma_rs_d','rate_rs_d','psi_rs','user_set_rs', ...
+      'gamma_sos_u','rate_sos_u','gamma_sos_d','rate_sos_d','psi_sos','user_set_sos', ...
+      'gamma_icibs_u','rate_icibs_u','gamma_icibs_d','rate_icibs_d','psi_icibs','user_set_icibs');

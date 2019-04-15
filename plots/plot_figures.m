@@ -2,7 +2,7 @@ clear;
 close all;
 clc;
 
-load('../results/rate_mf_M_500_K_5_MC_10000.mat');
+load('../results/rate_mf_M_500_K_5_L_4_MC_10000.mat');
 
 M = 500;
 K = 5;
@@ -15,18 +15,20 @@ fontsize  = 20;
 
 BIN_WIDTH_CDF  = 0.005;
 
-BAR_SIZE = 0.4;
+BAR_SIZE = 0.8;
 
 % NS - No selection
 % RS - Random selection
 % SOS - Semi-orthogonal selection
 % ICIBS - ICI-based selection
 
-legend_text = {'NS','RS','SOS','ICIBS'};
+legend_algo = {'NS','RS','SOS','ICIBS'};
+legend_link = {'Uplink','Downlink'};
+
 location = 'northwest';
 
-cat = categorical(legend_text);
-cat = reordercats(cat,legend_text);
+cat = categorical(legend_algo);
+cat = reordercats(cat,legend_algo);
 
 root_rate_fit = '../figures/rate/fit_';
 root_erg_rate = '../figures/rate/erg_cap_';
@@ -118,19 +120,20 @@ figure;
 
 set(gcf,'position',[0 0 800 600]);
 
-plot(edges_u,[values_u 1],'-','color',colours(1,:),'linewidth',linewidth);
+plot([20 edges_u],[0 values_u 1],'-','color',colours(1,:),'linewidth',linewidth);
 hold on;
-plot(edges_rs_u,[values_rs_u 1],'-','color',colours(2,:),'linewidth',linewidth);
-plot(edges_sos_u,[values_sos_u 1],'-','color',colours(3,:),'linewidth',linewidth);
-plot(edges_icibs_u,[values_icibs_u 1],'-','color',colours(4,:),'linewidth',linewidth);
+plot([20 edges_rs_u 40],[0 values_rs_u 1 1],'-','color',colours(2,:),'linewidth',linewidth);
+plot([20 edges_sos_u 40],[0 values_sos_u 1 1],'-','color',colours(3,:),'linewidth',linewidth);
+plot([20 edges_icibs_u 40],[0 values_icibs_u 1 1],'-','color',colours(4,:),'linewidth',linewidth);
 
 xlabel('Uplink sum-rate (b/s/Hz)','fontname',fontname,'fontsize',fontsize);
 ylabel('Outage probability','fontname',fontname,'fontsize',fontsize);
 
-legend(legend_text,'fontname',fontname,'fontsize',fontsize,'location',location);
+legend(legend_algo,'fontname',fontname,'fontsize',fontsize,'location',location);
 
 set(gca,'fontname',fontname,'fontsize',fontsize);
 
+xlim([20 40]);
 ylim([0 1]);
 
 saveas(gcf,[root_out_prob 'uplink_sum_rate_M_' num2str(M) '_K_' num2str(K)],'fig');
@@ -146,58 +149,49 @@ figure;
 
 set(gcf,'position',[0 0 800 600]);
 
-plot(edges_d,[values_d 1],'-','color',colours(1,:),'linewidth',linewidth);
+plot([20 edges_d],[0 values_d 1],'-','color',colours(1,:),'linewidth',linewidth);
 hold on;
-plot(edges_rs_d,[values_rs_d 1],'-','color',colours(2,:),'linewidth',linewidth);
-plot(edges_sos_d,[values_sos_d 1],'-','color',colours(3,:),'linewidth',linewidth);
-plot(edges_icibs_d,[values_icibs_d 1],'-','color',colours(4,:),'linewidth',linewidth);
+plot([20 edges_rs_d 40],[0 values_rs_d 1 1],'-','color',colours(2,:),'linewidth',linewidth);
+plot([20 edges_sos_d 40],[0 values_sos_d 1 1],'-','color',colours(3,:),'linewidth',linewidth);
+plot([20 edges_icibs_d 40],[0 values_icibs_d 1 1],'-','color',colours(4,:),'linewidth',linewidth);
 
 xlabel('Downlink sum-rate (b/s/Hz)','fontname',fontname,'fontsize',fontsize);
 ylabel('Outage probability','fontname',fontname,'fontsize',fontsize);
 
-legend(legend_text,'fontname',fontname,'fontsize',fontsize,'location',location);
+legend(legend_algo,'fontname',fontname,'fontsize',fontsize,'location',location);
 
 set(gca,'fontname',fontname,'fontsize',fontsize);
 
+xlim([20 40]);
 ylim([0 1]);
 
 saveas(gcf,[root_out_prob 'downlink_sum_rate_M_' num2str(M) '_K_' num2str(K)],'fig');
 saveas(gcf,[root_out_prob 'downlink_sum_rate_M_' num2str(M) '_K_' num2str(K)],'png');
 saveas(gcf,[root_out_prob 'downlink_sum_rate_M_' num2str(M) '_K_' num2str(K)],'epsc2');
 
-bar_sum_u = [sum(mean(rate_u,2)) sum(mean(rate_rs_u,2)) sum(mean(rate_sos_u,2)) sum(mean(rate_icibs_u,2))];
+bar_sum = [sum(mean(rate_u,2)) sum(mean(rate_d,2));
+           sum(mean(rate_rs_u,2))  sum(mean(rate_rs_d,2));
+           sum(mean(rate_sos_u,2)) sum(mean(rate_sos_d,2)); 
+           sum(mean(rate_icibs_u,2)) sum(mean(rate_icibs_d,2))];
 
 figure;
 
 set(gcf,'position',[0 0 800 600]);
 
-bar(cat,bar_sum_u,BAR_SIZE);
+bar(cat,bar_sum,BAR_SIZE);
 
 xlabel('Algorithms','fontname',fontname,'fontsize',fontsize);
-ylabel('Uplink average sum-rate (b/s/Hz)','fontname',fontname,'fontsize',fontsize);
+ylabel('Average sum-rate (b/s/Hz)','fontname',fontname,'fontsize',fontsize);
+
+legend(legend_link,'fontname',fontname,'fontsize',fontsize);
 
 set(gca,'fontname',fontname,'fontsize',fontsize);
 
-saveas(gcf,[root_erg_rate 'uplink_sum_rate_M_' num2str(M) '_K_' num2str(K)],'fig');
-saveas(gcf,[root_erg_rate 'uplink_sum_rate_M_' num2str(M) '_K_' num2str(K)],'png');
-saveas(gcf,[root_erg_rate 'uplink_sum_rate_M_' num2str(M) '_K_' num2str(K)],'epsc2');
+ylim([0 40]);
 
-bar_sum_d = [sum(mean(rate_d,2)) sum(mean(rate_rs_d,2)) sum(mean(rate_sos_d,2)) sum(mean(rate_icibs_d,2))];
-
-figure;
-
-set(gcf,'position',[0 0 800 600]);
-
-bar(cat,bar_sum_d,BAR_SIZE);
-
-xlabel('Algorithms','fontname',fontname,'fontsize',fontsize);
-ylabel('Downlink average sum-rate (b/s/Hz)','fontname',fontname,'fontsize',fontsize);
-
-set(gca,'fontname',fontname,'fontsize',fontsize);
-
-saveas(gcf,[root_erg_rate 'downlink_sum_rate_M_' num2str(M) '_K_' num2str(K)],'fig');
-saveas(gcf,[root_erg_rate 'downlink_sum_rate_M_' num2str(M) '_K_' num2str(K)],'png');
-saveas(gcf,[root_erg_rate 'downlink_sum_rate_M_' num2str(M) '_K_' num2str(K)],'epsc2');
+saveas(gcf,[root_erg_rate 'sum_rate_M_' num2str(M) '_K_' num2str(K)],'fig');
+saveas(gcf,[root_erg_rate 'sum_rate_M_' num2str(M) '_K_' num2str(K)],'png');
+saveas(gcf,[root_erg_rate 'sum_rate_M_' num2str(M) '_K_' num2str(K)],'epsc2');
 
 [values_u,edges_u]             = histcounts(mean(rate_u),'binwidth',BIN_WIDTH_CDF,'normalization','cdf');
 [values_rs_u,edges_rs_u]       = histcounts(mean(rate_rs_u),'binwidth',BIN_WIDTH_CDF,'normalization','cdf');
@@ -208,19 +202,20 @@ figure;
 
 set(gcf,'position',[0 0 800 600]);
 
-plot(edges_u,[values_u 1],'-','color',colours(1,:),'linewidth',linewidth);
+plot([5 edges_u 9],[0 values_u 1 1],'-','color',colours(1,:),'linewidth',linewidth);
 hold on;
-plot(edges_rs_u,[values_rs_u 1],'-','color',colours(2,:),'linewidth',linewidth);
-plot(edges_sos_u,[values_sos_u 1],'-','color',colours(3,:),'linewidth',linewidth);
-plot(edges_icibs_u,[values_icibs_u 1],'-','color',colours(4,:),'linewidth',linewidth);
+plot([5 edges_rs_u 9],[0 values_rs_u 1 1],'-','color',colours(2,:),'linewidth',linewidth);
+plot([5 edges_sos_u 9],[0 values_sos_u 1 1],'-','color',colours(3,:),'linewidth',linewidth);
+plot([5 edges_icibs_u 9],[0 values_icibs_u 1 1],'-','color',colours(4,:),'linewidth',linewidth);
 
 xlabel('Uplink rate per terminal (b/s/Hz)','fontname',fontname,'fontsize',fontsize);
 ylabel('Outage probability','fontname',fontname,'fontsize',fontsize);
 
-legend(legend_text,'fontname',fontname,'fontsize',fontsize,'location',location);
+legend(legend_algo,'fontname',fontname,'fontsize',fontsize,'location',location);
 
 set(gca,'fontname',fontname,'fontsize',fontsize);
 
+xlim([5 9]);
 ylim([0 1]);
 
 saveas(gcf,[root_out_prob 'uplink_avg_rate_ter_M_' num2str(M) '_K_' num2str(K)],'fig');
@@ -236,26 +231,30 @@ figure;
 
 set(gcf,'position',[0 0 800 600]);
 
-plot(edges_d,[values_d 1],'-','color',colours(1,:),'linewidth',linewidth);
+plot([5 edges_d 9],[0 values_d 1 1],'-','color',colours(1,:),'linewidth',linewidth);
 hold on;
-plot(edges_rs_d,[values_rs_d 1],'-','color',colours(2,:),'linewidth',linewidth);
-plot(edges_sos_d,[values_sos_d 1],'-','color',colours(3,:),'linewidth',linewidth);
-plot(edges_icibs_d,[values_icibs_d 1],'-','color',colours(4,:),'linewidth',linewidth);
+plot([5 edges_rs_d 9],[0 values_rs_d 1 1],'-','color',colours(2,:),'linewidth',linewidth);
+plot([5 edges_sos_d 9],[0 values_sos_d 1 1],'-','color',colours(3,:),'linewidth',linewidth);
+plot([5 edges_icibs_d 9],[0 values_icibs_d 1 1],'-','color',colours(4,:),'linewidth',linewidth);
 
 xlabel('Downlink rate per terminal (b/s/Hz)','fontname',fontname,'fontsize',fontsize);
 ylabel('Outage probability','fontname',fontname,'fontsize',fontsize);
 
-legend(legend_text,'fontname',fontname,'fontsize',fontsize,'location',location);
+legend(legend_algo,'fontname',fontname,'fontsize',fontsize,'location',location);
 
 set(gca,'fontname',fontname,'fontsize',fontsize);
 
+xlim([5 9]);
 ylim([0 1]);
 
 saveas(gcf,[root_out_prob 'downlink_avg_rate_ter_M_' num2str(M) '_K_' num2str(K)],'fig');
 saveas(gcf,[root_out_prob 'downlink_avg_rate_ter_M_' num2str(M) '_K_' num2str(K)],'png');
 saveas(gcf,[root_out_prob 'downlink_avg_rate_ter_M_' num2str(M) '_K_' num2str(K)],'epsc2');
 
-bar_u = [mean(mean(rate_u,2)) mean(mean(rate_rs_u,2)) mean(mean(rate_sos_u,2)) mean(mean(rate_icibs_u,2))];
+bar_u = [mean(mean(rate_u,2)) mean(mean(rate_d,2));
+         mean(mean(rate_rs_u,2)) mean(mean(rate_rs_d,2));
+         mean(mean(rate_sos_u,2)) mean(mean(rate_sos_d,2));
+         mean(mean(rate_icibs_u,2)) mean(mean(rate_icibs_d,2))];
 
 figure;
 
@@ -264,27 +263,14 @@ set(gcf,'position',[0 0 800 600]);
 bar(cat,bar_u,BAR_SIZE);
 
 xlabel('Algorithms','fontname',fontname,'fontsize',fontsize);
-ylabel('Uplink average rate per terminal (b/s/Hz)','fontname',fontname,'fontsize',fontsize);
+ylabel('Average rate per terminal (b/s/Hz)','fontname',fontname,'fontsize',fontsize);
+
+legend(legend_link,'fontname',fontname,'fontsize',fontsize);
 
 set(gca,'fontname',fontname,'fontsize',fontsize);
 
-saveas(gcf,[root_erg_rate 'uplink_avg_rate_ter_M_' num2str(M) '_K_' num2str(K)],'fig');
-saveas(gcf,[root_erg_rate 'uplink_avg_rate_ter_M_' num2str(M) '_K_' num2str(K)],'png');
-saveas(gcf,[root_erg_rate 'uplink_avg_rate_ter_M_' num2str(M) '_K_' num2str(K)],'epsc2');
+ylim([0 10]);
 
-bar_d = [mean(mean(rate_d,2)) mean(mean(rate_rs_d,2)) mean(mean(rate_sos_d,2)) mean(mean(rate_icibs_d,2))];
-
-figure;
-
-set(gcf,'position',[0 0 800 600]);
-
-bar(cat,bar_d,BAR_SIZE);
-
-xlabel('Algorithms','fontname',fontname,'fontsize',fontsize);
-ylabel('Downlink average rate per terminal (b/s/Hz)','fontname',fontname,'fontsize',fontsize);
-
-set(gca,'fontname',fontname,'fontsize',fontsize);
-
-saveas(gcf,[root_erg_rate 'downlink_avg_rate_ter_M_' num2str(M) '_K_' num2str(K)],'fig');
-saveas(gcf,[root_erg_rate 'downlink_avg_rate_ter_M_' num2str(M) '_K_' num2str(K)],'png');
-saveas(gcf,[root_erg_rate 'downlink_avg_rate_ter_M_' num2str(M) '_K_' num2str(K)],'epsc2');
+saveas(gcf,[root_erg_rate 'avg_rate_ter_M_' num2str(M) '_K_' num2str(K)],'fig');
+saveas(gcf,[root_erg_rate 'avg_rate_ter_M_' num2str(M) '_K_' num2str(K)],'png');
+saveas(gcf,[root_erg_rate 'avg_rate_ter_M_' num2str(M) '_K_' num2str(K)],'epsc2');

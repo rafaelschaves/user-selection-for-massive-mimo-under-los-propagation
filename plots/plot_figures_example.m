@@ -2,11 +2,11 @@ clear;
 close all;
 clc;
 
-load('./results/example_rate_mf_M_500_K_4_MC_10000.mat');
+load('../results/example_rate_mf_M_500_K_4_MC_10000.mat');
 
 rate_4 = rate;
 
-load('./results/example_rate_mf_M_500_K_5_MC_10000.mat');
+load('../results/example_rate_mf_M_500_K_5_MC_10000.mat');
 
 rate_5 = rate;
 
@@ -25,7 +25,7 @@ location = 'northwest';
 % cat = categorical(legend_text);
 % cat = reordercats(cat,legend_text);
 
-root_example = './figures/rate/example_';
+root_example = '../figures/rate/example_';
 
 colours = get(gca,'colororder');
 close;
