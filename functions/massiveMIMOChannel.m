@@ -208,11 +208,11 @@ if (nargin == N_ARGIN - 2)
 elseif (nargin >= N_ARGIN-1)
     coordinate = varargin{1};
     
-    x_user   = coordinate.x_user;
-    y_user   = coordinate.y_user;
+    x_user = coordinate.x_user;
+    y_user = coordinate.y_user;
 end
 
-theta_user   = atan2(y_user,x_user);                                       % Departure angle in rad
+theta_user = atan2(y_user,x_user);                                         % Departure angle in rad
 
 varargout{1} = [x_user y_user theta_user];
 
@@ -232,7 +232,7 @@ r_bs_user = sqrt(d_bs_user.^2 + (bs_height - H_user).^2);                  % Len
 
 z = lognrnd(mu_shadow_fad,sigma_shadow_fad,n_user,1);                      % Shadow fading                 
 
-beta = z.*pathLoss(city,bs_height,H_user,r_bs_user,f_c);                        % Large-scale fading
+beta = z.*pathLoss(city,bs_height,H_user,r_bs_user,f_c);                   % Large-scale fading
 
 switch fading
     case 'RAYLEIGH'
@@ -308,7 +308,7 @@ end
 
 end
 
-function [L,varargout] = pathLoss(city,h_bs,h_user,distance,frequency)
+function L = pathLoss(city,h_bs,h_user,distance,frequency)
 
 % COST-231 Hata Model
 
@@ -316,7 +316,6 @@ frequency = frequency/1e6;
 distance = distance/1e3;
 
 switch city
-   
     case 'LARGE'
         if((150 <= frequency) && (frequency <= 200))
             C_h = 8.29*(log10(1.54*h_user)).^2 - 1.1;
@@ -337,9 +336,7 @@ end
 
 L_dB = -(46.30 + 33.90*log10(frequency) - 13.82*log10(h_bs) - C_h + ...
         (44.9 - 6.55*log10(h_bs))*log10(distance) + C);
-     
-varargout{1} = L_dB;
-
+    
 L = 10.^(L_dB/10);
 
 end
