@@ -17,9 +17,11 @@ end
 
 interf_mtx_norm = chnl_mtx_norm'*chnl_mtx_norm;
 
-psi = sum(abs(interf_mtx_norm),2) - 1;
+psi = (sum(abs(interf_mtx_norm),2) - 1)/(n_user - 1);
 
 psi(psi <= 0) = 0;
+
+
 
 % chnl_vec_norm = vecnorm(chnl_mtx,2);
 % Chnl_vec_norm = repmat(chnl_vec_norm,n_antenna,1);

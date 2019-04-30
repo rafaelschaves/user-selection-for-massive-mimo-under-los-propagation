@@ -2,7 +2,7 @@ clear;
 close all;
 clc;
 
-load('../results/rate_mf_M_500_K_5_L_4_SNR_-7_dB_MC_10000.mat');
+load('../results/rate_mf_M_500_K_30_L_25_SNR_-7_dB_MC_10000.mat');
 
 M = 500;
 K = 5;
