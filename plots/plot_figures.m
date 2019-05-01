@@ -5,7 +5,7 @@ clc;
 load('../results/rate_mf_M_500_K_30_L_25_SNR_-7_dB_MC_10000.mat');
 
 M = 500;
-K = 5;
+K = 30;
 
 % Ploting Figures
 
@@ -62,7 +62,7 @@ close;
 
 p_u = zeros(2,K);
 
-psi_range = (0:0.01:0.4);
+psi_range = (0:0.01:0.2);
 
 f_u = zeros(K,length(psi_range));
 
