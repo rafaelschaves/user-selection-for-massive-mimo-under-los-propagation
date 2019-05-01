@@ -1,41 +1,30 @@
-function [rate,varargout] = rateCalculation(chnl_mtx,snr,type)
+function [rate,varargout] = rateCalculation(chnl_mtx,proc_mtx,pow_vec,snr,type)
 
-gamma = sinr(chnl_mtx,snr,type); 
+gamma = sinr(chnl_mtx,proc_mtx,pow_vec,snr,type); 
 rate  = log2(1 + gamma);
 
 varargout{1} = gamma;
 
 end
 
-function [gamma] = sinr(chnl_mtx,snr,type)
+function [gamma] = sinr(chnl_mtx,proc_mtx,pow_vec,snr,type)
 
 type = upper(type);
 
-n_antenna = size(chnl_mtx,1);
-
 switch type
     case 'UPLINK'
-        chnl_vec_norm = vecnorm(chnl_mtx,2)';
-        Chnl_vec_norm = repmat(chnl_vec_norm',n_antenna,1);
-
-        chnl_mtx_norm = chnl_mtx./Chnl_vec_norm;
-
-        interf_mtx = chnl_mtx_norm'*chnl_mtx;
-
-        pow_interf = sum(abs(interf_mtx).^2,2) - chnl_vec_norm.^2;
-
-        gamma = chnl_vec_norm.^2./(1./snr + pow_interf);
+        aux_mtx        = abs(proc_mtx'*chnl_mtx).^2;
+        pow_signal_vec = pow_vec.*diag(aux_mtx);
+        pow_interf_vec = sum(pow_vec.*aux_mtx,2) - pow_signal_vec;
+        proc_mtx_norm  = vecnorm(proc_mtx,2).^2;
+        
+        gamma = (snr.*pow_signal_vec)./(proc_mtx_norm' + snr.*pow_interf_vec);
     case 'DOWNLINK'
-        chnl_vec_norm = vecnorm(chnl_mtx,2)';
-        Chnl_vec_norm = repmat(chnl_vec_norm',n_antenna,1);
+        aux_mtx        = abs(chnl_mtx.'*proc_mtx).^2;
+        pow_signal_vec = pow_vec.*diag(aux_mtx);
+        pow_interf_vec = sum(pow_vec.*aux_mtx,2) - pow_signal_vec;
         
-        chnl_mtx_norm = chnl_mtx./Chnl_vec_norm;
-
-        interf_mtx = chnl_mtx.'*conj(chnl_mtx_norm);
-        
-        pow_interf = sum(abs(interf_mtx).^2,2) - chnl_vec_norm.^2;
-
-        gamma = chnl_vec_norm.^2./(1./snr + pow_interf);
+        gamma = (snr.*pow_signal_vec)./(1 + snr.*pow_interf_vec);
     otherwise
         error('Invalid link');
 end
