@@ -2,7 +2,12 @@ clear;
 close all;
 clc;
 
-load('../results/rate_mf_M_256_K_18_L_15_SNR_-20_dB_MC_10000.mat');
+% load('../results/rate_mf_M_256_K_18_L_15_SNR_-20_dB_MC_10000.mat');
+% load('../results/rate_mf_ur-los_M_500_K_30_L_25_SNR_-7_dB_MC_10000.mat');
+% load('../results/rate_mf_ur-los_M_500_K_30_L_25_SNR_15_dB_MC_10000.mat');
+% load('../results/rate_mf_rayleigh_M_500_K_30_L_25_SNR_15_dB_MC_10000.mat');
+% load('../results/rate_mf_sparse_M_500_K_30_L_25_SNR_-20_dB_MC_10000.mat');
+load('../results/rate_mf_sparse_M_256_K_18_L_15_SNR_-20_dB_MC_10000.mat');
 
 M = 500;
 K = 1;
@@ -21,9 +26,10 @@ BAR_SIZE = 0.8;
 % NS - No selection
 % RS - Random selection
 % SOS - Semi-orthogonal selection
+% CBS - Correlation-based selection
 % ICIBS - ICI-based selection
 
-legend_algo = {'NS','RS','SOS','ICIBS'};
+legend_algo = {'NS','RS','SOS','CBS','ICIBS'};
 legend_link = {'Uplink','Downlink'};
 
 location = 'northwest';
@@ -135,6 +141,7 @@ end
 [values_u,edges_u]             = histcounts(sum(rate_u),'binwidth',BIN_WIDTH_CDF,'normalization','cdf');
 [values_rs_u,edges_rs_u]       = histcounts(sum(rate_rs_u),'binwidth',BIN_WIDTH_CDF,'normalization','cdf');
 [values_sos_u,edges_sos_u]     = histcounts(sum(rate_sos_u),'binwidth',BIN_WIDTH_CDF,'normalization','cdf');
+[values_cbs_u,edges_cbs_u]     = histcounts(sum(rate_cbs_u),'binwidth',BIN_WIDTH_CDF,'normalization','cdf');
 [values_icibs_u,edges_icibs_u] = histcounts(sum(rate_icibs_u),'binwidth',BIN_WIDTH_CDF,'normalization','cdf');
 
 % x_sum_u = 20:35;
@@ -148,7 +155,8 @@ plot([edges_u],[values_u 1],'-','color',colours(1,:),'linewidth',linewidth);
 hold on;
 plot([edges_rs_u],[values_rs_u 1],'-','color',colours(2,:),'linewidth',linewidth);
 plot([edges_sos_u],[values_sos_u 1],'-','color',colours(3,:),'linewidth',linewidth);
-plot([edges_icibs_u],[values_icibs_u 1],'-','color',colours(4,:),'linewidth',linewidth);
+plot([edges_cbs_u],[values_cbs_u 1],'-','color',colours(4,:),'linewidth',linewidth);
+plot([edges_icibs_u],[values_icibs_u 1],'-','color',colours(5,:),'linewidth',linewidth);
 % plot(x_sum_u,y_sum_u,'--k','linewidth',linewidth);
 % plot(R_sum_u_ns,p_o,'o','color',colours(1,:),'linewidth',linewidth,'markersize',markersize);
 % plot(R_sum_u_rs,p_o,'o','color',colours(2,:),'linewidth',linewidth,'markersize',markersize);
@@ -174,6 +182,7 @@ end
 [values_d,edges_d]              = histcounts(sum(rate_d),'binwidth',BIN_WIDTH_CDF,'normalization','cdf');
 [values_rs_d,edges_rs_d]        = histcounts(sum(rate_rs_d),'binwidth',BIN_WIDTH_CDF,'normalization','cdf');
 [values_sos_d,edges_sos_d]      = histcounts(sum(rate_sos_d),'binwidth',BIN_WIDTH_CDF,'normalization','cdf');
+[values_cbs_d,edges_cbs_d]      = histcounts(sum(rate_cbs_d),'binwidth',BIN_WIDTH_CDF,'normalization','cdf');
 [values_icibs_d, edges_icibs_d] = histcounts(sum(rate_icibs_d),'binwidth',BIN_WIDTH_CDF,'normalization','cdf');
 
 % x_sum_d = 20:45;
@@ -187,7 +196,8 @@ plot([edges_d],[values_d 1],'-','color',colours(1,:),'linewidth',linewidth);
 hold on;
 plot([edges_rs_d],[values_rs_d 1],'-','color',colours(2,:),'linewidth',linewidth);
 plot([edges_sos_d],[values_sos_d 1],'-','color',colours(3,:),'linewidth',linewidth);
-plot([edges_icibs_d],[values_icibs_d 1],'-','color',colours(4,:),'linewidth',linewidth);
+plot([edges_cbs_d],[values_cbs_d 1],'-','color',colours(4,:),'linewidth',linewidth);
+plot([edges_icibs_d],[values_icibs_d 1],'-','color',colours(5,:),'linewidth',linewidth);
 % plot(x_sum_d,y_sum_d,'--k','linewidth',linewidth);
 % plot(R_sum_d_ns,p_o,'o','color',colours(1,:),'linewidth',linewidth,'markersize',markersize);
 % plot(R_sum_d_rs,p_o,'o','color',colours(2,:),'linewidth',linewidth,'markersize',markersize);
@@ -212,7 +222,8 @@ end
 
 bar_sum = [sum(mean(rate_u,2)) sum(mean(rate_d,2));
            sum(mean(rate_rs_u,2))  sum(mean(rate_rs_d,2));
-           sum(mean(rate_sos_u,2)) sum(mean(rate_sos_d,2)); 
+           sum(mean(rate_sos_u,2)) sum(mean(rate_sos_d,2));
+           sum(mean(rate_cbs_u,2)) sum(mean(rate_cbs_d,2));
            sum(mean(rate_icibs_u,2)) sum(mean(rate_icibs_d,2))];
 
 figure;
@@ -263,6 +274,7 @@ end
 [values_u,edges_u]             = histcounts(mean(rate_u),'binwidth',BIN_WIDTH_CDF,'normalization','cdf');
 [values_rs_u,edges_rs_u]       = histcounts(mean(rate_rs_u),'binwidth',BIN_WIDTH_CDF,'normalization','cdf');
 [values_sos_u,edges_sos_u]     = histcounts(mean(rate_sos_u),'binwidth',BIN_WIDTH_CDF,'normalization','cdf');
+[values_cbs_u,edges_cbs_u]     = histcounts(mean(rate_cbs_u),'binwidth',BIN_WIDTH_CDF,'normalization','cdf');
 [values_icibs_u,edges_icibs_u] = histcounts(mean(rate_icibs_u),'binwidth',BIN_WIDTH_CDF,'normalization','cdf');
 
 % x_u = 5:7;
@@ -276,7 +288,8 @@ plot([edges_u],[values_u 1],'-','color',colours(1,:),'linewidth',linewidth);
 hold on;
 plot([edges_rs_u],[values_rs_u 1],'-','color',colours(2,:),'linewidth',linewidth);
 plot([edges_sos_u],[values_sos_u 1],'-','color',colours(3,:),'linewidth',linewidth);
-plot([edges_icibs_u],[values_icibs_u 1],'-','color',colours(4,:),'linewidth',linewidth);
+plot([edges_cbs_u],[values_cbs_u 1],'-','color',colours(4,:),'linewidth',linewidth);
+plot([edges_icibs_u],[values_icibs_u 1],'-','color',colours(5,:),'linewidth',linewidth);
 % plot(x_u,y_u,'--k','linewidth',linewidth);
 % plot(R_u_ns,p_o,'o','color',colours(1,:),'linewidth',linewidth,'markersize',markersize);
 % plot(R_u_rs,p_o,'o','color',colours(2,:),'linewidth',linewidth,'markersize',markersize);
@@ -301,7 +314,8 @@ end
 
 [values_d, edges_d]             = histcounts(mean(rate_d),'binwidth',BIN_WIDTH_CDF,'normalization','cdf');
 [values_rs_d, edges_rs_d]       = histcounts(mean(rate_rs_d),'binwidth',BIN_WIDTH_CDF,'normalization','cdf');
-[values_sos_d, edges_sos_d]       = histcounts(mean(rate_sos_d),'binwidth',BIN_WIDTH_CDF,'normalization','cdf');
+[values_sos_d, edges_sos_d]     = histcounts(mean(rate_sos_d),'binwidth',BIN_WIDTH_CDF,'normalization','cdf');
+[values_cbs_d, edges_cbs_d]     = histcounts(mean(rate_cbs_d),'binwidth',BIN_WIDTH_CDF,'normalization','cdf');
 [values_icibs_d, edges_icibs_d] = histcounts(mean(rate_icibs_d),'binwidth',BIN_WIDTH_CDF,'normalization','cdf');
 
 % x_d = 5:10;
@@ -315,7 +329,8 @@ plot([edges_d],[values_d 1],'-','color',colours(1,:),'linewidth',linewidth);
 hold on;
 plot([edges_rs_d],[values_rs_d 1],'-','color',colours(2,:),'linewidth',linewidth);
 plot([edges_sos_d],[values_sos_d 1],'-','color',colours(3,:),'linewidth',linewidth);
-plot([edges_icibs_d],[values_icibs_d 1],'-','color',colours(4,:),'linewidth',linewidth);
+plot([edges_cbs_d],[values_cbs_d 1],'-','color',colours(4,:),'linewidth',linewidth);
+plot([edges_icibs_d],[values_icibs_d 1],'-','color',colours(5,:),'linewidth',linewidth);
 % plot(x_d,y_d,'--k','linewidth',linewidth);
 % plot(R_d_ns,p_o,'o','color',colours(1,:),'linewidth',linewidth,'markersize',markersize);
 % plot(R_d_rs,p_o,'o','color',colours(2,:),'linewidth',linewidth,'markersize',markersize);
@@ -341,6 +356,7 @@ end
 bar_u = [mean(mean(rate_u,2)) mean(mean(rate_d,2));
          mean(mean(rate_rs_u,2)) mean(mean(rate_rs_d,2));
          mean(mean(rate_sos_u,2)) mean(mean(rate_sos_d,2));
+         mean(mean(rate_cbs_u,2)) mean(mean(rate_cbs_d,2));
          mean(mean(rate_icibs_u,2)) mean(mean(rate_icibs_d,2))];
 
 figure;
