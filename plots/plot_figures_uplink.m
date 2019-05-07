@@ -243,7 +243,7 @@ root_rate_fit = '../figures/rate/fit_';
 root_erg_rate = '../figures/rate/erg_cap_';
 root_out_prob = '../figures/rate/out_prob_';
 
-savefig = 0;
+savefig = 1;
 
 % p_o = 0.05;
 % 
@@ -371,9 +371,9 @@ for snr_idx = 1:N_SNR
     ylim([0 1]);
     
     if (savefig == 1)
-        saveas(gcf,[root_out_prob 'uplink_sum_rate_M_' num2str(M) '_K_' num2str(K) '_L_' num2str(L) '_SNR_' snr(snr_idx)],'fig');
-        saveas(gcf,[root_out_prob 'uplink_sum_rate_M_' num2str(M) '_K_' num2str(K) '_L_' num2str(L) '_SNR_' snr(snr_idx)],'png');
-        saveas(gcf,[root_out_prob 'uplink_sum_rate_M_' num2str(M) '_K_' num2str(K) '_L_' num2str(L) '_SNR_' snr(snr_idx)],'epsc2');
+        saveas(gcf,[root_out_prob 'uplink_sum_rate_M_' num2str(M) '_K_' num2str(K) '_L_' num2str(L) '_SNR_' num2str(snr_idx)],'fig');
+        saveas(gcf,[root_out_prob 'uplink_sum_rate_M_' num2str(M) '_K_' num2str(K) '_L_' num2str(L) '_SNR_' num2str(snr_idx)],'png');
+        saveas(gcf,[root_out_prob 'uplink_sum_rate_M_' num2str(M) '_K_' num2str(K) '_L_' num2str(L) '_SNR_' num2str(snr_idx)],'epsc2');
     end
 end
 
@@ -409,9 +409,9 @@ for snr_idx = 1:N_SNR
     ylim([0 1]);
     
     if (savefig == 1)
-        saveas(gcf,[root_out_prob 'uplink_ur_los_sum_rate_M_' num2str(M) '_K_' num2str(K) '_L_' num2str(L) '_SNR_' snr(snr_idx)],'fig');
-        saveas(gcf,[root_out_prob 'uplink_ur_los_sum_rate_M_' num2str(M) '_K_' num2str(K) '_L_' num2str(L) '_SNR_' snr(snr_idx)],'png');
-        saveas(gcf,[root_out_prob 'uplink_ur_los_sum_rate_M_' num2str(M) '_K_' num2str(K) '_L_' num2str(L) '_SNR_' snr(snr_idx)],'epsc2');
+        saveas(gcf,[root_out_prob 'uplink_ur_los_sum_rate_M_' num2str(M) '_K_' num2str(K) '_L_' num2str(L) '_SNR_' num2str(snr_idx)],'fig');
+        saveas(gcf,[root_out_prob 'uplink_ur_los_sum_rate_M_' num2str(M) '_K_' num2str(K) '_L_' num2str(L) '_SNR_' num2str(snr_idx)],'png');
+        saveas(gcf,[root_out_prob 'uplink_ur_los_sum_rate_M_' num2str(M) '_K_' num2str(K) '_L_' num2str(L) '_SNR_' num2str(snr_idx)],'epsc2');
     end
 end
 
@@ -447,9 +447,9 @@ for snr_idx = 1:N_SNR
     ylim([0 1]);
     
     if (savefig == 1)
-        saveas(gcf,[root_out_prob 'uplink_sparse_sum_rate_M_' num2str(M) '_K_' num2str(K) '_L_' num2str(L) '_SNR_' snr(snr_idx)],'fig');
-        saveas(gcf,[root_out_prob 'uplink_sparse_sum_rate_M_' num2str(M) '_K_' num2str(K) '_L_' num2str(L) '_SNR_' snr(snr_idx)],'png');
-        saveas(gcf,[root_out_prob 'uplink_sparse_sum_rate_M_' num2str(M) '_K_' num2str(K) '_L_' num2str(L) '_SNR_' snr(snr_idx)],'epsc2');
+        saveas(gcf,[root_out_prob 'uplink_sparse_sum_rate_M_' num2str(M) '_K_' num2str(K) '_L_' num2str(L) '_SNR_' num2str(snr_idx)],'fig');
+        saveas(gcf,[root_out_prob 'uplink_sparse_sum_rate_M_' num2str(M) '_K_' num2str(K) '_L_' num2str(L) '_SNR_' num2str(snr_idx)],'png');
+        saveas(gcf,[root_out_prob 'uplink_sparse_sum_rate_M_' num2str(M) '_K_' num2str(K) '_L_' num2str(L) '_SNR_' num2str(snr_idx)],'epsc2');
     end
 end
 
@@ -485,60 +485,12 @@ for snr_idx = 1:N_SNR
     ylim([0 1]);
     
     if (savefig == 1)
-        saveas(gcf,[root_out_prob 'uplink_rayleigh_sum_rate_M_' num2str(M) '_K_' num2str(K) '_L_' num2str(L) '_SNR_' snr(snr_idx)],'fig');
-        saveas(gcf,[root_out_prob 'uplink_rayleigh_sum_rate_M_' num2str(M) '_K_' num2str(K) '_L_' num2str(L) '_SNR_' snr(snr_idx)],'png');
-        saveas(gcf,[root_out_prob 'uplink_rayleigh_sum_rate_M_' num2str(M) '_K_' num2str(K) '_L_' num2str(L) '_SNR_' snr(snr_idx)],'epsc2');
+        saveas(gcf,[root_out_prob 'uplink_rayleigh_sum_rate_M_' num2str(M) '_K_' num2str(K) '_L_' num2str(L) '_SNR_' num2str(snr_idx)],'fig');
+        saveas(gcf,[root_out_prob 'uplink_rayleigh_sum_rate_M_' num2str(M) '_K_' num2str(K) '_L_' num2str(L) '_SNR_' num2str(snr_idx)],'png');
+        saveas(gcf,[root_out_prob 'uplink_rayleigh_sum_rate_M_' num2str(M) '_K_' num2str(K) '_L_' num2str(L) '_SNR_' num2str(snr_idx)],'epsc2');
     end
 end
-% 
-% bar_sum = [sum(mean(rate_u,2)) sum(mean(rate_d,2));
-%            sum(mean(rate_rs_u,2))  sum(mean(rate_rs_d,2));
-%            sum(mean(rate_sos_u,2)) sum(mean(rate_sos_d,2)); 
-%            sum(mean(rate_icibs_u,2)) sum(mean(rate_icibs_d,2))];
-% 
-% figure;
-% 
-% set(gcf,'position',[0 0 800 600]);
-% 
-% bar(cat,bar_sum,BAR_SIZE);
-% 
-% xlabel('Algorithms','fontname',fontname,'fontsize',fontsize);
-% ylabel('Average sum-rate (b/s/Hz)','fontname',fontname,'fontsize',fontsize);
-% 
-% legend(legend_link,'fontname',fontname,'fontsize',fontsize);
-% 
-% set(gca,'fontname',fontname,'fontsize',fontsize);
-% 
-% ylim([0 40]);
-% 
-% saveas(gcf,[root_erg_rate 'sum_rate_M_' num2str(M) '_K_' num2str(K)],'fig');
-% saveas(gcf,[root_erg_rate 'sum_rate_M_' num2str(M) '_K_' num2str(K)],'png');
-% saveas(gcf,[root_erg_rate 'sum_rate_M_' num2str(M) '_K_' num2str(K)],'epsc2');
-% 
-% bar_sum_5 = [R_sum_u_ns R_sum_d_ns; 
-%              R_sum_u_rs R_sum_d_rs; 
-%              R_sum_u_sos R_sum_d_sos;
-%              R_sum_u_icibs R_sum_d_icibs];
-%          
-% figure;
-% 
-% set(gcf,'position',[0 0 800 600]);
-% 
-% bar(cat,bar_sum_5,BAR_SIZE);
-% 
-% xlabel('Algorithms','fontname',fontname,'fontsize',fontsize);
-% ylabel('95% likely sum-rate (b/s/Hz)','fontname',fontname,'fontsize',fontsize);
-% 
-% legend(legend_link,'fontname',fontname,'fontsize',fontsize);
-% 
-% set(gca,'fontname',fontname,'fontsize',fontsize);
-% 
-% ylim([0 40]);
-% 
-% saveas(gcf,[root_erg_rate '95_sum_rate_M_' num2str(M) '_K_' num2str(K)],'fig');
-% saveas(gcf,[root_erg_rate '95_sum_rate_M_' num2str(M) '_K_' num2str(K)],'png');
-% saveas(gcf,[root_erg_rate '95_sum_rate_M_' num2str(M) '_K_' num2str(K)],'epsc2');
-% 
+
 for snr_idx = 1:N_SNR  
     [values_u_ur_los,edges_u_ur_los]             = histcounts(mean(rate_u_ur_los(:,:,snr_idx)),'binwidth',BIN_WIDTH_CDF,'normalization','cdf');
     
@@ -594,9 +546,9 @@ for snr_idx = 1:N_SNR
     ylim([0 1]);
     
     if (savefig == 1)
-        saveas(gcf,[root_out_prob 'uplink_avg_rate_ter_M_' num2str(M) '_K_' num2str(K) '_L_' num2str(L) '_SNR_' snr(snr_idx)],'fig');
-        saveas(gcf,[root_out_prob 'uplink_avg_rate_ter_M_' num2str(M) '_K_' num2str(K) '_L_' num2str(L) '_SNR_' snr(snr_idx)],'png');
-        saveas(gcf,[root_out_prob 'uplink_avg_rate_ter_M_' num2str(M) '_K_' num2str(K) '_L_' num2str(L) '_SNR_' snr(snr_idx)],'epsc2');
+        saveas(gcf,[root_out_prob 'uplink_avg_rate_ter_M_' num2str(M) '_K_' num2str(K) '_L_' num2str(L) '_SNR_' num2str(snr_idx)],'fig');
+        saveas(gcf,[root_out_prob 'uplink_avg_rate_ter_M_' num2str(M) '_K_' num2str(K) '_L_' num2str(L) '_SNR_' num2str(snr_idx)],'png');
+        saveas(gcf,[root_out_prob 'uplink_avg_rate_ter_M_' num2str(M) '_K_' num2str(K) '_L_' num2str(L) '_SNR_' num2str(snr_idx)],'epsc2');
     end
 end
 
@@ -631,9 +583,9 @@ for snr_idx = 1:N_SNR
     ylim([0 1]);
     
     if (savefig == 1)
-        saveas(gcf,[root_out_prob 'uplink_ur_los_avg_rate_ter_M_' num2str(M) '_K_' num2str(K) '_L_' num2str(L) '_SNR_' snr(snr_idx)],'fig');
-        saveas(gcf,[root_out_prob 'uplink_ur_los_avg_rate_ter_M_' num2str(M) '_K_' num2str(K) '_L_' num2str(L) '_SNR_' snr(snr_idx)],'png');
-        saveas(gcf,[root_out_prob 'uplink_ur_los_avg_rate_ter_M_' num2str(M) '_K_' num2str(K) '_L_' num2str(L) '_SNR_' snr(snr_idx)],'epsc2');
+        saveas(gcf,[root_out_prob 'uplink_ur_los_avg_rate_ter_M_' num2str(M) '_K_' num2str(K) '_L_' num2str(L) '_SNR_' num2str(snr_idx)],'fig');
+        saveas(gcf,[root_out_prob 'uplink_ur_los_avg_rate_ter_M_' num2str(M) '_K_' num2str(K) '_L_' num2str(L) '_SNR_' num2str(snr_idx)],'png');
+        saveas(gcf,[root_out_prob 'uplink_ur_los_avg_rate_ter_M_' num2str(M) '_K_' num2str(K) '_L_' num2str(L) '_SNR_' num2str(snr_idx)],'epsc2');
     end
 end
 
@@ -668,9 +620,9 @@ for snr_idx = 1:N_SNR
     ylim([0 1]);
     
     if (savefig == 1)
-        saveas(gcf,[root_out_prob 'uplink_sparse_avg_rate_ter_M_' num2str(M) '_K_' num2str(K) '_L_' num2str(L) '_SNR_' snr(snr_idx)],'fig');
-        saveas(gcf,[root_out_prob 'uplink_sparse_avg_rate_ter_M_' num2str(M) '_K_' num2str(K) '_L_' num2str(L) '_SNR_' snr(snr_idx)],'png');
-        saveas(gcf,[root_out_prob 'uplink_sparse_avg_rate_ter_M_' num2str(M) '_K_' num2str(K) '_L_' num2str(L) '_SNR_' snr(snr_idx)],'epsc2');
+        saveas(gcf,[root_out_prob 'uplink_sparse_avg_rate_ter_M_' num2str(M) '_K_' num2str(K) '_L_' num2str(L) '_SNR_' num2str(snr_idx)],'fig');
+        saveas(gcf,[root_out_prob 'uplink_sparse_avg_rate_ter_M_' num2str(M) '_K_' num2str(K) '_L_' num2str(L) '_SNR_' num2str(snr_idx)],'png');
+        saveas(gcf,[root_out_prob 'uplink_sparse_avg_rate_ter_M_' num2str(M) '_K_' num2str(K) '_L_' num2str(L) '_SNR_' num2str(snr_idx)],'epsc2');
     end
 end
 
@@ -705,56 +657,8 @@ for snr_idx = 1:N_SNR
     ylim([0 1]);
     
     if (savefig == 1)
-        saveas(gcf,[root_out_prob 'uplink_rayleigh_avg_rate_ter_M_' num2str(M) '_K_' num2str(K) '_L_' num2str(L) '_SNR_' snr(snr_idx)],'fig');
-        saveas(gcf,[root_out_prob 'uplink_rayleigh_avg_rate_ter_M_' num2str(M) '_K_' num2str(K) '_L_' num2str(L) '_SNR_' snr(snr_idx)],'png');
-        saveas(gcf,[root_out_prob 'uplink_rayleigh_avg_rate_ter_M_' num2str(M) '_K_' num2str(K) '_L_' num2str(L) '_SNR_' snr(snr_idx)],'epsc2');
+        saveas(gcf,[root_out_prob 'uplink_rayleigh_avg_rate_ter_M_' num2str(M) '_K_' num2str(K) '_L_' num2str(L) '_SNR_' num2str(snr_idx)],'fig');
+        saveas(gcf,[root_out_prob 'uplink_rayleigh_avg_rate_ter_M_' num2str(M) '_K_' num2str(K) '_L_' num2str(L) '_SNR_' num2str(snr_idx)],'png');
+        saveas(gcf,[root_out_prob 'uplink_rayleigh_avg_rate_ter_M_' num2str(M) '_K_' num2str(K) '_L_' num2str(L) '_SNR_' num2str(snr_idx)],'epsc2');
     end
 end
-% 
-% bar_u = [mean(mean(rate_u,2)) mean(mean(rate_d,2));
-%          mean(mean(rate_rs_u,2)) mean(mean(rate_rs_d,2));
-%          mean(mean(rate_sos_u,2)) mean(mean(rate_sos_d,2));
-%          mean(mean(rate_icibs_u,2)) mean(mean(rate_icibs_d,2))];
-% 
-% figure;
-% 
-% set(gcf,'position',[0 0 800 600]);
-% 
-% bar(cat,bar_u,BAR_SIZE);
-% 
-% xlabel('Algorithms','fontname',fontname,'fontsize',fontsize);
-% ylabel('Average rate per terminal (b/s/Hz)','fontname',fontname,'fontsize',fontsize);
-% 
-% legend(legend_link,'fontname',fontname,'fontsize',fontsize);
-% 
-% set(gca,'fontname',fontname,'fontsize',fontsize);
-% 
-% ylim([0 10]);
-% 
-% saveas(gcf,[root_erg_rate 'avg_rate_ter_M_' num2str(M) '_K_' num2str(K)],'fig');
-% saveas(gcf,[root_erg_rate 'avg_rate_ter_M_' num2str(M) '_K_' num2str(K)],'png');
-% saveas(gcf,[root_erg_rate 'avg_rate_ter_M_' num2str(M) '_K_' num2str(K)],'epsc2');
-% 
-% bar_u_5 = [R_u_ns R_d_ns;
-%            R_u_rs R_d_rs; 
-%            R_u_sos R_d_sos;
-%            R_u_icibs R_d_icibs];
-% 
-% figure;
-% 
-% set(gcf,'position',[0 0 800 600]);
-% 
-% bar(cat,bar_u_5,BAR_SIZE);
-% 
-% xlabel('Algorithms','fontname',fontname,'fontsize',fontsize);
-% ylabel('95% likely average rate per terminal (b/s/Hz)','fontname',fontname,'fontsize',fontsize);
-% 
-% legend(legend_link,'fontname',fontname,'fontsize',fontsize);
-% 
-% set(gca,'fontname',fontname,'fontsize',fontsize);
-% 
-% ylim([0 10]);
-% 
-% saveas(gcf,[root_erg_rate '95_avg_rate_ter_M_' num2str(M) '_K_' num2str(K)],'fig');
-% saveas(gcf,[root_erg_rate '95_avg_rate_ter_M_' num2str(M) '_K_' num2str(K)],'png');
-% saveas(gcf,[root_erg_rate '95_avg_rate_ter_M_' num2str(M) '_K_' num2str(K)],'epsc2');
