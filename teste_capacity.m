@@ -7,8 +7,8 @@ addpath('./functions/')
 MC = 10000;                                                                % Size of the outer Monte Carlo ensemble (Varies the channel realizarions)
 
 M = 256;                                                                   % Number of antennas at the base station
-K = 5;                                                                    % Number of users at the cell
-L = 3;
+K = 18;                                                                    % Number of users at the cell
+L = 13;
 
 commcell.nAntennas       = M;                                              % Number of Antennas
 commcell.nUsers          = K;                                              % Number of Users
@@ -33,8 +33,11 @@ linkprop.bandwidth       = 20e6;                                           % in 
                 
 beta_db = -135;
 
-snr_u_eff = round(snr_u_db + beta_db);
-snr_d_eff = round(snr_d_db + beta_db);
+% snr_u_eff = round(snr_u_db + beta_db);
+% snr_d_eff = round(snr_d_db + beta_db);
+
+snr_u_eff = -20;
+snr_d_eff = -20;
 
 snr_u = 10.^((snr_u_eff)/10);                                              % Uplink SNR
 snr_d = 10.^((snr_d_eff)/10);                                              % Downlink SNR
@@ -84,10 +87,14 @@ psi_sos   = zeros(L,MC);
 psi_cbs   = zeros(L,MC);
 psi_icibs = zeros(L,MC);
 
+channel_type = 'sparse';
+
 for out_mc = 1:MC
     out_mc
     
-    [H(:,:,out_mc),beta] = massiveMIMOChannel(commcell,'ur-los');
+%     commcell.nPaths          = randi([11 30]);                                             % Number of Multipaths
+    
+    [H(:,:,out_mc),beta] = massiveMIMOChannel(commcell,channel_type);
     
     H(:,:,out_mc) = H(:,:,out_mc)*sqrt(diag(1./beta));
         
@@ -190,7 +197,7 @@ for out_mc = 1:MC
     psi_icibs(:,out_mc)   = ici(H_icibs);
 end
 
-save(['./results/rate_mf_M_' num2str(M) '_K_' num2str(K) '_L_' num2str(L) '_SNR_' num2str(snr_u_eff) '_dB_MC_' num2str(MC) '.mat'], ...
+save(['./results/rate_mf_' channel_type '_M_' num2str(M) '_K_' num2str(K) '_L_' num2str(L) '_SNR_' num2str(snr_u_eff) '_dB_MC_' num2str(MC) '.mat'], ...
       'H', ...
       'gamma_u','rate_u','gamma_d','rate_d','psi', ...
       'gamma_rs_u','rate_rs_u','gamma_rs_d','rate_rs_d','psi_rs','user_set_rs', ...
