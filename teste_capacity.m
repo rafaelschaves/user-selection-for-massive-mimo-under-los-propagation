@@ -6,7 +6,8 @@ addpath('./functions/')
 
 MC = 10000;                                                                % Size of the outer Monte Carlo ensemble (Varies the channel realizarions)
 
-M = 256;                                                                   % Number of antennas at the base station
+
+M = 64;                                                                    % Number of antennas at the base station
 K = 18;                                                                    % Number of users at the cell
 L = 13;
 
@@ -36,8 +37,13 @@ beta_db = -135;
 % snr_u_eff = round(snr_u_db + beta_db);
 % snr_d_eff = round(snr_d_db + beta_db);
 
+<<<<<<< HEAD
 snr_u_eff = -20;
 snr_d_eff = -20;
+=======
+snr_u_eff = 10;
+snr_d_eff = 10;
+>>>>>>> b0aef67253106c7735a518a1b50db2106c3fb863
 
 snr_u = 10.^((snr_u_eff)/10);                                              % Uplink SNR
 snr_d = 10.^((snr_d_eff)/10);                                              % Downlink SNR
@@ -87,13 +93,20 @@ psi_sos   = zeros(L,MC);
 psi_cbs   = zeros(L,MC);
 psi_icibs = zeros(L,MC);
 
+<<<<<<< HEAD
 channel_type = 'sparse';
+=======
+channel_type = 'rayleigh';
+>>>>>>> b0aef67253106c7735a518a1b50db2106c3fb863
 
 for out_mc = 1:MC
     out_mc
     
+<<<<<<< HEAD
 %     commcell.nPaths          = randi([11 30]);                                             % Number of Multipaths
     
+=======
+>>>>>>> b0aef67253106c7735a518a1b50db2106c3fb863
     [H(:,:,out_mc),beta] = massiveMIMOChannel(commcell,channel_type);
     
     H(:,:,out_mc) = H(:,:,out_mc)*sqrt(diag(1./beta));
@@ -202,4 +215,5 @@ save(['./results/rate_mf_' channel_type '_M_' num2str(M) '_K_' num2str(K) '_L_' 
       'gamma_u','rate_u','gamma_d','rate_d','psi', ...
       'gamma_rs_u','rate_rs_u','gamma_rs_d','rate_rs_d','psi_rs','user_set_rs', ...
       'gamma_sos_u','rate_sos_u','gamma_sos_d','rate_sos_d','psi_sos','user_set_sos', ...
+      'gamma_cbs_u','rate_cbs_u','gamma_cbs_d','rate_cbs_d','psi_cbs','user_set_cbs', ...
       'gamma_icibs_u','rate_icibs_u','gamma_icibs_d','rate_icibs_d','psi_icibs','user_set_icibs');
