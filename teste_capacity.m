@@ -4,6 +4,9 @@ clc;
 
 addpath('./functions/')
 
+root_downlink = './results/downlink/rate_downlink_mf_';
+root_uplink   = './results/uplink/rate_uplink_mf_';
+
 MC    = 10000;                                                             % Size of the outer Monte Carlo ensemble (Varies the channel realizarions)
 N_ALG = 4;
 
@@ -37,8 +40,8 @@ beta_db = -135;
 % snr_u_eff = round(snr_u_db + beta_db);
 % snr_d_eff = round(snr_d_db + beta_db);
 
-snr_u_eff = 10;
-snr_d_eff = 10;
+snr_u_eff = 20;
+snr_d_eff = 20;
 
 snr_u = 10.^((snr_u_eff)/10);                                              % Uplink SNR
 snr_d = 10.^((snr_d_eff)/10);                                              % Downlink SNR
@@ -63,23 +66,21 @@ rate_d_alg = zeros(L,MC,N_ALG);
 
 psi_alg = zeros(L,MC,N_ALG);
 
-channel_type = 'rayleigh';
+channel_type = 'ur-los';
 
 for out_mc = 1:MC
     out_mc
     
 %     commcell.nPaths          = randi([11 30]);                                             % Number of Multipaths
 
-    [H,beta] = massiveMIMOChannel(commcell,channel_type);
+    [G,beta] = massiveMIMOChannel(commcell,channel_type);
     
-    H = H*sqrt(diag(1./beta));
-        
     % No Selection
     
-    h_norm_ns     = vecnorm(H);
+    h_norm_ns     = vecnorm(G);
     h_norm_ns_mtx = repmat(h_norm_ns,M,1);
     
-    H_norm_ns = H./h_norm_ns_mtx;    
+    H_norm_ns = G./h_norm_ns_mtx;    
     
     Q_mf_ns = H_norm_ns;
     W_mf_ns = conj(H_norm_ns);
@@ -87,14 +88,14 @@ for out_mc = 1:MC
     pow_upl_ns = ones(K,1);
     pow_dow_ns = ones(K,1)/K;
     
-    [rate_u(:,out_mc),gamma_u(:,out_mc)] = rateCalculation(H,Q_mf_ns,pow_upl_ns,snr_u,'uplink');
-    [rate_d(:,out_mc),gamma_d(:,out_mc)] = rateCalculation(H,W_mf_ns,pow_dow_ns,snr_d,'downlink');
+    [rate_u(:,out_mc),gamma_u(:,out_mc)] = rateCalculation(G,Q_mf_ns,pow_upl_ns,snr_u,'uplink');
+    [rate_d(:,out_mc),gamma_d(:,out_mc)] = rateCalculation(G,W_mf_ns,pow_dow_ns,snr_d,'downlink');
     
-    psi(:,out_mc)   = ici(H);
+    psi(:,out_mc)   = ici(G);
     
     % Random Selection
     
-    [user_set(:,out_mc,1),H_rs] = userScheduling(H,L,'random selection');
+    [user_set(:,out_mc,1),H_rs] = userScheduling(G,L,'random selection');
     
     h_norm_rs     = vecnorm(H_rs);
     h_norm_rs_mtx = repmat(h_norm_rs,M,1);
@@ -114,7 +115,7 @@ for out_mc = 1:MC
 
     % Semi-orthogonal Selection
     
-    [user_set(:,out_mc,2),H_sos] = userScheduling(H,L,'semi-orthogonal selection');
+    [user_set(:,out_mc,2),H_sos] = userScheduling(G,L,'semi-orthogonal selection');
     
     h_norm_sos     = vecnorm(H_sos);
     h_norm_sos_mtx = repmat(h_norm_sos,M,1);
@@ -134,7 +135,7 @@ for out_mc = 1:MC
     
     % Correlation-based Selection
     
-    [user_set(:,out_mc,3),H_cbs] = userScheduling(H,L,'correlation-based selection');
+    [user_set(:,out_mc,3),H_cbs] = userScheduling(G,L,'correlation-based selection');
     
     h_norm_cbs     = vecnorm(H_cbs);
     h_norm_cbs_mtx = repmat(h_norm_cbs,M,1);
@@ -154,7 +155,7 @@ for out_mc = 1:MC
     
     % ICI-based Selection
     
-    [user_set(:,out_mc,4),H_icibs] = userScheduling(H,L,'ici-based selection');
+    [user_set(:,out_mc,4),H_icibs] = userScheduling(G,L,'ici-based selection');
     
     h_norm_icibs     = vecnorm(H_icibs);
     h_norm_icibs_mtx = repmat(h_norm_icibs,M,1);
@@ -173,8 +174,8 @@ for out_mc = 1:MC
     psi_alg(:,out_mc,4) = ici(H_icibs);
 end
 
-save(['./results/rate_uplink_mf_' channel_type '_M_' num2str(M) '_K_' num2str(K) '_L_' num2str(L) '_SNR_' num2str(snr_u_eff) '_dB_MC_' num2str(MC) '.mat'], ...
-      'gamma_u','rate_u','psi','gamma_u_alg','rate_u_alg','user_set','psi_alg');
-  
-save(['./results/rate_downlink_mf_' channel_type '_M_' num2str(M) '_K_' num2str(K) '_L_' num2str(L) '_SNR_' num2str(snr_u_eff) '_dB_MC_' num2str(MC) '.mat'], ...
+save([root_downlink channel_type '_M_' num2str(M) '_K_' num2str(K) '_L_' num2str(L) '_SNR_' num2str(snr_u_eff) '_dB_MC_' num2str(MC) '.mat'], ...
       'gamma_d','rate_d','psi','gamma_d_alg','rate_d_alg','user_set','psi_alg');
+
+save([root_uplink channel_type '_M_' num2str(M) '_K_' num2str(K) '_L_' num2str(L) '_SNR_' num2str(snr_u_eff) '_dB_MC_' num2str(MC) '.mat'], ...
+      'gamma_u','rate_u','psi','gamma_u_alg','rate_u_alg','user_set','psi_alg');
