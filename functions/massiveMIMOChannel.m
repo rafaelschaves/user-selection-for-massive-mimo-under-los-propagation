@@ -32,7 +32,7 @@
 %
 % Help:
 %
-% [H, beta, varargout] = multipathMUMIMOChannel(cell,   ...
+% [G, beta, varargout] = multipathMUMIMOChannel(cell,   ...
 %                                               fading, ...
 %                                               varargin)
 %
@@ -101,8 +101,8 @@
 %
 % Outputs:
 %
-%         -- 'H' is the uplink channel matrix, it is a complex matrix with
-%         size 'commcell.nAntennas' x 'commcell.nUsers'.
+%         -- 'G' is the small-scale channel matrix, it is a complex matrix 
+%         with size 'commcell.nAntennas' x 'commcell.nUsers'.
 %
 %         -- 'beta' is the large-scale fading vector, it is a real vector
 %         with size 'commcell.nUsers'.
@@ -113,7 +113,7 @@
 %         -- 'varargout{2}' is a vector with the position and the angle of
 %         arrival for all interfering objects.
 
-function [H, beta, varargout] = massiveMIMOChannel(commcell, ...
+function [G, beta, varargout] = massiveMIMOChannel(commcell, ...
                                                    fading,   ...
                                                    varargin)
                                               
@@ -237,17 +237,14 @@ beta = z.*pathLoss(city,bs_height,H_user,r_bs_user,f_c);                   % Lar
 switch fading
     case 'RAYLEIGH'
         G = (randn(n_antenna,n_user) + 1i*randn(n_antenna,n_user))/sqrt(2);% Small-scale fading coefficient matrix
-        
-        Beta = repmat(beta',n_antenna,1);
-
-        H = sqrt(Beta).*G;                                                 % Uplink channel matrix
     case 'UR-LOS'
         A = steeringVector(n_antenna, theta_user, antenna_spacing, c/f_c);
         
-        g = (randn(1,n_user) + 1i*randn(1,n_user))/sqrt(2);                % Small-scale fading coefficient vector
-        G = repmat(sqrt(beta').*g,n_antenna,1);                            % Small-scale fading coefficient matrix
+        phi   = -pi + 2*pi*rand(n_user,1);                                 % Phase shift
+        phase = exp(1i*phi);                                               
+        Phase = repmat(phase.',n_antenna,1);                                
         
-        H = G.*A;                                                          % Uplink channel matrix
+        G = Phase.*A;                                                      % Small-scale fading coefficient matrix
     case 'SPARSE'
         if (nargin < N_ARGIN)
             x_object = zeros(n_user,n_path(1));
@@ -293,14 +290,15 @@ switch fading
         
         varargout{2} = [x_object y_object theta_object];
         
-        H = zeros(n_antenna,n_user);
+        G = zeros(n_antenna,n_user);
         
         for k = 1:n_user
             A_k = steeringVector(n_antenna, theta_object(k,:)', antenna_spacing, c/f_c);
             
-            g = (randn(n_path(k),1) + 1i*randn(n_path(k),1))/sqrt(2);      % Small-scale fading coefficient vector
+            phi   = -pi + 2*pi*rand(n_path(k),1);                          % Phase shift
+            phase = exp(1i*phi);                                               
             
-            H(:,k) = sqrt(beta(k))*A_k*g;                                  % Uplink channel matrix
+            G(:,k) = A_k*phase;                                            % Small-scale fading coefficient matrix
         end
     otherwise
         error('Invalid type of fading');
