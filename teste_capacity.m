@@ -10,7 +10,7 @@ root_uplink   = './results/uplink/rate_uplink_mf_';
 MC    = 10000;                                                             % Size of the outer Monte Carlo ensemble (Varies the channel realizarions)
 N_ALG = 4;
 
-M = 64;                                                                    % Number of antennas at the base station
+M = 256;                                                                    % Number of antennas at the base station
 K = 18;                                                                    % Number of users at the cell
 L = 13;
 
@@ -40,8 +40,8 @@ beta_db = -135;
 % snr_u_eff = round(snr_u_db + beta_db);
 % snr_d_eff = round(snr_d_db + beta_db);
 
-snr_u_eff = 20;
-snr_d_eff = 20;
+snr_u_eff = 10;
+snr_d_eff = 10;
 
 snr_u = 10.^((snr_u_eff)/10);                                              % Uplink SNR
 snr_d = 10.^((snr_d_eff)/10);                                              % Downlink SNR
@@ -66,7 +66,7 @@ rate_d_alg = zeros(L,MC,N_ALG);
 
 psi_alg = zeros(L,MC,N_ALG);
 
-channel_type = 'ur-los';
+channel_type = 'rayleigh';
 
 for out_mc = 1:MC
     out_mc

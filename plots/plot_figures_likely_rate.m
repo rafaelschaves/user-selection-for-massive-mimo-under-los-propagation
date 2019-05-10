@@ -2,30 +2,49 @@ clear;
 close all;
 clc;
 
-M = 64;
+M = [64 256];
 K = 18;
 L = 13;
 
+N_CHN = 3;
+
 snr = [-20 -15 -10 -5 0 5 10]';
 
-likely_capacity_ur_los = [7.235 14.460 23.405 32.625 39.515 43.945 45.625;
-                          5.080 10.550 17.685 25.365 31.530 35.245 37.460;
-                          6.765 13.400 21.270 29.080 34.615 38.155 39.950;
-                          5.445 12.265 22.840 35.530 46.330 53.975 57.520;
-                          5.445 12.320 22.815 35.750 46.715 54.505 57.780];
-                      
-likely_capacity_sparse = [10.415 10.765 10.845 10.890 10.900 10.865 10.825;
-                           9.045  9.410  9.420  9.530  9.570  9.550  9.530;
-                           9.115  9.430  9.555  9.545  9.580  9.635  9.440;
-                          14.515 15.005 15.155 15.265 15.195 15.210 15.185;
-                          14.795 15.350 15.535 15.700 15.625 15.520 15.540];
-                      
-likely_capacity_rayleigh = [10.885 21.010 30.150 35.275 37.360 38.150 38.385;
-                             8.080 16.205 24.250 29.170 31.225 32.060 32.310;
-                             8.210 16.380 24.395 29.275 31.340 32.145 32.265;
-                             8.210 16.815 25.765 31.510 34.005 35.010 35.285;
-                             8.245 17.000 26.290 32.395 35.160 36.195 36.560];
-                         
+likely_capacity(:,:,1,1) = [0.54625 1.02980 1.58030 2.06970 2.42570 2.61270 2.72580;
+                            0.56375 1.08370 1.68720 2.25370 2.69870 2.94720 3.11330;
+                            0.59725 1.17830 1.88730 2.55770 3.07680 3.37570 3.58220;
+                            0.68025 1.44830 2.44570 3.42930 4.19080 4.64480 4.89530;
+                            0.68225 1.45380 2.44930 3.44930 4.20180 4.66230 4.89670];
+
+likely_capacity(:,:,1,2) = [0.58625 0.59675 0.59425 0.60725 0.60225 0.60175 0.60725;
+                            0.70525 0.72075 0.72775 0.72975 0.73575 0.72975 0.73575;
+                            0.69875 0.71975 0.71875 0.72575 0.72725 0.71975 0.72325;
+                            1.11730 1.15980 1.16880 1.17630 1.16780 1.17980 1.17730;
+                            1.14030 1.18630 1.19780 1.20430 1.20430 1.20530 1.21080];
+                        
+likely_capacity(:,:,1,3) = [0.60575 1.16630 1.67780 1.96230 2.08020 2.11670 2.12920;
+                            0.62275 1.24720 1.86630 2.24570 2.41120 2.46670 2.47620;
+                            0.63225 1.25930 1.88130 2.25230 2.41720 2.47020 2.49070;
+                            0.63275 1.29280 1.98430 2.42720 2.62470 2.68980 2.71470;
+                            0.63525 1.30730 2.02770 2.49520 2.70770 2.78030 2.80930];
+                        
+likely_capacity(:,:,2,1) = [1.4848 2.4077 3.3257 4.1358 4.7928 5.2687 5.4833;
+                            1.5123 2.4632 3.4347 4.2943 5.0498 5.5988 5.9278;
+                            1.6113 2.6343 3.7203 4.6698 5.5428 6.1573 6.5443;
+                            1.8228 3.1498 4.6193 6.0413 7.2293 8.1267 8.6542;
+                            1.8228 3.1503 4.6223 6.0443 7.2538 8.1677 8.6932];
+                        
+likely_capacity(:,:,2,2) = [1.1793 1.2003 1.2023 1.2028 1.2007 1.2178 1.2018;
+                            1.3618 1.3968 1.3843 1.3938 1.3993 1.4038 1.3998;
+                            1.3682 1.4143 1.4093 1.4058 1.4088 1.4198 1.4173;
+                            2.1942 2.2463 2.2483 2.2602 2.2462 2.2877 2.2612;
+                            2.2348 2.2977 2.3022 2.3073 2.2992 2.3323 2.3132];
+
+likely_capacity(:,:,2,3) = [1.6438 2.5903 3.2942 3.6547 3.7978 3.8492 3.8582;
+                            1.6827 2.7132 3.5397 3.9973 4.1878 4.2542 4.2753;
+                            1.6898 2.7212 3.5448 4.0003 4.1873 4.2553 4.2728;
+                            1.7043 2.7862 3.6923 4.2168 4.4437 4.5258 4.5507;
+                            1.7108 2.8102 3.7422 4.2988 4.5398 4.6298 4.6573];
 % Ploting Figures
 
 linewidth  = 2;
@@ -45,6 +64,7 @@ BAR_SIZE = 0.8;
 
 legend_algo = {'NS','RS','SOS','CBS','ICIBS'};
 legend_link = {'Uplink','Downlink'};
+channel_mod = {'ur_los','sparse','rayleigh'};
 
 location = 'northwest';
 
@@ -58,95 +78,82 @@ savefig = 1;
 colours = get(gca,'colororder');
 close;                        
 
-figure;
-    
-set(gcf,'position',[0 0 800 600]);
-    
-plot(snr,likely_capacity_ur_los(1,:),'-','color',colours(1,:),'linewidth',linewidth);
-hold on;
-plot(snr,likely_capacity_ur_los(2,:),'-','color',colours(2,:),'linewidth',linewidth);
-plot(snr,likely_capacity_ur_los(3,:),'-','color',colours(3,:),'linewidth',linewidth);
-plot(snr,likely_capacity_ur_los(4,:),'-','color',colours(4,:),'linewidth',linewidth);
-plot(snr,likely_capacity_ur_los(5,:),'-','color',colours(5,:),'linewidth',linewidth);
+% figure;
+%     
+% set(gcf,'position',[0 0 800 600]);
+%     
+% plot(snr,likely_capacity_ur_los(1,:),'-','color',colours(1,:),'linewidth',linewidth);
+% hold on;
+% plot(snr,likely_capacity_ur_los(2,:),'-','color',colours(2,:),'linewidth',linewidth);
+% plot(snr,likely_capacity_ur_los(3,:),'-','color',colours(3,:),'linewidth',linewidth);
+% plot(snr,likely_capacity_ur_los(4,:),'-','color',colours(4,:),'linewidth',linewidth);
+% plot(snr,likely_capacity_ur_los(5,:),'-','color',colours(5,:),'linewidth',linewidth);
+% 
+% xlabel('SNR (dB)','fontname',fontname,'fontsize',fontsize);
+% ylabel('95% likely sum-rate (b/s/Hz)','fontname',fontname,'fontsize',fontsize);
+%     
+% legend(legend_algo,'fontname',fontname,'fontsize',fontsize,'location',location);
+%     
+% set(gca,'fontname',fontname,'fontsize',fontsize);
+% 
+% % dim = [0.65 0.75 0.2 0.15];
+% dim = [0.2 0.25 0.2 0.15];
+% 
+% annotation('ellipse',dim,'linewidth',linewidth);
+% 
+% axes('position',[.6 .20 .27 .27])
+% box on;
+% 
+% plot(snr(1:3),likely_capacity_ur_los(1,1:3),'-','color',colours(1,:),'linewidth',linewidth);
+% hold on;
+% plot(snr(1:3),likely_capacity_ur_los(2,1:3),'-','color',colours(2,:),'linewidth',linewidth);
+% plot(snr(1:3),likely_capacity_ur_los(3,1:3),'-','color',colours(3,:),'linewidth',linewidth);
+% plot(snr(1:3),likely_capacity_ur_los(4,1:3),'-','color',colours(4,:),'linewidth',linewidth);
+% plot(snr(1:3),likely_capacity_ur_los(5,1:3),'-','color',colours(5,:),'linewidth',linewidth);
+% 
+% set(gca,'fontname',fontname,'fontsize',fontsize);
+% 
+% % ylim([45 58]);
+% 
+% if (savefig == 1)
+%     saveas(gcf,[root_rate_lik 'uplink_ur_los_sum_rate_M_' num2str(M) '_K_' num2str(K) '_L_' num2str(L)],'fig');
+%     saveas(gcf,[root_rate_lik 'uplink_ur_los_sum_rate_M_' num2str(M) '_K_' num2str(K) '_L_' num2str(L)],'png');
+%     saveas(gcf,[root_rate_lik 'uplink_ur_los_sum_rate_M_' num2str(M) '_K_' num2str(K) '_L_' num2str(L)],'epsc2');
+% end
 
-xlabel('SNR (dB)','fontname',fontname,'fontsize',fontsize);
-ylabel('95% likely sum-rate (b/s/Hz)','fontname',fontname,'fontsize',fontsize);
+for chn_idx = 1:N_CHN
     
-legend(legend_algo,'fontname',fontname,'fontsize',fontsize,'location',location);
+    figure;
     
-set(gca,'fontname',fontname,'fontsize',fontsize);
-
-% dim = [0.65 0.75 0.2 0.15];
-dim = [0.2 0.25 0.2 0.15];
-
-annotation('ellipse',dim,'linewidth',linewidth);
-
-axes('position',[.6 .20 .27 .27])
-box on;
-
-plot(snr(1:3),likely_capacity_ur_los(1,1:3),'-','color',colours(1,:),'linewidth',linewidth);
-hold on;
-plot(snr(1:3),likely_capacity_ur_los(2,1:3),'-','color',colours(2,:),'linewidth',linewidth);
-plot(snr(1:3),likely_capacity_ur_los(3,1:3),'-','color',colours(3,:),'linewidth',linewidth);
-plot(snr(1:3),likely_capacity_ur_los(4,1:3),'-','color',colours(4,:),'linewidth',linewidth);
-plot(snr(1:3),likely_capacity_ur_los(5,1:3),'-','color',colours(5,:),'linewidth',linewidth);
-
-set(gca,'fontname',fontname,'fontsize',fontsize);
-
-% ylim([45 58]);
-
-if (savefig == 1)
-    saveas(gcf,[root_rate_lik 'uplink_ur_los_sum_rate_M_' num2str(M) '_K_' num2str(K) '_L_' num2str(L)],'fig');
-    saveas(gcf,[root_rate_lik 'uplink_ur_los_sum_rate_M_' num2str(M) '_K_' num2str(K) '_L_' num2str(L)],'png');
-    saveas(gcf,[root_rate_lik 'uplink_ur_los_sum_rate_M_' num2str(M) '_K_' num2str(K) '_L_' num2str(L)],'epsc2');
-end
-
-figure;
+    set(gcf,'position',[0 0 800 600]);
     
-set(gcf,'position',[0 0 800 600]);
-    
-plot(snr,likely_capacity_sparse(1,:),'-','color',colours(1,:),'linewidth',linewidth);
-hold on;
-plot(snr,likely_capacity_sparse(2,:),'-','color',colours(2,:),'linewidth',linewidth);
-plot(snr,likely_capacity_sparse(3,:),'-','color',colours(3,:),'linewidth',linewidth);
-plot(snr,likely_capacity_sparse(4,:),'-','color',colours(4,:),'linewidth',linewidth);
-plot(snr,likely_capacity_sparse(5,:),'-','color',colours(5,:),'linewidth',linewidth);
+    plot(snr,likely_capacity(1,:,1,chn_idx),'-','color',colours(1,:),'linewidth',linewidth);
+    hold on;
+    plot(snr,likely_capacity(2,:,1,chn_idx),'-','color',colours(2,:),'linewidth',linewidth);
+    plot(snr,likely_capacity(3,:,1,chn_idx),'-','color',colours(3,:),'linewidth',linewidth);
+    plot(snr,likely_capacity(4,:,1,chn_idx),'-','color',colours(4,:),'linewidth',linewidth);
+    plot(snr,likely_capacity(5,:,1,chn_idx),'-','color',colours(5,:),'linewidth',linewidth);
+    plot(snr,likely_capacity(1,:,2,chn_idx),'--','color',colours(1,:),'linewidth',linewidth);
+    plot(snr,likely_capacity(2,:,2,chn_idx),'--','color',colours(2,:),'linewidth',linewidth);
+    plot(snr,likely_capacity(3,:,2,chn_idx),'--','color',colours(3,:),'linewidth',linewidth);
+    plot(snr,likely_capacity(4,:,2,chn_idx),'--','color',colours(4,:),'linewidth',linewidth);
+    plot(snr,likely_capacity(5,:,2,chn_idx),'--','color',colours(5,:),'linewidth',linewidth);
 
-xlabel('SNR (dB)','fontname',fontname,'fontsize',fontsize);
-ylabel('95% likely sum-rate (b/s/Hz)','fontname',fontname,'fontsize',fontsize);
     
-legend(legend_algo,'fontname',fontname,'fontsize',fontsize,'location',location);
     
-set(gca,'fontname',fontname,'fontsize',fontsize);
-       
-if (savefig == 1)
-    saveas(gcf,[root_rate_lik 'uplink_sparse_sum_rate_M_' num2str(M) '_K_' num2str(K) '_L_' num2str(L)],'fig');
-    saveas(gcf,[root_rate_lik 'uplink_sparse_sum_rate_M_' num2str(M) '_K_' num2str(K) '_L_' num2str(L)],'png');
-    saveas(gcf,[root_rate_lik 'uplink_sparse_sum_rate_M_' num2str(M) '_K_' num2str(K) '_L_' num2str(L)],'epsc2');
-end
-
-figure;
+    xlabel('SNR (dB)','fontname',fontname,'fontsize',fontsize);
+    ylabel('95% likely sum-rate (b/s/Hz)','fontname',fontname,'fontsize',fontsize);
     
-set(gcf,'position',[0 0 800 600]);
+    legend(legend_algo,'fontname',fontname,'fontsize',fontsize,'location',location);
     
-plot(snr,likely_capacity_rayleigh(1,:),'-','color',colours(1,:),'linewidth',linewidth);
-hold on;
-plot(snr,likely_capacity_rayleigh(2,:),'-','color',colours(2,:),'linewidth',linewidth);
-plot(snr,likely_capacity_rayleigh(3,:),'-','color',colours(3,:),'linewidth',linewidth);
-plot(snr,likely_capacity_rayleigh(4,:),'-','color',colours(4,:),'linewidth',linewidth);
-plot(snr,likely_capacity_rayleigh(5,:),'-','color',colours(5,:),'linewidth',linewidth);
-
-xlabel('SNR (dB)','fontname',fontname,'fontsize',fontsize);
-ylabel('95% likely sum-rate (b/s/Hz)','fontname',fontname,'fontsize',fontsize);
+    set(gca,'fontname',fontname,'fontsize',fontsize);
     
-legend(legend_algo,'fontname',fontname,'fontsize',fontsize,'location',location);
+    if (savefig == 1)
+        saveas(gcf,[root_rate_lik 'uplink' channel_mod{chn_idx} '_avg_rate_ter_K_' num2str(K) '_L_' num2str(L)],'fig');
+        saveas(gcf,[root_rate_lik 'uplink' channel_mod{chn_idx} '_avg_rate_ter_K_' num2str(K) '_L_' num2str(L)],'png');
+        saveas(gcf,[root_rate_lik 'uplink' channel_mod{chn_idx} '_avg_rate_ter_K_' num2str(K) '_L_' num2str(L)],'epsc2');
+    end
     
-set(gca,'fontname',fontname,'fontsize',fontsize);
-       
-if (savefig == 1)
-    saveas(gcf,[root_rate_lik 'uplink_rayleigh_sum_rate_M_' num2str(M) '_K_' num2str(K) '_L_' num2str(L)],'fig');
-    saveas(gcf,[root_rate_lik 'uplink_rayleigh_sum_rate_M_' num2str(M) '_K_' num2str(K) '_L_' num2str(L)],'png');
-    saveas(gcf,[root_rate_lik 'uplink_rayleigh_sum_rate_M_' num2str(M) '_K_' num2str(K) '_L_' num2str(L)],'epsc2');
 end
 
 % 
