@@ -1,7 +1,8 @@
 function [psi] = ici(chnl_mtx)
 
-n_antenna = size(chnl_mtx,1);
-n_user    = size(chnl_mtx,2);
+n_antenna  = size(chnl_mtx,1);
+n_user     = size(chnl_mtx,2);
+n_user_aux = size(chnl_mtx,2) - length(find(all(chnl_mtx == 0)));
 
 chnl_mtx_norm = zeros(n_antenna,n_user);
 
@@ -17,11 +18,9 @@ end
 
 interf_mtx_norm = chnl_mtx_norm'*chnl_mtx_norm;
 
-psi = (sum(abs(interf_mtx_norm),2) - 1)/(n_user - 1);
+psi = (sum(abs(interf_mtx_norm),2) - 1)/(n_user_aux - 1);
 
-psi(psi <= 0) = 0;
-
-
+% psi(psi <= 0) = 0;
 
 % chnl_vec_norm = vecnorm(chnl_mtx,2);
 % Chnl_vec_norm = repmat(chnl_vec_norm,n_antenna,1);
