@@ -6,7 +6,7 @@ addpath('./functions/')
 
 root = './results/comp_time_';
 
-MC    = 10000;                                                              % Size of the outer Monte Carlo ensemble (Varies the channel realizarions)
+MC    = 5000;                                                              % Size of the outer Monte Carlo ensemble (Varies the channel realizarions)
 N_ALG = 4;                                                                 % Number of algorithms user to perform user scheduling
 N_CHN = 3;                                                                 % Number of channel models tested
 
