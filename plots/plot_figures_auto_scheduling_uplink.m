@@ -77,11 +77,11 @@ bin_width = 0.0005;
 prob = cell(N_ALG);
 edge = cell(N_ALG); 
 
-% [prob{1},edge{1}] = histcounts(up_rate_per_terminal(:,1),'binwidth',bin_width,'normalization','cdf');
-% [prob{2},edge{2}] = histcounts(up_rate_per_terminal(:,2),'binwidth',bin_width,'normalization','cdf');
+[prob{1},edge{1}] = histcounts(up_rate_per_terminal(:,1),'binwidth',bin_width,'normalization','cdf');
+[prob{2},edge{2}] = histcounts(up_rate_per_terminal(:,2),'binwidth',bin_width,'normalization','cdf');
 
-[prob{1},edge{1}] = histcounts(up_rate_cbs,'binwidth',bin_width,'normalization','cdf');
-[prob{2},edge{2}] = histcounts(up_rate_icibs,'binwidth',bin_width,'normalization','cdf');
+% [prob{1},edge{1}] = histcounts(up_rate_cbs,'binwidth',bin_width,'normalization','cdf');
+% [prob{2},edge{2}] = histcounts(up_rate_icibs,'binwidth',bin_width,'normalization','cdf');
 
 prob{1} = [prob{1} 1];
 prob{2} = [prob{2} 1];

@@ -45,7 +45,7 @@ snr_d_eff = 20;
 snr_u = 10.^((snr_u_eff)/10);                                              % Uplink SNR
 snr_d = 10.^((snr_d_eff)/10);                                              % Downlink SNR
 
-tau = 0.2;
+tau = 0.1;
 
 % Initialization
 

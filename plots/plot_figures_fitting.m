@@ -1,3 +1,77 @@
+clear;
+close all;
+clc;
+
+% Macros
+
+MC = 10000;                                                                % Size of the monte-carlo ensemble
+
+M = [64 256];                                                              % Number of antennas at base station
+K = 18;                                                                    % Number of mobile users
+L = 13;                                                                    % Number of selected users
+
+snr = (-20:5:10)';                                                         % SNR in dB
+
+M_SIZ = length(M);                                                         % Size of the antennas set
+N_ALG = 4;                                                                 % Number of algorithms for perform user scheduling
+N_SNR = length(snr);                                                       % Size of the SNR set 
+N_CHN = 3;                                                                 % Number of channel models simulated
+
+% Loading data
+
+rate = zeros(K,MC,M_SIZ,N_SNR,N_CHN);                                      % Rate using all K users
+psi_  = zeros(K,MC,M_SIZ,N_SNR,N_CHN);                                      % Interchannel interference for all users
+
+for m_idx = 1:length(M)
+    for snr_idx = 1:N_SNR
+        load(['../results/uplink/rate_uplink_mf_ur-los_M_' num2str(M(m_idx)) ...
+            '_K_' num2str(K) '_L_' num2str(L) '_SNR_' num2str(snr(snr_idx)) ...
+            '_dB_MC_' num2str(MC) '.mat']);
+        
+        rate(:,:,m_idx,snr_idx,1) = rate_u;
+        psi_(:,:,m_idx,snr_idx,1)  = psi;
+                
+        load(['../results/uplink/rate_uplink_mf_sparse_M_' num2str(M(m_idx)) ...
+            '_K_' num2str(K) '_L_' num2str(L) '_SNR_' num2str(snr(snr_idx)) ...
+            '_dB_MC_' num2str(MC) '.mat']);
+        
+        rate(:,:,m_idx,snr_idx,2) = rate_u;
+        psi_(:,:,m_idx,snr_idx,2)  = psi;
+                
+        load(['../results/uplink/rate_uplink_mf_rayleigh_M_' num2str(M(m_idx)) ...
+            '_K_' num2str(K) '_L_' num2str(L) '_SNR_' num2str(snr(snr_idx)) ...
+            '_dB_MC_' num2str(MC) '.mat']);
+        
+        rate(:,:,m_idx,snr_idx,3) = rate_u;
+        psi_(:,:,m_idx,snr_idx,3)  = psi;        
+    end
+end
+
+% Ploting Figures
+
+linewidth  = 2;
+markersize = 10;
+fontname   = 'Times New Roman';
+fontsize   = 20;
+
+savefig = 0;
+
+% NS - No selection
+% RS - Random selection
+% SOS - Semi-orthogonal selection
+% CBS - Correlation-based selection
+% ICIBS - ICI-based selection
+
+legend_algo = {'NS','RS','SOS','CBS','ICIBS'};
+channel_mod = {'ur_los','sparse','rayleigh'};
+
+location = 'northwest';
+
+root_out_prob = '../figures/rate/out_prob_';
+
+colours = get(gca,'colororder');
+close;
+
 p_u_ur_los   = zeros(10,K,N_SNR);
 p_u_sparse   = zeros(10,K,N_SNR);
 p_u_rayleigh = zeros(10,K,N_SNR);
@@ -23,9 +97,9 @@ f_u_rayleigh = zeros(K,length(psi_range_rayleigh),N_SNR);
 
 for snr_idx = 1:N_SNR
     for k = 1:1
-        curvefit_ur_los   = fit(psi_ur_los(k,:,snr_idx)',rate_u_ur_los(k,:,snr_idx)','exp2');
-        curvefit_sparse   = fit(psi_sparse(k,:,snr_idx)',rate_u_sparse(k,:,snr_idx)','exp2');
-        curvefit_rayleigh = fit(psi_rayleigh(k,:,snr_idx)',rate_u_rayleigh(k,:,snr_idx)','poly3');
+        curvefit_ur_los   = fit(psi_(k,:,1,snr_idx,1)',rate(k,:,1,snr_idx,1)','exp2');
+        curvefit_sparse   = fit(psi_(k,:,1,snr_idx,2)',rate(k,:,1,snr_idx,2)','exp2');
+        curvefit_rayleigh = fit(psi_(k,:,1,snr_idx,3)',rate(k,:,1,snr_idx,3)','poly3');
         
         % p_u_ur_los(1,k,snr_idx)  = curvefit_ur_los.p1;
         % p_u_ur_los(2,k,snr_idx)  = curvefit_ur_los.p2;
@@ -78,7 +152,7 @@ for snr_idx = 1:N_SNR
         
         subplot(1,3,1);
         
-        plot(psi_ur_los(k,:,snr_idx),rate_u_ur_los(k,:,snr_idx),'.','color',colours(1,:),'linewidth',linewidth);
+        plot(psi_(k,:,1,snr_idx,1),rate(k,:,1,snr_idx,1),'.','color',colours(1,:),'linewidth',linewidth);
         hold on;
         plot(psi_range_ur_los,f_u_ur_los(k,:,snr_idx),'-','color',colours(2,:),'linewidth',linewidth);
         
@@ -93,7 +167,7 @@ for snr_idx = 1:N_SNR
         
         subplot(1,3,2);
         
-        plot(psi_sparse(k,:,snr_idx),rate_u_sparse(k,:,snr_idx),'.','color',colours(1,:),'linewidth',linewidth);
+        plot(psi_(k,:,1,snr_idx,2),rate(k,:,1,snr_idx,2),'.','color',colours(1,:),'linewidth',linewidth);
         hold on;
         plot(psi_range_sparse,f_u_sparse(k,:,snr_idx),'-','color',colours(2,:),'linewidth',linewidth);
         
@@ -108,7 +182,7 @@ for snr_idx = 1:N_SNR
         
         subplot(1,3,3)
         
-        plot(psi_rayleigh(k,:,snr_idx),rate_u_rayleigh(k,:,snr_idx),'.','color',colours(1,:),'linewidth',linewidth);
+        plot(psi_(k,:,1,snr_idx,3),rate(k,:,1,snr_idx,3),'.','color',colours(1,:),'linewidth',linewidth);
         hold on;
         plot(psi_range_rayleigh,f_u_rayleigh(k,:,snr_idx),'-','color',colours(2,:),'linewidth',linewidth);
         
