@@ -10,7 +10,7 @@ MC    = 5000;                                                              % Siz
 N_ALG = 4;                                                                 % Number of algorithms user to perform user scheduling
 N_CHN = 3;                                                                 % Number of channel models tested
 
-M = 64;                                                                   % Number of antennas at the base station
+M = 256;                                                                   % Number of antennas at the base station
 K = 18;                                                                    % Number of users at the cell
 L = K - 1;                                                                 % Maximum number of selected users
 
