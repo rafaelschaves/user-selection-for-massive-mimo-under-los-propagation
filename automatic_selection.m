@@ -10,7 +10,6 @@ root_uplink   = './results/auto_scheduling/uplink/rate_uplink_mf_';
 MC    = 10000;                                                             % Size of the Monte Carlo ensemble (Varies the channel realizarions)
 N_ALG = 2;
 
-
 M = 64;                                                                    % Number of antennas at the base station
 K = 18;                                                                    % Number of users at the cell
 
@@ -46,8 +45,7 @@ snr_d_eff = 20;
 snr_u = 10.^((snr_u_eff)/10);                                              % Uplink SNR
 snr_d = 10.^((snr_d_eff)/10);                                              % Downlink SNR
 
-
-tau_min = 0.1;
+tau_min = 0.01;
 tau_max = 0.5;
 
 tau_step = 0.005;
