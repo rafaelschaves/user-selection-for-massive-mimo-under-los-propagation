@@ -7,7 +7,7 @@ root_fig  = '../figures/comp_time/comp_time_';
 
 % Macros
 
-MC    = 1000;                                                              % Size of the monte-carlo ensemble
+MC    = 5000;                                                              % Size of the monte-carlo ensemble
 N_ALG = 4;                                                                 % Number of algorithms for perform user scheduling
 M_SIZ = 2;                                                                 % Size of the antennas set
 N_CHN = 3;                                                                 % Number of channel models simulated
@@ -33,7 +33,7 @@ markersize = 10;
 fontname   = 'Times New Roman';
 fontsize   = 20;
 
-savefig = 0;
+savefig = 1;
 
 % RS - Random selection
 % SOS - Semi-orthogonal selection
@@ -49,8 +49,8 @@ location_2 = 'northwest';
 colours = get(gca,'colororder');
 close;
 
-ylim_1 = [0 2.5];
-ylim_2 = [0 15];
+ylim_1 = [0 5];
+ylim_2 = [0 18];
 
 for chn_idx = 1:N_CHN
     for m_idx = 1:M_SIZ
@@ -70,7 +70,7 @@ for chn_idx = 1:N_CHN
         set(gca,'fontname',fontname,'fontsize',fontsize);
         
         if(m_idx == 1)
-            legend(legend_algo,'fontname',fontname,'fontsize',fontsize,'location',location_1);
+            legend(legend_algo,'fontname',fontname,'fontsize',fontsize,'location',location_2);
 
             xlim([1 L]);
             ylim(ylim_1);
@@ -82,9 +82,9 @@ for chn_idx = 1:N_CHN
         end
         
         if(savefig == 1)
-            saveas(gcf,[root_fig channel_mod{chn_idx} '_M_' num2str(M(m_idx)) '_K_' num2str(k) '_user'],'fig');
-            saveas(gcf,[root_fig channel_mod{chn_idx} '_M_' num2str(M(m_idx)) '_K_' num2str(k) '_user'],'png');
-            saveas(gcf,[root_fig channel_mod{chn_idx} '_M_' num2str(M(m_idx)) '_K_' num2str(k) '_user'],'epsc2');
+            saveas(gcf,[root_fig channel_mod{chn_idx} '_M_' num2str(M(m_idx)) '_K_' num2str(K) '_MC_' num2str(MC)],'fig');
+            saveas(gcf,[root_fig channel_mod{chn_idx} '_M_' num2str(M(m_idx)) '_K_' num2str(K) '_MC_' num2str(MC)],'png');
+            saveas(gcf,[root_fig channel_mod{chn_idx} '_M_' num2str(M(m_idx)) '_K_' num2str(K) '_MC_' num2str(MC)],'epsc2');
         end
     end
 end
