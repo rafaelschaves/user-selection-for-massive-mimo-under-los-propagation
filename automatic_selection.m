@@ -4,13 +4,13 @@ clc;
 
 addpath('./functions/')
 
-root_downlink = './results/downlink/rate_downlink_auto_scheduling_mf_';
-root_uplink   = './results/uplink/rate_uplink_auto_scheduling_mf_';
+root_downlink = './results/auto_scheduling/downlink/rate_downlink_mf_';
+root_uplink   = './results/auto_scheduling/uplink/rate_uplink_mf_';
 
 MC    = 10000;                                                             % Size of the Monte Carlo ensemble (Varies the channel realizarions)
 N_ALG = 2;
 
-M = 256;                                                                    % Number of antennas at the base station
+M = 64;                                                                    % Number of antennas at the base station
 K = 18;                                                                    % Number of users at the cell
 
 commcell.nAntennas       = M;                                              % Number of Antennas
@@ -45,7 +45,7 @@ snr_d_eff = 20;
 snr_u = 10.^((snr_u_eff)/10);                                              % Uplink SNR
 snr_d = 10.^((snr_d_eff)/10);                                              % Downlink SNR
 
-tau_min = 0.01;
+tau_min = 0.1;
 tau_max = 0.5;
 
 tau_step = 0.005;
@@ -65,7 +65,7 @@ rate_d_alg = cell(MC,N_TAU,N_ALG);
 
 psi_alg = cell(MC,N_TAU,N_ALG);
 
-channel_type   = 'ur-los';
+channel_type   = 'sparse';
 
 for mc = 1:MC
     mc

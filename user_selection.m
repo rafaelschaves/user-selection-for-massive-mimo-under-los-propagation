@@ -4,8 +4,8 @@ clc;
 
 addpath('./functions/')
 
-root_downlink = './results/downlink/rate_downlink_mf_';
-root_uplink   = './results/uplink/rate_uplink_mf_';
+root_downlink = './results/scheduling/downlink/rate_downlink_mf_';
+root_uplink   = './results/scheduling/uplink/rate_uplink_mf_';
 
 MC    = 10000;                                                             % Size of the outer Monte Carlo ensemble (Varies the channel realizarions)
 N_ALG = 4;
@@ -173,7 +173,7 @@ for out_mc = 1:MC
 end
 
 save([root_downlink channel_type '_M_' num2str(M) '_K_' num2str(K) '_L_' num2str(L) '_SNR_' num2str(snr_u_eff) '_dB_MC_' num2str(MC) '.mat'], ...
-      'gamma_d','rate_d','psi','gamma_d_alg','rate_d_alg','user_set','psi_alg');
+      'rate_d','psi','rate_d_alg','user_set','psi_alg');
 
 save([root_uplink channel_type '_M_' num2str(M) '_K_' num2str(K) '_L_' num2str(L) '_SNR_' num2str(snr_u_eff) '_dB_MC_' num2str(MC) '.mat'], ...
-      'gamma_u','rate_u','psi','gamma_u_alg','rate_u_alg','user_set','psi_alg');
+      'rate_u','psi','rate_u_alg','user_set','psi_alg');
