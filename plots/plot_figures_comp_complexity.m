@@ -2,9 +2,6 @@ clear;
 close all;
 clc;
 
-root_load = '../results/comp_time/comp_time_';
-root_fig  = '../figures/comp_time/comp_time_';
-
 % Macros
 
 MC    = 5000;                                                              % Size of the monte-carlo ensemble
@@ -15,6 +12,11 @@ N_CHN = 3;                                                                 % Num
 M = [64 256];                                                              % Number of antennas at base station
 K = 18;                                                                    % Number of mobile users
 L = K - 1;                                                                 % Maximum number of selected users
+
+% Root
+
+root_load = '../results/comp_time/comp_time_';
+root_save = '../figures/comp_time/comp_time_';
 
 % Loading data
 
@@ -41,10 +43,9 @@ savefig = 1;
 % ICIBS - ICI-based selection
 
 legend_algo = {'RS','SOS','CBS','ICIBS'};
-channel_mod = {'ur_los','sparse','rayleigh'};
+channel_mod = {'ur-los','sparse','rayleigh'};
 
-location_1 = 'northeast';
-location_2 = 'northwest';
+location = 'northwest';
 
 colours = get(gca,'colororder');
 close;
@@ -67,24 +68,23 @@ for chn_idx = 1:N_CHN
         xlabel('Number of selected users','fontname',fontname,'fontsize',fontsize);
         ylabel('Computational time (ms)','fontname',fontname,'fontsize',fontsize);
         
+        legend(legend_algo,'fontname',fontname,'fontsize',fontsize,'location',location);
+        legend box off;
+        
         set(gca,'fontname',fontname,'fontsize',fontsize);
         
+        xlim([1 L]);
+        
         if(m_idx == 1)
-            legend(legend_algo,'fontname',fontname,'fontsize',fontsize,'location',location_2);
-
-            xlim([1 L]);
             ylim(ylim_1);
         else
-            legend(legend_algo,'fontname',fontname,'fontsize',fontsize,'location',location_2);
-
-            xlim([1 L]);
             ylim(ylim_2);
         end
         
         if(savefig == 1)
-            saveas(gcf,[root_fig channel_mod{chn_idx} '_M_' num2str(M(m_idx)) '_K_' num2str(K) '_MC_' num2str(MC)],'fig');
-            saveas(gcf,[root_fig channel_mod{chn_idx} '_M_' num2str(M(m_idx)) '_K_' num2str(K) '_MC_' num2str(MC)],'png');
-            saveas(gcf,[root_fig channel_mod{chn_idx} '_M_' num2str(M(m_idx)) '_K_' num2str(K) '_MC_' num2str(MC)],'epsc2');
+            saveas(gcf,[root_save channel_mod{chn_idx} '_M_' num2str(M(m_idx)) '_K_' num2str(K) '_MC_' num2str(MC)],'fig');
+            saveas(gcf,[root_save channel_mod{chn_idx} '_M_' num2str(M(m_idx)) '_K_' num2str(K) '_MC_' num2str(MC)],'png');
+            saveas(gcf,[root_save channel_mod{chn_idx} '_M_' num2str(M(m_idx)) '_K_' num2str(K) '_MC_' num2str(MC)],'epsc2');
         end
     end
 end

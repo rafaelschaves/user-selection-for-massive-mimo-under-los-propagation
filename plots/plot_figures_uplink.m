@@ -17,45 +17,26 @@ N_ALG = 4;                                                                 % Num
 N_SNR = length(snr);                                                       % Size of the SNR set 
 N_CHN = 3;                                                                 % Number of channel models simulated
 
+% Roots
+
+root_load = '../results/scheduling/uplink/rate_uplink_mf_';
+root_save = '../figures/scheduling/uplink/out_prob_mf_norm_sum_rate_';
+
+chn_type = {'ur-los','sparse','rayleigh'};
+
 % Loading data
 
-rate = zeros(K,MC,M_SIZ,N_SNR,N_CHN);                                      % Rate using all K users
-psi  = zeros(K,MC,M_SIZ,N_SNR,N_CHN);                                      % Interchannel interference for all users
-
+rate     = zeros(K,MC,M_SIZ,N_SNR,N_CHN);                                  % Rate using all K users
 rate_sel = zeros(L,MC,N_ALG,M_SIZ,N_SNR,N_CHN);                            % Rate using only L users
-% psi_sel  = zeros(L,MC,N_ALG,M_SIZ,N_SNR,N_CHN);                            % Interchannel interference for L users
 
-for m_idx = 1:length(M)
-    for snr_idx = 1:N_SNR
-        load(['../results/uplink/rate_uplink_mf_ur-los_M_' num2str(M(m_idx)) ...
-            '_K_' num2str(K) '_L_' num2str(L) '_SNR_' num2str(snr(snr_idx)) ...
-            '_dB_MC_' num2str(MC) '.mat']);
-        
-        rate(:,:,m_idx,snr_idx,1) = rate_u;
-        psi(:,:,m_idx,snr_idx,1)  = psi;
-        
-        rate_sel(:,:,:,m_idx,snr_idx,1) = rate_u_alg;
-        % psi_sel(:,:,:,m_idx,snr_idx,1)  = psi_alg;
-        
-        load(['../results/uplink/rate_uplink_mf_sparse_M_' num2str(M(m_idx)) ...
-            '_K_' num2str(K) '_L_' num2str(L) '_SNR_' num2str(snr(snr_idx)) ...
-            '_dB_MC_' num2str(MC) '.mat']);
-        
-        rate(:,:,m_idx,snr_idx,2) = rate_u;
-        psi(:,:,m_idx,snr_idx,2)  = psi;
-        
-        rate_sel(:,:,:,m_idx,snr_idx,2) = rate_u_alg;
-        % psi_sel(:,:,:,m_idx,snr_idx,2)  = psi_alg;
-        
-        load(['../results/uplink/rate_uplink_mf_rayleigh_M_' num2str(M(m_idx)) ...
-            '_K_' num2str(K) '_L_' num2str(L) '_SNR_' num2str(snr(snr_idx)) ...
-            '_dB_MC_' num2str(MC) '.mat']);
-        
-        rate(:,:,m_idx,snr_idx,3) = rate_u;
-        psi(:,:,m_idx,snr_idx,3)  = psi;
-        
-        rate_sel(:,:,:,m_idx,snr_idx,3) = rate_u_alg;
-        % psi_sel(:,:,:,m_idx,snr_idx,3)  = psi_alg;
+for chn_idx = 1:N_CHN
+    for m = 1:M_SIZ
+        for snr_idx = 1:N_SNR
+            load([root_load chn_type{chn_idx} '_M_' num2str(M(m)) '_K_' num2str(K) '_L_' num2str(L) '_SNR_' num2str(snr(snr_idx)) '_dB_MC_' num2str(MC) '.mat']);
+            
+            rate(:,:,m,snr_idx,chn_idx)       = rate_u;
+            rate_sel(:,:,:,m,snr_idx,chn_idx) = rate_u_alg;
+        end
     end
 end
 
@@ -68,24 +49,24 @@ edge = cell(N_ALG+1,M_SIZ,N_SNR,N_CHN);
 
 for chn_idx = 1:N_CHN
     for snr_idx = 1:N_SNR
-        for m_idx = 1:M_SIZ
-            [prob{1,m_idx,snr_idx,chn_idx},edge{1,m_idx,snr_idx,chn_idx}] = histcounts(mean(rate(:,:,m_idx,snr_idx,chn_idx)),'binwidth',bin_width,'normalization','cdf');
-            [prob{2,m_idx,snr_idx,chn_idx},edge{2,m_idx,snr_idx,chn_idx}] = histcounts(mean(rate_sel(:,:,1,m_idx,snr_idx,chn_idx)),'binwidth',bin_width,'normalization','cdf');
-            [prob{3,m_idx,snr_idx,chn_idx},edge{3,m_idx,snr_idx,chn_idx}] = histcounts(mean(rate_sel(:,:,2,m_idx,snr_idx,chn_idx)),'binwidth',bin_width,'normalization','cdf');
-            [prob{4,m_idx,snr_idx,chn_idx},edge{4,m_idx,snr_idx,chn_idx}] = histcounts(mean(rate_sel(:,:,3,m_idx,snr_idx,chn_idx)),'binwidth',bin_width,'normalization','cdf');
-            [prob{5,m_idx,snr_idx,chn_idx},edge{5,m_idx,snr_idx,chn_idx}] = histcounts(mean(rate_sel(:,:,4,m_idx,snr_idx,chn_idx)),'binwidth',bin_width,'normalization','cdf');
+        for m = 1:M_SIZ
+            [prob{1,m,snr_idx,chn_idx},edge{1,m,snr_idx,chn_idx}] = histcounts(mean(rate(:,:,m,snr_idx,chn_idx)),'binwidth',bin_width,'normalization','cdf');
+            [prob{2,m,snr_idx,chn_idx},edge{2,m,snr_idx,chn_idx}] = histcounts(mean(rate_sel(:,:,1,m,snr_idx,chn_idx)),'binwidth',bin_width,'normalization','cdf');
+            [prob{3,m,snr_idx,chn_idx},edge{3,m,snr_idx,chn_idx}] = histcounts(mean(rate_sel(:,:,2,m,snr_idx,chn_idx)),'binwidth',bin_width,'normalization','cdf');
+            [prob{4,m,snr_idx,chn_idx},edge{4,m,snr_idx,chn_idx}] = histcounts(mean(rate_sel(:,:,3,m,snr_idx,chn_idx)),'binwidth',bin_width,'normalization','cdf');
+            [prob{5,m,snr_idx,chn_idx},edge{5,m,snr_idx,chn_idx}] = histcounts(mean(rate_sel(:,:,4,m,snr_idx,chn_idx)),'binwidth',bin_width,'normalization','cdf');
             
-            prob{1,m_idx,snr_idx,chn_idx} = [prob{1,m_idx,snr_idx,chn_idx} 1];
-            prob{2,m_idx,snr_idx,chn_idx} = [prob{2,m_idx,snr_idx,chn_idx} 1];
-            prob{3,m_idx,snr_idx,chn_idx} = [prob{3,m_idx,snr_idx,chn_idx} 1];
-            prob{4,m_idx,snr_idx,chn_idx} = [prob{4,m_idx,snr_idx,chn_idx} 1];
-            prob{5,m_idx,snr_idx,chn_idx} = [prob{5,m_idx,snr_idx,chn_idx} 1];
+            prob{1,m,snr_idx,chn_idx} = [prob{1,m,snr_idx,chn_idx} 1];
+            prob{2,m,snr_idx,chn_idx} = [prob{2,m,snr_idx,chn_idx} 1];
+            prob{3,m,snr_idx,chn_idx} = [prob{3,m,snr_idx,chn_idx} 1];
+            prob{4,m,snr_idx,chn_idx} = [prob{4,m,snr_idx,chn_idx} 1];
+            prob{5,m,snr_idx,chn_idx} = [prob{5,m,snr_idx,chn_idx} 1];
             
-            edge{1,m_idx,snr_idx,chn_idx} = edge{1,m_idx,snr_idx,chn_idx} + bin_width/2;
-            edge{2,m_idx,snr_idx,chn_idx} = edge{2,m_idx,snr_idx,chn_idx} + bin_width/2;
-            edge{3,m_idx,snr_idx,chn_idx} = edge{3,m_idx,snr_idx,chn_idx} + bin_width/2;
-            edge{4,m_idx,snr_idx,chn_idx} = edge{4,m_idx,snr_idx,chn_idx} + bin_width/2;
-            edge{5,m_idx,snr_idx,chn_idx} = edge{5,m_idx,snr_idx,chn_idx} + bin_width/2;
+            edge{1,m,snr_idx,chn_idx} = edge{1,m,snr_idx,chn_idx} + bin_width/2;
+            edge{2,m,snr_idx,chn_idx} = edge{2,m,snr_idx,chn_idx} + bin_width/2;
+            edge{3,m,snr_idx,chn_idx} = edge{3,m,snr_idx,chn_idx} + bin_width/2;
+            edge{4,m,snr_idx,chn_idx} = edge{4,m,snr_idx,chn_idx} + bin_width/2;
+            edge{5,m,snr_idx,chn_idx} = edge{5,m,snr_idx,chn_idx} + bin_width/2;
         end
     end
 end
@@ -97,7 +78,7 @@ markersize = 10;
 fontname   = 'Times New Roman';
 fontsize   = 20;
 
-savefig = 0;
+savefig = 1;
 
 % NS - No selection
 % RS - Random selection
@@ -106,11 +87,8 @@ savefig = 0;
 % ICIBS - ICI-based selection
 
 legend_algo = {'NS','RS','SOS','CBS','ICIBS'};
-channel_mod = {'ur_los','sparse','rayleigh'};
 
 location = 'northwest';
-
-root_out_prob = '../figures/rate/out_prob_';
 
 colours = get(gca,'colororder');
 close;
@@ -132,20 +110,61 @@ for chn_idx = 1:N_CHN
         plot(edge{3,2,snr_idx,chn_idx},prob{3,2,snr_idx,chn_idx},'--','color',colours(3,:),'linewidth',linewidth);
         plot(edge{4,2,snr_idx,chn_idx},prob{4,2,snr_idx,chn_idx},'--','color',colours(4,:),'linewidth',linewidth);
         plot(edge{5,2,snr_idx,chn_idx},prob{5,2,snr_idx,chn_idx},'--','color',colours(5,:),'linewidth',linewidth);
+        
+        if(snr_idx == 7 && chn_idx == 1)
+            dim(1,:) = [0.33 0.5 0.225 0.1];
+            dim(2,:) = [0.57 0.5 0.225 0.1];
+            
+            annotation('ellipse',dim(1,:),'linewidth',linewidth);
+            annotation('ellipse',dim(2,:),'linewidth',linewidth);
+            
+            cord(1,:) = [1.5 9.7];
+            cord(2,:) = [0.425 0.425];
+            
+            text(cord(1,1),cord(2,1),'$M = 64$','fontname',fontname,'fontsize',fontsize,'interpreter','latex');
+            text(cord(1,2),cord(2,2),'$M = 256$','fontname',fontname,'fontsize',fontsize,'interpreter','latex');
+        end
+        
+        if(snr_idx == 7 && chn_idx == 3)
+            % xlim([0 6]);
+            % dim(1,:) = [0.375 0.5 0.2 0.1];
+            % dim(2,:) = [0.600 0.5 0.2 0.1];
+            
+            % xlim([1 6]);
+            dim(1,:) = [0.280 0.5 0.2 0.1];
+            dim(2,:) = [0.570 0.5 0.2 0.1];
+            
+            annotation('ellipse',dim(1,:),'linewidth',linewidth);
+            annotation('ellipse',dim(2,:),'linewidth',linewidth);
+            
+            cord(1,:) = [3.0 4.9];
+            cord(2,:) = [0.4 0.4];
+            
+            text(cord(1,1),cord(2,1),'$M = 64$','fontname',fontname,'fontsize',fontsize,'interpreter','latex');
+            text(cord(1,2),cord(2,2),'$M = 256$','fontname',fontname,'fontsize',fontsize,'interpreter','latex');
+        end
 
-        xlabel('Uplink rate per terminal (b/s/Hz)','fontname',fontname,'fontsize',fontsize);
+        xlabel('Normalized sum-rate (b/s/Hz)','fontname',fontname,'fontsize',fontsize);
         ylabel('Outage probability','fontname',fontname,'fontsize',fontsize);
         
         legend(legend_algo,'fontname',fontname,'fontsize',fontsize,'location',location);
         
+        if((snr_idx == 7 && chn_idx == 1) || (snr_idx == 7 && chn_idx == 3))
+            legend box off;
+        end
+        
         set(gca,'fontname',fontname,'fontsize',fontsize);
+        
+        if(chn_idx == 3)
+            xlim([1 6]);
+        end
         
         ylim([0 1]);
         
         if (savefig == 1)
-            saveas(gcf,[root_out_prob 'uplink_' channel_mod{chn_idx} '_avg_rate_ter_M_' num2str(M) '_K_' num2str(K) '_L_' num2str(L) '_SNR_' num2str(snr_idx)],'fig');
-            saveas(gcf,[root_out_prob 'uplink_' channel_mod{chn_idx} '_avg_rate_ter_M_' num2str(M) '_K_' num2str(K) '_L_' num2str(L) '_SNR_' num2str(snr_idx)],'png');
-            saveas(gcf,[root_out_prob 'uplink_' channel_mod{chn_idx} '_avg_rate_ter_M_' num2str(M) '_K_' num2str(K) '_L_' num2str(L) '_SNR_' num2str(snr_idx)],'epsc2');
+            saveas(gcf,[root_save chn_type{chn_idx} '_K_' num2str(K) '_L_' num2str(L) '_SNR_' num2str(snr(snr_idx))],'fig');
+            saveas(gcf,[root_save chn_type{chn_idx} '_K_' num2str(K) '_L_' num2str(L) '_SNR_' num2str(snr(snr_idx))],'png');
+            saveas(gcf,[root_save chn_type{chn_idx} '_K_' num2str(K) '_L_' num2str(L) '_SNR_' num2str(snr(snr_idx))],'epsc2');
         end
     end
 end
