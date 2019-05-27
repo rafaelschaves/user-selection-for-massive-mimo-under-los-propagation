@@ -71,7 +71,7 @@ location = 'northwest';
 cat = categorical(legend_algo);
 cat = reordercats(cat,legend_algo);
 
-root_rate_lik = '../figures/rate/likely_';
+root_rate_lik = '../figures/scheduling/uplink/likely_';
 
 savefig = 1;
 
@@ -142,16 +142,17 @@ for chn_idx = 1:N_CHN
     
     
     xlabel('SNR (dB)','fontname',fontname,'fontsize',fontsize);
-    ylabel('95% likely sum-rate (b/s/Hz)','fontname',fontname,'fontsize',fontsize);
+    ylabel('95% likely normalized sum-rate (b/s/Hz)','fontname',fontname,'fontsize',fontsize);
     
     legend(legend_algo,'fontname',fontname,'fontsize',fontsize,'location',location);
+    legend box off;
     
     set(gca,'fontname',fontname,'fontsize',fontsize);
     
     if (savefig == 1)
-        saveas(gcf,[root_rate_lik 'uplink' channel_mod{chn_idx} '_avg_rate_ter_K_' num2str(K) '_L_' num2str(L)],'fig');
-        saveas(gcf,[root_rate_lik 'uplink' channel_mod{chn_idx} '_avg_rate_ter_K_' num2str(K) '_L_' num2str(L)],'png');
-        saveas(gcf,[root_rate_lik 'uplink' channel_mod{chn_idx} '_avg_rate_ter_K_' num2str(K) '_L_' num2str(L)],'epsc2');
+        saveas(gcf,[root_rate_lik channel_mod{chn_idx} '_norm_sum_rate_K_' num2str(K) '_L_' num2str(L)],'fig');
+        saveas(gcf,[root_rate_lik channel_mod{chn_idx} '_norm_sum_rate_K_' num2str(K) '_L_' num2str(L)],'png');
+        saveas(gcf,[root_rate_lik channel_mod{chn_idx} '_norm_sum_rate_K_' num2str(K) '_L_' num2str(L)],'epsc2');
     end
     
 end

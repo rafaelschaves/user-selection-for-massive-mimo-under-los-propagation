@@ -74,13 +74,21 @@ end
 
 up_norm_sum_rate = zeros(MC,N_TAU,N_ALG);
 
-prob = cell(N_TAU,N_ALG);
-edge = cell(N_TAU,N_ALG); 
+% prob = cell(N_TAU,N_ALG);
+% edge = cell(N_TAU,N_ALG); 
+% 
+% prob_L = cell(N_TAU,N_ALG);
+% edge_L = cell(N_TAU,N_ALG); 
 
-prob_L = cell(N_TAU,N_ALG);
-edge_L = cell(N_TAU,N_ALG); 
+edges = 15*linspace(0,1,15000);
 
-bin_width = 0.0005;
+prob   = zeros(length(edges) - 1,N_TAU,N_ALG);
+prob_f = zeros(length(edges),N_TAU,N_ALG);
+
+edges_grid = repmat(edges,N_TAU,1);
+tau_grid   = repmat(tau',1,length(edges));
+
+% bin_width = 0.0005;
     
 for tau_idx = 1:N_TAU
     for mc = 1:MC
@@ -91,23 +99,31 @@ for tau_idx = 1:N_TAU
         up_norm_sum_rate(mc,tau_idx,2) = mean(rate_u_alg{mc,tau_idx,2});
     end
     
-    [prob{tau_idx,1},edge{tau_idx,1}] = histcounts(up_norm_sum_rate(:,tau_idx,1),'binwidth',bin_width,'normalization','cdf');
-    [prob{tau_idx,2},edge{tau_idx,2}] = histcounts(up_norm_sum_rate(:,tau_idx,2),'binwidth',bin_width,'normalization','cdf');
+    % [prob{tau_idx,1},edge{tau_idx,1}] = histcounts(up_norm_sum_rate(:,tau_idx,1),'binwidth',bin_width,'normalization','cdf');
+    % [prob{tau_idx,2},edge{tau_idx,2}] = histcounts(up_norm_sum_rate(:,tau_idx,2),'binwidth',bin_width,'normalization','cdf');
+    
+    % [prob{tau_idx,1},edge{tau_idx,1}] = histcounts(up_norm_sum_rate(:,tau_idx,1),10000,'normalization','cdf');
+    % [prob{tau_idx,2},edge{tau_idx,2}] = histcounts(up_norm_sum_rate(:,tau_idx,2),10000,'normalization','cdf');
+    
+    prob(:,tau_idx,1) = histcounts(up_norm_sum_rate(:,tau_idx,1),edges,'normalization','cdf');
+    prob(:,tau_idx,2) = histcounts(up_norm_sum_rate(:,tau_idx,2),edges,'normalization','cdf');
     
     % [prob{1},edge{1}] = histcounts(up_rate_cbs,'binwidth',bin_width,'normalization','cdf');
     % [prob{2},edge{2}] = histcounts(up_rate_icibs,'binwidth',bin_width,'normalization','cdf');
     
-    prob{tau_idx,1} = [prob{tau_idx,1} 1];
-    prob{tau_idx,2} = [prob{tau_idx,2} 1];
+    prob_f(:,tau_idx,1) = [prob(:,tau_idx,1); 1];
+    prob_f(:,tau_idx,2) = [prob(:,tau_idx,2); 1];
     
-    edge{tau_idx,1} = edge{tau_idx,1} + bin_width/2;
-    edge{tau_idx,2} = edge{tau_idx,2} + bin_width/2;
+    % edges = edges + 2/15000;
     
-    [prob_L{tau_idx,1},edge_L{tau_idx,1}] = histcounts(K - L(:,tau_idx,1),'binwidth',bin_width,'normalization','cdf');
-    [prob_L{tau_idx,2},edge_L{tau_idx,2}] = histcounts(K - L(:,tau_idx,2),'binwidth',bin_width,'normalization','cdf');
+    %edge{tau_idx,1} = edge{tau_idx,1} + bin_width/2;
+    %edge{tau_idx,2} = edge{tau_idx,2} + bin_width/2;
     
-    prob_L{tau_idx,1} = [prob_L{tau_idx,1} 1];
-    prob_L{tau_idx,2} = [prob_L{tau_idx,2} 1];    
+    % [prob_L{tau_idx,1},edge_L{tau_idx,1}] = histcounts(K - L(:,tau_idx,1),'binwidth',bin_width,'normalization','cdf');
+    % [prob_L{tau_idx,2},edge_L{tau_idx,2}] = histcounts(K - L(:,tau_idx,2),'binwidth',bin_width,'normalization','cdf');
+    
+    % prob_L{tau_idx,1} = [prob_L{tau_idx,1} 1];
+    % prob_L{tau_idx,2} = [prob_L{tau_idx,2} 1];    
 end
 
 % Ploting Figures
@@ -117,14 +133,14 @@ markersize = 10;
 fontname   = 'Times New Roman';
 fontsize   = 20;
 
-savefig = 1;
+savefig = 0;
 
 % CBS - Correlation-based selection
 % ICIBS - ICI-based selection
 
 legend_algo = {'CBS','ICIBS'};
 
-tau_idx_aux = [1 10 15 20 50 70 99];
+%tau_idx_aux = [1 10 15 20 50 70 99];
 
 legend_tau  = {'$\tau = 0.010$', ...
                '$\tau = 0.055$', ...
@@ -148,7 +164,43 @@ close;
 
 L_max = 17;
 
-N_TAU = length(tau_idx_aux);
+%N_TAU = length(tau_idx_aux);
+
+% for chn_idx = 1:N_CHN
+%     for alg_idx = 1:N_ALG
+%         for snr_idx = 1:N_SNR
+%             figure;
+%                 
+%             set(gcf,'position',[0 0 800 600]);
+%    
+%             for tau_idx = 1:N_TAU    
+%                 plot(edge{tau_idx,alg_idx},prob{tau_idx,alg_idx},'-','linewidth',linewidth);
+%                 % plot(edge{tau_idx_aux(tau_idx),alg_idx},prob{tau_idx_aux(tau_idx),alg_idx},'-','linewidth',linewidth);
+%                 
+%                 if(tau_idx == 1)
+%                     hold on;
+%                 end
+%             end
+%             
+%             xlabel('Uplink rate per terminal (b/s/Hz)','fontname',fontname,'fontsize',fontsize);
+%             ylabel('Outage probability','fontname',fontname,'fontsize',fontsize);
+%                 
+%             legend(legend_tau,'fontname',fontname,'fontsize',fontsize,'location',location_1,'interpreter','latex');
+%             % legend(legend_algo,'fontname',fontname,'fontsize',fontsize,'location',location_1);
+%             % ,'color',colours(1,:)
+%                 
+%             set(gca,'fontname',fontname,'fontsize',fontsize);
+%                 
+%             ylim([0 1]);
+%         end
+%         
+%         if (savefig == 1)
+%             saveas(gcf,[root_rate channel_mod{chn_idx} '_' algorithm{alg_idx} '_M_' num2str(M) '_K_' num2str(K) '_tau_' num2str(N_TAU) '_SNR_' num2str(snr_idx)],'fig');
+%             saveas(gcf,[root_rate channel_mod{chn_idx} '_' algorithm{alg_idx} '_M_' num2str(M) '_K_' num2str(K) '_tau_' num2str(N_TAU) '_SNR_' num2str(snr_idx)],'png');
+%             saveas(gcf,[root_rate channel_mod{chn_idx} '_' algorithm{alg_idx} '_M_' num2str(M) '_K_' num2str(K) '_tau_' num2str(N_TAU) '_SNR_' num2str(snr_idx)],'epsc2');
+%         end
+%     end
+% end
 
 for chn_idx = 1:N_CHN
     for alg_idx = 1:N_ALG
@@ -157,25 +209,34 @@ for chn_idx = 1:N_CHN
                 
             set(gcf,'position',[0 0 800 600]);
    
-            for tau_idx = 1:N_TAU    
-                % plot(edge{tau_idx,alg_idx},prob{tau_idx,alg_idx},'-','linewidth',linewidth);
-                plot(edge{tau_idx_aux(tau_idx),alg_idx},prob{tau_idx_aux(tau_idx),alg_idx},'-','linewidth',linewidth);
-                
-                if(tau_idx == 1)
-                    hold on;
-                end
-            end
-            
+%             for tau_idx = 1:N_TAU
+%                 tau_aux = tau(tau_idx)*ones(length(prob{tau_idx,alg_idx}),1);
+%                 
+%                 % plot3(edge{tau_idx,alg_idx},tau_aux,prob{tau_idx,alg_idx},'-','linewidth',linewidth);
+%                 plot3(edges,tau_aux,prob{tau_idx,alg_idx},'-','linewidth',linewidth);
+%                 % plot(edge{tau_idx_aux(tau_idx),alg_idx},prob{tau_idx_aux(tau_idx),alg_idx},'-','linewidth',linewidth);
+%                 
+%                 if(tau_idx == 1)
+%                     hold on;
+%                 end
+%             end
+
+            surf(edges_grid,tau_grid,prob_f(:,:,alg_idx)','edgecolor','none');
+
             xlabel('Uplink rate per terminal (b/s/Hz)','fontname',fontname,'fontsize',fontsize);
-            ylabel('Outage probability','fontname',fontname,'fontsize',fontsize);
+            ylabel('$\tau$','fontname',fontname,'fontsize',fontsize,'interpreter','latex');
+            zlabel('Outage probability','fontname',fontname,'fontsize',fontsize);
                 
-            legend(legend_tau,'fontname',fontname,'fontsize',fontsize,'location',location_1,'interpreter','latex');
+            % legend(legend_tau,'fontname',fontname,'fontsize',fontsize,'location',location_1,'interpreter','latex');
             % legend(legend_algo,'fontname',fontname,'fontsize',fontsize,'location',location_1);
             % ,'color',colours(1,:)
                 
             set(gca,'fontname',fontname,'fontsize',fontsize);
-                
-            ylim([0 1]);
+            
+            xlim([0 15]);
+            ylim([0 0.5]);
+            zlim([0 1]);
+            
         end
         
         if (savefig == 1)
@@ -190,34 +251,81 @@ for chn_idx = 1:N_CHN
     for alg_idx = 1:N_ALG
         for snr_idx = 1:N_SNR
             figure;
-            
-            set(gcf,'position',[0 0 800 600]);
-            
-            for tau_idx = 1:N_TAU
-                % plot(edge_L{tau_idx,alg_idx},prob_L{tau_idx,alg_idx},'-','linewidth',linewidth);
-                plot(edge_L{tau_idx_aux(tau_idx),alg_idx},prob_L{tau_idx_aux(tau_idx),alg_idx},'-','linewidth',linewidth);
                 
-                if(tau_idx == 1)
-                    hold on;
-                end             
-            end
+            set(gcf,'position',[0 0 800 600]);
+   
+%             for tau_idx = 1:N_TAU
+%                 tau_aux = tau(tau_idx)*ones(length(prob{tau_idx,alg_idx}),1);
+%                 
+%                 % plot3(edge{tau_idx,alg_idx},tau_aux,prob{tau_idx,alg_idx},'-','linewidth',linewidth);
+%                 plot3(edges,tau_aux,prob{tau_idx,alg_idx},'-','linewidth',linewidth);
+%                 % plot(edge{tau_idx_aux(tau_idx),alg_idx},prob{tau_idx_aux(tau_idx),alg_idx},'-','linewidth',linewidth);
+%                 
+%                 if(tau_idx == 1)
+%                     hold on;
+%                 end
+%             end
+
+            contour(edges_grid,tau_grid,prob_f(:,:,alg_idx)',10,'linewidth',linewidth);
             
-            xlabel('Number of dropped users','fontname',fontname,'fontsize',fontsize);
-            ylabel('CDF','fontname',fontname,'fontsize',fontsize);
+            colorbar;
             
-            legend(legend_tau,'fontname',fontname,'fontsize',fontsize,'location',location_1,'interpreter','latex');
-            % legend(legend_algo,'fontname',fontname,'fontsize',fontsize,'location',location_2);
-            
+            xlabel('Uplink rate per terminal (b/s/Hz)','fontname',fontname,'fontsize',fontsize);
+            ylabel('$\tau$','fontname',fontname,'fontsize',fontsize,'interpreter','latex');
+            zlabel('Outage probability','fontname',fontname,'fontsize',fontsize);
+                
+            % legend(legend_tau,'fontname',fontname,'fontsize',fontsize,'location',location_1,'interpreter','latex');
+            % legend(legend_algo,'fontname',fontname,'fontsize',fontsize,'location',location_1);
+            % ,'color',colours(1,:)
+                
             set(gca,'fontname',fontname,'fontsize',fontsize);
             
-            xlim([0 L_max]);
-            ylim([0 1]);
+   %         xlim([0 15]);
+    %        ylim([0 0.5]);
+    %        zlim([0 1]);
+            
         end
         
         if (savefig == 1)
-            saveas(gcf,[root_drop channel_mod{chn_idx} '_' algorithm{alg_idx} '_M_' num2str(M) '_K_' num2str(K) '_tau_' num2str(N_TAU) '_SNR_' num2str(snr_idx)],'fig');
-            saveas(gcf,[root_drop channel_mod{chn_idx} '_' algorithm{alg_idx} '_M_' num2str(M) '_K_' num2str(K) '_tau_' num2str(N_TAU) '_SNR_' num2str(snr_idx)],'png');
-            saveas(gcf,[root_drop channel_mod{chn_idx} '_' algorithm{alg_idx} '_M_' num2str(M) '_K_' num2str(K) '_tau_' num2str(N_TAU) '_SNR_' num2str(snr_idx)],'epsc2');
+            saveas(gcf,[root_rate channel_mod{chn_idx} '_' algorithm{alg_idx} '_M_' num2str(M) '_K_' num2str(K) '_tau_' num2str(N_TAU) '_SNR_' num2str(snr_idx)],'fig');
+            saveas(gcf,[root_rate channel_mod{chn_idx} '_' algorithm{alg_idx} '_M_' num2str(M) '_K_' num2str(K) '_tau_' num2str(N_TAU) '_SNR_' num2str(snr_idx)],'png');
+            saveas(gcf,[root_rate channel_mod{chn_idx} '_' algorithm{alg_idx} '_M_' num2str(M) '_K_' num2str(K) '_tau_' num2str(N_TAU) '_SNR_' num2str(snr_idx)],'epsc2');
         end
     end
 end
+
+% for chn_idx = 1:N_CHN
+%     for alg_idx = 1:N_ALG
+%         for snr_idx = 1:N_SNR
+%             figure;
+%             
+%             set(gcf,'position',[0 0 800 600]);
+%             
+%             for tau_idx = 1:N_TAU
+%                 plot(edge_L{tau_idx,alg_idx},prob_L{tau_idx,alg_idx},'-','linewidth',linewidth);
+%                 % plot(edge_L{tau_idx_aux(tau_idx),alg_idx},prob_L{tau_idx_aux(tau_idx),alg_idx},'-','linewidth',linewidth);
+%                 
+%                 if(tau_idx == 1)
+%                     hold on;
+%                 end             
+%             end
+%             
+%             xlabel('Number of dropped users','fontname',fontname,'fontsize',fontsize);
+%             ylabel('CDF','fontname',fontname,'fontsize',fontsize);
+%             
+%             legend(legend_tau,'fontname',fontname,'fontsize',fontsize,'location',location_1,'interpreter','latex');
+%             % legend(legend_algo,'fontname',fontname,'fontsize',fontsize,'location',location_2);
+%             
+%             set(gca,'fontname',fontname,'fontsize',fontsize);
+%             
+%             xlim([0 L_max]);
+%             ylim([0 1]);
+%         end
+%         
+%         if (savefig == 1)
+%             saveas(gcf,[root_drop channel_mod{chn_idx} '_' algorithm{alg_idx} '_M_' num2str(M) '_K_' num2str(K) '_tau_' num2str(N_TAU) '_SNR_' num2str(snr_idx)],'fig');
+%             saveas(gcf,[root_drop channel_mod{chn_idx} '_' algorithm{alg_idx} '_M_' num2str(M) '_K_' num2str(K) '_tau_' num2str(N_TAU) '_SNR_' num2str(snr_idx)],'png');
+%             saveas(gcf,[root_drop channel_mod{chn_idx} '_' algorithm{alg_idx} '_M_' num2str(M) '_K_' num2str(K) '_tau_' num2str(N_TAU) '_SNR_' num2str(snr_idx)],'epsc2');
+%         end
+%     end
+% end
