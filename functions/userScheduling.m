@@ -116,32 +116,38 @@ switch algorithm
                 selection = 1;
                 idx_while = 1;
                 
-                while(selection == 1)
-                    corr_mtx = correlationMatrix(chnl_mtx_aux);
-                    corr_mtx_aux = corr_mtx - eye_K;
-                    
-                    [max_corr,idx_corr] = max(corr_mtx_aux(:));
-                    
-                    if(max_corr < threshold)
-                        selection = 0;
-                    else
-                        [corr_i,corr_j] = ind2sub(size(corr_mtx_aux),idx_corr);
-                    
-                        h_i = corr_mtx_aux(:,corr_i);
-                        h_j = corr_mtx_aux(:,corr_j);
-                    
-                        h_i(corr_j) = [];
-                        h_j(corr_i) = [];
-                    
-                        if(max(h_i) > max(h_j))
-                            user_set_drop(idx_while) = corr_i;
-                        else
-                            user_set_drop(idx_while) = corr_j;
-                        end
-                    
-                        chnl_mtx_aux(:,user_set_drop(idx_while)) = zeros(n_antenna,1);
+                if(threshold == 0)
+                    idx_while = n_user + 1;
+                elseif(threshold == 1)
+                    idx_while = 1;
+                else
+                    while(selection == 1)
+                        corr_mtx = correlationMatrix(chnl_mtx_aux);
+                        corr_mtx_aux = corr_mtx - eye_K;
                         
-                        idx_while = idx_while + 1;
+                        [max_corr,idx_corr] = max(corr_mtx_aux(:));
+                        
+                        if(max_corr < threshold)
+                            selection = 0;
+                        else
+                            [corr_i,corr_j] = ind2sub(size(corr_mtx_aux),idx_corr);
+                            
+                            h_i = corr_mtx_aux(:,corr_i);
+                            h_j = corr_mtx_aux(:,corr_j);
+                            
+                            h_i(corr_j) = [];
+                            h_j(corr_i) = [];
+                            
+                            if(max(h_i) > max(h_j))
+                                user_set_drop(idx_while) = corr_i;
+                            else
+                                user_set_drop(idx_while) = corr_j;
+                            end
+                            
+                            chnl_mtx_aux(:,user_set_drop(idx_while)) = zeros(n_antenna,1);
+                            
+                            idx_while = idx_while + 1;
+                        end
                     end
                 end
                 
@@ -150,6 +156,10 @@ switch algorithm
                 if(n_selected == n_user)
                     user_set_sel = (1:n_user)';
                     sel_chnl_mtx = chnl_mtx;
+                elseif(n_selected == 0)
+                    user_set_sel = 0;
+                    
+                    sel_chnl_mtx = 0;
                 else
                     user_set_sel = (1:n_user)';
                     user_set_sel(user_set_drop) = [];
@@ -188,23 +198,29 @@ switch algorithm
                 selection = 1;
                 idx_while = 1;
                 
-                while(selection == 1)
-                    psi = ici(chnl_mtx_aux);
-                    
-                    decision = (psi > threshold);
-                    
-                    if(sum(decision) == 0)
-                        selection = 0;
-                    else
-                        idx_decision = user_set_sel(decision);
-                    
-                        [~,idx_aux] = max(psi(decision));
-                    
-                        user_set_drop(idx_while) = idx_decision(idx_aux);
-                    
-                        chnl_mtx_aux(:,user_set_drop(idx_while)) = zeros(n_antenna,1);
+                if(threshold == 0)
+                    idx_while = n_user + 1;
+                elseif(threshold == 1)
+                    idx_while = 1;
+                else
+                    while(selection == 1)
+                        psi = ici(chnl_mtx_aux);
                         
-                        idx_while = idx_while + 1;
+                        decision = (psi > threshold);
+                        
+                        if(sum(decision) == 0)
+                            selection = 0;
+                        else
+                            idx_decision = user_set_sel(decision);
+                            
+                            [~,idx_aux] = max(psi(decision));
+                            
+                            user_set_drop(idx_while) = idx_decision(idx_aux);
+                            
+                            chnl_mtx_aux(:,user_set_drop(idx_while)) = zeros(n_antenna,1);
+                            
+                            idx_while = idx_while + 1;
+                        end
                     end
                 end
                 
@@ -212,6 +228,10 @@ switch algorithm
                 
                 if(n_selected == n_user)
                     sel_chnl_mtx = chnl_mtx;
+                elseif(n_selected == 0)
+                    user_set_sel = 0;
+                    
+                    sel_chnl_mtx = 0;
                 else
                     user_set_sel(user_set_drop) = [];
         
