@@ -127,7 +127,7 @@ switch algorithm
                         
                         [max_corr,idx_corr] = max(corr_mtx_aux(:));
                         
-                        if(max_corr < threshold)
+                        if(max_corr < threshold || idx_while == n_user)
                             selection = 0;
                         else
                             [corr_i,corr_j] = ind2sub(size(corr_mtx_aux),idx_corr);
@@ -208,7 +208,7 @@ switch algorithm
                         
                         decision = (psi > threshold);
                         
-                        if(sum(decision) == 0)
+                        if(sum(decision) == 0 || idx_while == n_user)
                             selection = 0;
                         else
                             idx_decision = user_set_sel(decision);
