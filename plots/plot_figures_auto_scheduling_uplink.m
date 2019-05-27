@@ -11,22 +11,37 @@ K = 18;                                                                    % Num
 
 snr = 20;                                                                  % SNR in dB
 
-tau_min = 0.01;
-tau_max = 0.5;
+% Threshold - CBS
 
-tau_step = 0.005;
+tau_cbs_min = 0;
+tau_cbs_max = 1;
 
-tau = tau_min:tau_step:tau_max;
+tau_cbs_step = 0.01;
+
+tau_cbs = tau_cbs_min:tau_cbs_step:tau_cbs_max;
+
+N_TAU_CBS = length(tau_cbs);
+
+% Threshold - ICIBS
+
+tau_icibs_min = 0;
+tau_icibs_max = 0.25;
+
+tau_icibs_step = 0.0025;
+
+tau_icibs = tau_icibs_min:tau_icibs_step:tau_icibs_max;
+
+N_TAU_ICIBS = length(tau_icibs);
 
 M_SIZ = length(M);                                                         % Size of the antennas set
 N_ALG = 2;                                                                 % Number of algorithms for perform user scheduling
 N_SNR = length(snr);                                                       % Size of the SNR set 
 N_CHN = 1;                                                                 % Number of channel models simulated
-N_TAU = length(tau);
 
 % Root
 
-root_load = '../results/auto_scheduling/uplink/rate_uplink_auto_scheduling_mf_';
+% root_load = '../results/auto_scheduling/uplink/rate_uplink_auto_scheduling_mf_';
+root_load = '../results/auto_scheduling/uplink/rate_uplink_mf_';
 
 root_save_rate = '../figures/auto_scheduling/uplink/normalized_sum_rate/auto_scheduling_norm_sum_rate_uplink_';
 root_save_drop = '../figures/auto_scheduling/uplink/dropped_users/cdf_dropped_users_uplink_';
@@ -41,8 +56,8 @@ root_save_drop = '../figures/auto_scheduling/uplink/dropped_users/cdf_dropped_us
 
 for m_idx = 1:length(M)
     for snr_idx = 1:N_SNR
-        load([root_load 'ur-los_M_' num2str(M(m_idx)) '_K_' num2str(K) '_tau_' ...
-              num2str(N_TAU) '_SNR_' num2str(snr(snr_idx)) '_dB_MC_' ...
+        load([root_load 'ur-los_M_' num2str(M(m_idx)) '_K_' num2str(K) ...
+              '_SNR_' num2str(snr(snr_idx)) '_dB_MC_' ...
               num2str(MC) '.mat']);
         
         % rate_sel(:,:,:,m_idx,snr_idx,1) = rate_u_alg;
@@ -77,6 +92,9 @@ rate_samples = 15000;
 
 L_max = 18;
 
+tau = tau_cbs;
+N_TAU = N_TAU_CBS;
+
 up_norm_sum_rate = zeros(MC,N_TAU,N_ALG);
 
 edges_rate = max_rate*linspace(0,1,rate_samples);
@@ -93,19 +111,33 @@ tau_rate_grid   = repmat(tau',1,rate_samples);
 edges_sele_grid = repmat(edges_sele(1:end-1),N_TAU,1);
 tau_sele_grid   = repmat(tau',1,L_max);
     
-for tau_idx = 1:N_TAU
+for tau_idx = 2:N_TAU_CBS
     for mc = 1:MC
-        up_norm_sum_rate(mc,tau_idx,1) = mean(rate_u_alg{mc,tau_idx,1});
-        up_norm_sum_rate(mc,tau_idx,2) = mean(rate_u_alg{mc,tau_idx,2});
+        % up_norm_sum_rate(mc,tau_idx,1) = mean(rate_u_alg{mc,tau_idx,1});
+        % up_norm_sum_rate(mc,tau_idx,2) = mean(rate_u_alg{mc,tau_idx,2});
+        
+        up_norm_sum_rate(mc,tau_idx,1) = mean(rate_u_cbs{mc,tau_idx});
     end
         
     prob_rate(:,tau_idx,1) = histcounts(up_norm_sum_rate(:,tau_idx,1),edges_rate,'normalization','cdf');
-    prob_rate(:,tau_idx,2) = histcounts(up_norm_sum_rate(:,tau_idx,2),edges_rate,'normalization','cdf');
     
-    prob_sele(:,tau_idx,1) = histcounts(K - L(:,tau_idx,1),edges_sele,'normalization','probability');
-    prob_sele(:,tau_idx,2) = histcounts(K - L(:,tau_idx,2),edges_sele,'normalization','probability');
+    prob_sele(:,tau_idx,1) = histcounts(K - L_cbs(:,tau_idx),edges_sele,'normalization','probability');
         
     prob_rate_f(:,tau_idx,1) = [prob_rate(:,tau_idx,1); 1];
+end
+
+for tau_idx = 2:N_TAU_ICIBS
+    for mc = 1:MC
+        % up_norm_sum_rate(mc,tau_idx,1) = mean(rate_u_alg{mc,tau_idx,1});
+        % up_norm_sum_rate(mc,tau_idx,2) = mean(rate_u_alg{mc,tau_idx,2});
+        
+        up_norm_sum_rate(mc,tau_idx,2) = mean(rate_u_icibs{mc,tau_idx});
+    end
+        
+    prob_rate(:,tau_idx,2) = histcounts(up_norm_sum_rate(:,tau_idx,2),edges_rate,'normalization','cdf');
+    
+    prob_sele(:,tau_idx,2) = histcounts(K - L_icibs(:,tau_idx),edges_sele,'normalization','probability');
+        
     prob_rate_f(:,tau_idx,2) = [prob_rate(:,tau_idx,2); 1];
 end
 
@@ -144,7 +176,7 @@ for chn_idx = 1:N_CHN
             set(gca,'fontname',fontname,'fontsize',fontsize);
             
             xlim([0 15]);
-            ylim([0 0.5]);
+            ylim([0 1]);
             zlim([0 1]);    
         end
         
@@ -201,7 +233,7 @@ for chn_idx = 1:N_CHN
             set(gca,'fontname',fontname,'fontsize',fontsize);
             
             xlim([0 L_max]);
-            ylim([0 0.5]);
+            ylim([0 1]);
             zlim([0 1]);
         end
         
