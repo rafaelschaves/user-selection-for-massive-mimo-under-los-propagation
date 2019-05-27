@@ -116,9 +116,7 @@ switch algorithm
                 selection = 1;
                 idx_while = 1;
                 
-                if(threshold == 0)
-                    idx_while = n_user + 1;
-                elseif(threshold == 1)
+                if(threshold == 1)
                     idx_while = 1;
                 else
                     while(selection == 1)
@@ -156,10 +154,6 @@ switch algorithm
                 if(n_selected == n_user)
                     user_set_sel = (1:n_user)';
                     sel_chnl_mtx = chnl_mtx;
-                elseif(n_selected == 0)
-                    user_set_sel = 0;
-                    
-                    sel_chnl_mtx = 0;
                 else
                     user_set_sel = (1:n_user)';
                     user_set_sel(user_set_drop) = [];
@@ -198,9 +192,7 @@ switch algorithm
                 selection = 1;
                 idx_while = 1;
                 
-                if(threshold == 0)
-                    idx_while = n_user + 1;
-                elseif(threshold == 1)
+                if(threshold == 1)
                     idx_while = 1;
                 else
                     while(selection == 1)
@@ -228,10 +220,6 @@ switch algorithm
                 
                 if(n_selected == n_user)
                     sel_chnl_mtx = chnl_mtx;
-                elseif(n_selected == 0)
-                    user_set_sel = 0;
-                    
-                    sel_chnl_mtx = 0;
                 else
                     user_set_sel(user_set_drop) = [];
         
