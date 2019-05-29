@@ -6,7 +6,7 @@ clc;
 
 MC = 10000;                                                                % Size of the monte-carlo ensemble
 
-M = 256;                                                                   % Number of antennas at base station
+M = 256;                                                                    % Number of antennas at base station
 K = 18;                                                                    % Number of mobile users
 
 snr = 20;                                                                  % SNR in dB
@@ -32,11 +32,11 @@ time = T_c*(0:MC-1);
 
 % Root
 
-root_load = '../results/auto_scheduling/uplink/rate_uplink_mf_';
+root_load = '../results/auto_scheduling/downlink/rate_downlink_mf_';
 
-root_save_rate = '../figures/auto_scheduling/uplink/normalized_sum_rate/cdf_';
-root_save_drop = '../figures/auto_scheduling/uplink/dropped_users/pdf_';
-root_save_time = '../figures/auto_scheduling/uplink/time/';
+root_save_rate = '../figures/auto_scheduling/downlink/normalized_sum_rate/cdf_';
+root_save_drop = '../figures/auto_scheduling/downlink/dropped_users/pdf_';
+root_save_time = '../figures/auto_scheduling/downlink/time/';
 
 % Loading data
 
@@ -61,7 +61,7 @@ rate = zeros(MC,K,N_TAU,N_ALG);
 for alg_idx = 1:N_ALG
     for mc = 1:MC
         for tau_idx = 1:N_TAU
-            rate(mc,user_sel{mc,tau_idx,alg_idx},tau_idx,alg_idx) = rate_u{mc,tau_idx,alg_idx};
+            rate(mc,user_sel{mc,tau_idx,alg_idx},tau_idx,alg_idx) = rate_d{mc,tau_idx,alg_idx};
         end
     end
 end
@@ -73,7 +73,7 @@ rate_samples = 15000;
 
 L_max = 19;
 
-up_norm_sum_rate = zeros(MC,N_TAU,N_ALG);
+do_norm_sum_rate = zeros(MC,N_TAU,N_ALG);
 
 edges_rate = max_rate*linspace(0,1,rate_samples);
 edges_sele = 0:L_max;
@@ -92,10 +92,10 @@ tau_sele_grid   = repmat(tau_norm',1,L_max);
 for alg_idx = 1:N_ALG
     for tau_idx = 1:N_TAU
         for mc = 1:MC
-            up_norm_sum_rate(mc,tau_idx,alg_idx) = mean(rate_u{mc,tau_idx,alg_idx});
+            do_norm_sum_rate(mc,tau_idx,alg_idx) = mean(rate_d{mc,tau_idx,alg_idx});
         end
         
-        prob_rate(:,tau_idx,alg_idx) = histcounts(up_norm_sum_rate(:,tau_idx,alg_idx),edges_rate,'normalization','cdf');
+        prob_rate(:,tau_idx,alg_idx) = histcounts(do_norm_sum_rate(:,tau_idx,alg_idx),edges_rate,'normalization','cdf');
         prob_sele(:,tau_idx,alg_idx) = histcounts(K - L(:,tau_idx,alg_idx),edges_sele,'normalization','probability');
         
         prob_rate_f(:,tau_idx,alg_idx) = [prob_rate(:,tau_idx,alg_idx); 1];
@@ -118,20 +118,20 @@ legend_tau_cbs    = {['$ \tau = ' num2str(tau_norm(end)) '$'], ...
                      ['$ \tau = ' num2str(tau_norm(10)) '$'], ...
                      ['$ \tau = ' num2str(tau_norm(5)) '$'], ...
                      ['$ \tau = ' num2str(tau_norm(1)) '$']};
-                
+
 legend_tau_cbs2   = {['$ \tau = ' num2str(tau_norm(end)) '$'], ...
                      ['$ \tau = ' num2str(tau_norm(10)) '$'], ...
                      ['$ \tau = ' num2str(tau_norm(5)) '$']};
-
+                
 legend_tau_icibs  = {['$ \tau = ' num2str(tau_icibs_max*tau_norm(end)) '$'], ...
                      ['$ \tau = ' num2str(tau_icibs_max*tau_norm(10)) '$'], ...
                      ['$ \tau = ' num2str(tau_icibs_max*tau_norm(5)) '$'], ...
                      ['$ \tau = ' num2str(tau_icibs_max*tau_norm(1)) '$']};
-                
+
 legend_tau_icibs2 = {['$ \tau = ' num2str(tau_icibs_max*tau_norm(end)) '$'], ...
                      ['$ \tau = ' num2str(tau_icibs_max*tau_norm(10)) '$'], ...
                      ['$ \tau = ' num2str(tau_icibs_max*tau_norm(5)) '$']};
-              
+
 location_1 = 'northwest';
 location_2 = 'southeast';
 location_3 = 'southwest';
@@ -141,7 +141,7 @@ n_contour = 20;
 colours = get(gca,'colororder');
 close;                        
 
-% Pictures - Rate x tau x outage probability 
+% Pictures - Rate x tau x outage probability
 
 for chn_idx = 1:N_CHN
     for alg_idx = 1:N_ALG
@@ -326,10 +326,47 @@ for chn_idx = 1:N_CHN
             ylim([0 max_rate + 7]);
             
             if (savefig == 1)
-                saveas(gcf,[root_save_time 'rate/' channel_mod{chn_idx} '_' algorithm{alg_idx} '_M_' num2str(M) '_' num2str(k) '_user_SNR_' num2str(snr(snr_idx))],'fig');
-                saveas(gcf,[root_save_time 'rate/' channel_mod{chn_idx} '_' algorithm{alg_idx} '_M_' num2str(M) '_' num2str(k) '_user_SNR_' num2str(snr(snr_idx))],'png');
-                saveas(gcf,[root_save_time 'rate/' channel_mod{chn_idx} '_' algorithm{alg_idx} '_M_' num2str(M) '_' num2str(k) '_user_SNR_' num2str(snr(snr_idx))],'epsc2');
+                saveas(gcf,[root_save_time 'rate/' channel_mod{chn_idx} '_' algorithm{alg_idx} '_M_' num2str(M) '_' num2str(k) '_user_SNR_' num2str(snr(snr_idx)) '_dB'],'fig');
+                saveas(gcf,[root_save_time 'rate/' channel_mod{chn_idx} '_' algorithm{alg_idx} '_M_' num2str(M) '_' num2str(k) '_user_SNR_' num2str(snr(snr_idx)) '_dB'],'png');
+                saveas(gcf,[root_save_time 'rate/' channel_mod{chn_idx} '_' algorithm{alg_idx} '_M_' num2str(M) '_' num2str(k) '_user_SNR_' num2str(snr(snr_idx)) '_dB'],'epsc2');
             end
         end   
+    end
+end
+
+% Picture - Power per user x time
+
+for chn_idx = 1:N_CHN
+    for alg_idx = 1:N_ALG
+        figure;
+        
+        set(gcf,'position',[0 0 800 600]);
+        
+        plot(time,1./L(:,end,chn_idx),'o-','color',colours(1,:),'linewidth',linewidth,'markersize',markersize);
+        hold on;
+        plot(time,1./L(:,50,chn_idx),'o-','color',colours(2,:),'linewidth',linewidth,'markersize',markersize);
+        plot(time,1./L(:,10,chn_idx),'o-','color',colours(3,:),'linewidth',linewidth,'markersize',markersize);
+        
+        xlabel('Time (s)','fontname',fontname,'fontsize',fontsize);
+        ylabel('Power per active user','fontname',fontname,'fontsize',fontsize);
+        
+        if(alg_idx == 1)
+            legend(legend_tau_cbs2,'fontname',fontname,'fontsize',fontsize,'interpreter','latex','location',location_3);
+            legend box off;
+        else
+            legend(legend_tau_icibs2,'fontname',fontname,'fontsize',fontsize,'interpreter','latex','location',location_3);
+            legend box off;
+        end
+        
+        set(gca,'fontname',fontname,'fontsize',fontsize);
+        
+        xlim([0 0.1]);
+        ylim([0 0.1]);
+        
+        if (savefig == 1)
+            saveas(gcf,[root_save_time 'power/' channel_mod{chn_idx} '_' algorithm{alg_idx} '_M_' num2str(M) '_SNR_' num2str(snr(snr_idx)) '_dB'],'fig');
+            saveas(gcf,[root_save_time 'power/' channel_mod{chn_idx} '_' algorithm{alg_idx} '_M_' num2str(M) '_SNR_' num2str(snr(snr_idx)) '_dB'],'png');
+            saveas(gcf,[root_save_time 'power/' channel_mod{chn_idx} '_' algorithm{alg_idx} '_M_' num2str(M) '_SNR_' num2str(snr(snr_idx)) '_dB'],'epsc2');
+        end
     end
 end
