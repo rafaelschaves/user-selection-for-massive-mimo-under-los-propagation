@@ -8,7 +8,7 @@ root_downlink = './results/auto_scheduling/downlink/rate_downlink_mf_';
 root_uplink   = './results/auto_scheduling/uplink/rate_uplink_mf_';
 
 MC    = 10000;                                                             % Size of the Monte Carlo ensemble (Varies the channel realizarions)
-% N_ALG = 2;
+N_ALG = 2;
 
 M = 64;                                                                    % Number of antennas at the base station
 K = 18;                                                                    % Number of users at the cell
@@ -33,7 +33,7 @@ commcell.city            = 'large';                                        % Typ
 % linkprop.bandwidth       = 20e6;                                           % in Hz
 
 % [snr_u_db,snr_d_db] = linkBudgetCalculation(linkprop);                     % SNR in dB
-                
+
 % beta_db = -135;
 
 % snr_u_eff = round(snr_u_db + beta_db);
@@ -45,102 +45,64 @@ snr_d_eff = 20;
 snr_u = 10.^((snr_u_eff)/10);                                              % Uplink SNR
 snr_d = 10.^((snr_d_eff)/10);                                              % Downlink SNR
 
-% Threshold - CBS
+% Normalized threshold
 
-tau_cbs_min = 0;
-tau_cbs_max = 1;
+tau_norm_min = 0;
+tau_norm_max = 1;
 
-tau_cbs_step = 0.01;
+tau_norm_step = 0.01;
 
-tau_cbs = tau_cbs_min:tau_cbs_step:tau_cbs_max;
+tau_norm = tau_norm_min:tau_norm_step:tau_norm_max;
 
-N_TAU_CBS = length(tau_cbs);
+N_TAU = length(tau_norm);
 
-% Threshold - ICIBS
-
-tau_icibs_min = 0;
 tau_icibs_max = 0.25;
 
-tau_icibs_step = 0.0025;
-
-tau_icibs = tau_icibs_min:tau_icibs_step:tau_icibs_max;
-
-N_TAU_ICIBS = length(tau_icibs);
+tau(:,1) = tau_norm';                                                      % Threshold - CBS
+tau(:,2) = tau_icibs_max*tau_norm';                                        % Threshold - ICIBS
 
 % Initialization
 
-L_cbs   = zeros(MC,N_TAU_CBS);
-L_icibs = zeros(MC,N_TAU_ICIBS);
+L = zeros(MC,N_TAU,N_ALG);
 
-rate_u_cbs = cell(MC,N_TAU_CBS);
-rate_d_cbs = cell(MC,N_TAU_CBS);
-
-rate_u_icibs = cell(MC,N_TAU_ICIBS);
-rate_d_icibs = cell(MC,N_TAU_ICIBS);
-
-psi_cbs   = cell(MC,N_TAU_CBS);
-psi_icibs = cell(MC,N_TAU_ICIBS);
+user_sel = cell(MC,N_TAU,N_ALG);
+rate_u   = cell(MC,N_TAU,N_ALG);
+rate_d   = cell(MC,N_TAU,N_ALG);
+psi      = cell(MC,N_TAU,N_ALG);
 
 channel_type   = 'ur-los';
+algorithm_type = {'correlation-based selection','ici-based selection'};
+
+% Correlation-based Selection
+
+% ICI-based Selection
 
 for mc = 1:MC
     mc
     
     [G,~] = massiveMIMOChannel(commcell,channel_type);
     
-    % Correlation-based Selection
-    
-    for tau_idx = 1:N_TAU_CBS
-        [~,H_cbs] = userScheduling(G,'correlation-based selection','automatic',[],tau_cbs(tau_idx));
-        
-        L_cbs(mc,tau_idx) = size(H_cbs,2);
-        
-        h_norm_cbs     = vecnorm(H_cbs);
-        h_norm_cbs_mtx = repmat(h_norm_cbs,M,1);
-        
-        H_norm_cbs = H_cbs./h_norm_cbs_mtx;
-        
-        Q_mf_cbs = H_norm_cbs;
-        W_mf_cbs = conj(H_norm_cbs);
-        
-        pow_upl_cbs = ones(L_cbs(mc,tau_idx),1);
-        pow_dow_cbs = ones(L_cbs(mc,tau_idx),1)/L_cbs(mc,tau_idx);
-        
-        rate_u_cbs{mc,tau_idx} = rateCalculation(H_cbs,Q_mf_cbs,pow_upl_cbs,snr_u,'uplink');
-        rate_d_cbs{mc,tau_idx} = rateCalculation(H_cbs,W_mf_cbs,pow_dow_cbs,snr_d,'downlink');
-        
-        psi_cbs{mc,tau_idx} = ici(H_cbs);
-    end
-    
-    % ICI-based Selection
-    
-    for tau_idx = 1:N_TAU_ICIBS    
-        [~,H_icibs] = userScheduling(G,'ici-based selection','automatic',[],tau_icibs(tau_idx));
-        
-        L_icibs(mc,tau_idx) = size(H_icibs,2);
-        
-        h_norm_icibs     = vecnorm(H_icibs);
-        h_norm_icibs_mtx = repmat(h_norm_icibs,M,1);
-        
-        H_norm_icibs = H_icibs./h_norm_icibs_mtx;
-        
-        Q_mf_icibs = H_norm_icibs;
-        W_mf_icibs = conj(H_norm_icibs);
-        
-        pow_upl_icibs = ones(L_icibs(mc,tau_idx),1);
-        pow_dow_icibs = ones(L_icibs(mc,tau_idx),1)/L_icibs(mc,tau_idx);
-        
-        rate_u_icibs{mc,tau_idx} = rateCalculation(H_icibs,Q_mf_icibs,pow_upl_icibs,snr_u,'uplink');
-        rate_d_icibs{mc,tau_idx} = rateCalculation(H_icibs,W_mf_icibs,pow_dow_icibs,snr_d,'downlink');
-        
-        psi_icibs{mc,tau_idx} = ici(H_icibs);
+    for alg_idx = 1:N_ALG
+        for tau_idx = 1:N_TAU
+            [user_sel{mc,tau_idx,alg_idx},H_sel] = userScheduling(G,algorithm_type{alg_idx},'automatic',[],tau(tau_idx,alg_idx));
+            
+            L(mc,tau_idx,alg_idx) = size(H_sel,2);
+            
+            [Q,W] = decoderMatrix(H_sel,'mf');
+                        
+            pow_upl = ones(L(mc,tau_idx,alg_idx),1);
+            pow_dow = ones(L(mc,tau_idx,alg_idx),1)/L(mc,tau_idx,alg_idx);
+            
+            rate_u{mc,tau_idx,alg_idx} = rateCalculation(H_sel,Q,pow_upl,snr_u,'uplink');
+            rate_d{mc,tau_idx,alg_idx} = rateCalculation(H_sel,W,pow_dow,snr_d,'downlink');
+            
+            psi{mc,tau_idx,alg_idx} = ici(H_sel);
+        end
     end
 end
 
-save([root_downlink channel_type '_M_' num2str(M) '_K_' num2str(K) '_SNR_' ...
-      num2str(snr_u_eff) '_dB_MC_' num2str(MC) '.mat'], ...
-      'rate_d_cbs','rate_d_icibs','psi_cbs','psi_icibs','L_cbs','L_icibs');
+save([root_downlink strrep(channel_type,'-','_') '_M_' num2str(M) '_K_' num2str(K) '_SNR_' ...
+    num2str(snr_u_eff) '_dB_MC_' num2str(MC) '.mat'],'user_sel','rate_d','psi','L');
 
-save([root_uplink channel_type '_M_' num2str(M) '_K_' num2str(K) '_SNR_' ...
-      num2str(snr_u_eff) '_dB_MC_' num2str(MC) '.mat'], ...
-      'rate_u_cbs','rate_u_icibs','psi_cbs','psi_icibs','L_cbs','L_icibs');
+save([root_uplink strrep(channel_type,'-','_') '_M_' num2str(M) '_K_' num2str(K) '_SNR_' ...
+    num2str(snr_u_eff) '_dB_MC_' num2str(MC) '.mat'],'user_sel','rate_u','psi','L');
