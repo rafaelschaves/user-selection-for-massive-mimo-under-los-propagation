@@ -10,7 +10,7 @@ root_uplink   = './results/auto_scheduling/uplink/rate_uplink_mf_';
 MC    = 10000;                                                             % Size of the Monte Carlo ensemble (Varies the channel realizarions)
 N_ALG = 2;
 
-M = 64;                                                                    % Number of antennas at the base station
+M = 256;                                                                    % Number of antennas at the base station
 K = 18;                                                                    % Number of users at the cell
 
 commcell.nAntennas       = M;                                              % Number of Antennas
@@ -73,10 +73,6 @@ psi      = cell(MC,N_TAU,N_ALG);
 channel_type   = 'ur-los';
 algorithm_type = {'correlation-based selection','ici-based selection'};
 
-% Correlation-based Selection
-
-% ICI-based Selection
-
 for mc = 1:MC
     mc
     
@@ -101,8 +97,10 @@ for mc = 1:MC
     end
 end
 
-save([root_downlink strrep(channel_type,'-','_') '_M_' num2str(M) '_K_' num2str(K) '_SNR_' ...
-    num2str(snr_u_eff) '_dB_MC_' num2str(MC) '.mat'],'user_sel','rate_d','psi','L');
+save([root_downlink strrep(channel_type,'-','_') '_M_' num2str(M) '_K_' ...
+      num2str(K) '_tau_' num2str(N_TAU) '_SNR_' num2str(snr_u_eff) '_dB_MC_' ...
+      num2str(MC) '.mat'],'user_sel','rate_d','psi','L');
 
-save([root_uplink strrep(channel_type,'-','_') '_M_' num2str(M) '_K_' num2str(K) '_SNR_' ...
-    num2str(snr_u_eff) '_dB_MC_' num2str(MC) '.mat'],'user_sel','rate_u','psi','L');
+save([root_uplink strrep(channel_type,'-','_') '_M_' num2str(M) '_K_' ...
+      num2str(K) '_tau_' num2str(N_TAU) '_SNR_' num2str(snr_u_eff) '_dB_MC_' ...
+      num2str(MC) '.mat'],'user_sel','rate_u','psi','L');
