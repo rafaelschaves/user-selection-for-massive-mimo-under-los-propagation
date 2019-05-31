@@ -18,29 +18,29 @@ end
 
 % Checking variables
 
-% if ~exist('MC','var')
-%     MC = 10000;                                                            % Size of the outer Monte Carlo ensemble (Varies the channel realizarions)
-% end
-% 
-% if ~exist('M','var')
-%     M = 64;                                                                % Number of antennas at the base station
-% end
-% 
-% if ~exist('K','var')
-%     K = 18;                                                                % Number of users at the cell
-% end
-% 
-% if ~exist('L','var')
-%     L = 13;                                                                % Number of selected users
-% end
-% 
-% if ~exist('snr_db','var')
-%     snr_db = 10;                                                           % SNR in dB
-% end
-% 
-% if ~exist('channel_type','var')
-%     channel_type = 'ur-los';
-% end
+if ~exist('MC','var')
+    MC = 10000;                                                            % Size of the outer Monte Carlo ensemble (Varies the channel realizarions)
+end
+
+if ~exist('M','var')
+    M = 64;                                                                % Number of antennas at the base station
+end
+
+if ~exist('K','var')
+    K = 72;                                                                % Number of users at the cell
+end
+
+if ~exist('L','var')
+    L = 13;                                                                % Number of selected users
+end
+
+if ~exist('snr_db','var')
+    snr_db = 10;                                                           % SNR in dB
+end
+
+if ~exist('channel_type','var')
+    channel_type = 'ur-los';
+end
 
 commcell.nAntennas       = M;                                              % Number of Antennas
 commcell.nUsers          = K;                                              % Number of Users
