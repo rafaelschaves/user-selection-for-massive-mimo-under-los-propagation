@@ -6,23 +6,24 @@ clc;
 
 MC = 10000;                                                                % Size of the monte-carlo ensemble
 
-M = [64 256];                                                              % Number of antennas at base station
-K = 18;                                                                    % Number of mobile users
+M = [64];                                                              % Number of antennas at base station
+K = 72;                                                                    % Number of mobile users
 L = 13;                                                                    % Number of selected users
 
-snr = (-20:5:10)';                                                         % SNR in dB
+%snr = (-20:5:10)';                                                         % SNR in dB
+snr = 10;
 
 M_SIZ = length(M);                                                         % Size of the antennas set
 N_ALG = 4;                                                                 % Number of algorithms for perform user scheduling
 N_SNR = length(snr);                                                       % Size of the SNR set 
-N_CHN = 3;                                                                 % Number of channel models simulated
+N_CHN = 2;                                                                 % Number of channel models simulated
 
 % Roots
 
-root_load = '../results/scheduling/uplink/rate_uplink_mf_';
+root_load = '../results/scheduling/uplink/rate_mf_';
 root_save = '../figures/scheduling/uplink/out_prob_mf_norm_sum_rate_';
 
-chn_type = {'ur-los','sparse','rayleigh'};
+chn_type = {'ur_los','rayleigh'};
 
 % Loading data
 
@@ -35,7 +36,7 @@ for chn_idx = 1:N_CHN
             load([root_load chn_type{chn_idx} '_M_' num2str(M(m)) '_K_' num2str(K) '_L_' num2str(L) '_SNR_' num2str(snr(snr_idx)) '_dB_MC_' num2str(MC) '.mat']);
             
             rate(:,:,m,snr_idx,chn_idx)       = rate_u;
-            rate_sel(:,:,:,m,snr_idx,chn_idx) = rate_u_alg;
+            rate_sel(:,:,:,m,snr_idx,chn_idx) = rate_u_sel;
         end
     end
 end
@@ -78,7 +79,7 @@ markersize = 10;
 fontname   = 'Times New Roman';
 fontsize   = 20;
 
-savefig = 1;
+savefig = 0;
 
 % NS - No selection
 % RS - Random selection
@@ -105,11 +106,11 @@ for chn_idx = 1:N_CHN
         plot(edge{3,1,snr_idx,chn_idx},prob{3,1,snr_idx,chn_idx},'-','color',colours(3,:),'linewidth',linewidth);
         plot(edge{4,1,snr_idx,chn_idx},prob{4,1,snr_idx,chn_idx},'-','color',colours(4,:),'linewidth',linewidth);
         plot(edge{5,1,snr_idx,chn_idx},prob{5,1,snr_idx,chn_idx},'-','color',colours(5,:),'linewidth',linewidth);
-        plot(edge{1,2,snr_idx,chn_idx},prob{1,2,snr_idx,chn_idx},'--','color',colours(1,:),'linewidth',linewidth);
-        plot(edge{2,2,snr_idx,chn_idx},prob{2,2,snr_idx,chn_idx},'--','color',colours(2,:),'linewidth',linewidth);
-        plot(edge{3,2,snr_idx,chn_idx},prob{3,2,snr_idx,chn_idx},'--','color',colours(3,:),'linewidth',linewidth);
-        plot(edge{4,2,snr_idx,chn_idx},prob{4,2,snr_idx,chn_idx},'--','color',colours(4,:),'linewidth',linewidth);
-        plot(edge{5,2,snr_idx,chn_idx},prob{5,2,snr_idx,chn_idx},'--','color',colours(5,:),'linewidth',linewidth);
+%         plot(edge{1,2,snr_idx,chn_idx},prob{1,2,snr_idx,chn_idx},'--','color',colours(1,:),'linewidth',linewidth);
+%         plot(edge{2,2,snr_idx,chn_idx},prob{2,2,snr_idx,chn_idx},'--','color',colours(2,:),'linewidth',linewidth);
+%         plot(edge{3,2,snr_idx,chn_idx},prob{3,2,snr_idx,chn_idx},'--','color',colours(3,:),'linewidth',linewidth);
+%         plot(edge{4,2,snr_idx,chn_idx},prob{4,2,snr_idx,chn_idx},'--','color',colours(4,:),'linewidth',linewidth);
+%         plot(edge{5,2,snr_idx,chn_idx},prob{5,2,snr_idx,chn_idx},'--','color',colours(5,:),'linewidth',linewidth);
         
         if(snr_idx == 7 && chn_idx == 1)
             dim(1,:) = [0.33 0.5 0.225 0.1];
