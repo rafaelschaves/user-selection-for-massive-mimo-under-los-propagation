@@ -4,8 +4,21 @@ clc;
 
 addpath('./functions/')
 
-root_save_dow = './results/scheduling/downlink/rate_mf_';
-root_save_upl = './results/scheduling/uplink/rate_mf_';
+% Cheking deirectory
+
+dir_save_dow = './results/scheduling/downlink/';
+dir_save_upl = './results/scheduling/uplink';
+
+root_save_dow = [dir_save_dow 'rate_mf_'];
+root_save_upl = [dir_save_pul 'rate_mf_'];
+
+if ~exist(dir_save_dow,'dir')
+    mkdir(dir_save_dow);
+end
+
+if ~exist(dir_save_upl,'dir')
+    mkdir(dir_save_upl);
+end
 
 % Checking variables
 
