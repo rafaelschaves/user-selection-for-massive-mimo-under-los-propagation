@@ -10,7 +10,7 @@ CHANNEL='ur-los'
 
 for SNR in -20 -15 -10 -5 0 5 10 
 do
-    ARGUMENTS="MC=$MC; M=$M; K=$K; L=$L; snr_db=$SNR; channel_type='$CHANNEL';"
+    ARGUMENTS="MC=$MC; M=$M; K=$K; L=$L; snr_db=$SNR; channel_type='$CHANNEL'; user_selection.m"
 #    echo $ARGUMENTS
-    nice -n 19 nohup matlab -nojvm -r $ARGUMENTS <user_selection.m> ./log/output_$SNR.log &
+    nice -n 19 nohup matlab -nojvm -r $ARGUMENTS ./log/output_$SNR.log &
 done
