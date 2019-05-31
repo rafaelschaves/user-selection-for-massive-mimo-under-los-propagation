@@ -12,8 +12,8 @@ do
         do
             for SNR in -20 -15 -10 -5 0 5 10 
             do
-                arguments = "MC = $MC; M = $M; K = $K; L = $L; snr_db = $SNR; channel_type = ${CHANNEL[$IDX]};"
-                nice -n 19 nohup matlab -nojvm -r $arguments <user_selection.m> output_${CHANNEL[$IDX]}_$M_$K_$L_$SNR.log &
+                ARGUMENTS="MC = $MC; M = $M; K = $K; L = $L; snr_db = $SNR; channel_type = ${CHANNEL[$IDX]};"
+                nice -n 19 nohup matlab -nojvm -r $ARGUMENTS <user_selection.m> output_${CHANNEL[$IDX]}_$M_$K_$L_$SNR.log &
             done
         done
     done
