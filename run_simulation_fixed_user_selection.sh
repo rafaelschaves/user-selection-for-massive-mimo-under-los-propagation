@@ -4,7 +4,7 @@ MC=10000
 M=64
 K=18
 L=13
-CHANNEL='ur-los'
+CHANNEL="ur-los"
 
 for SNR in -20 -15 -10 -5 0 5 10 
 do
