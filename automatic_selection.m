@@ -1,17 +1,42 @@
-clear;
-close all;
-clc;
-
 addpath('./functions/')
 
-root_downlink = './results/auto_scheduling/downlink/rate_downlink_mf_';
-root_uplink   = './results/auto_scheduling/uplink/rate_uplink_mf_';
+% Cheking deirectory
 
-MC    = 10000;                                                             % Size of the Monte Carlo ensemble (Varies the channel realizarions)
-N_ALG = 2;
+dir_save_dow = './results/auto_scheduling/downlink/';
+dir_save_upl = './results/auto_scheduling/uplink/';
 
-M = 256;                                                                    % Number of antennas at the base station
-K = 18;                                                                    % Number of users at the cell
+root_save_dow = [dir_save_dow 'rate_mf_'];
+root_save_upl = [dir_save_upl 'rate_mf_'];
+
+if ~exist(dir_save_dow,'dir')
+    mkdir(dir_save_dow);
+end
+
+if ~exist(dir_save_upl,'dir')
+    mkdir(dir_save_upl);
+end
+
+% Checking variables
+
+if ~exist('MC','var')
+    MC = 10000;                                                            % Size of the outer Monte Carlo ensemble (Varies the channel realizarions)
+end
+
+if ~exist('M','var')
+    M = 64;                                                                % Number of antennas at the base station
+end
+
+if ~exist('K','var')
+    K = 72;                                                                % Number of users at the cell
+end
+
+if ~exist('snr_db','var')
+    snr_db = 10;                                                           % SNR in dB
+end
+
+if ~exist('channel_type','var')
+    channel_type = 'ur-los';
+end
 
 commcell.nAntennas       = M;                                              % Number of Antennas
 commcell.nUsers          = K;                                              % Number of Users
@@ -24,26 +49,9 @@ commcell.meanShadowFad   = 0;                                              % Sha
 commcell.stdDevShadowFad = 8;                                              % Shadow fading standard deviation in dB
 commcell.city            = 'large';                                        % Type of city
 
-% linkprop.bsPower         = 10;                                             % in Watts
-% linkprop.userPower       = 0.2;                                            % in Watts
-% linkprop.AntennaGainBS   = 0;                                              % in dBi
-% linkprop.AntennaGainUser = 0;                                              % in dBi
-% linkprop.noiseFigureBS   = 9;                                              % in dB
-% linkprop.noiseFigureUser = 9 ;                                             % in dB
-% linkprop.bandwidth       = 20e6;                                           % in Hz
+N_ALG = 2;
 
-% [snr_u_db,snr_d_db] = linkBudgetCalculation(linkprop);                     % SNR in dB
-
-% beta_db = -135;
-
-% snr_u_eff = round(snr_u_db + beta_db);
-% snr_d_eff = round(snr_d_db + beta_db);
-
-snr_u_eff = 20;
-snr_d_eff = 20;
-
-snr_u = 10.^((snr_u_eff)/10);                                              % Uplink SNR
-snr_d = 10.^((snr_d_eff)/10);                                              % Downlink SNR
+snr = 10.^((snr_db)/10);                                                   % SNR
 
 % Normalized threshold
 
@@ -70,7 +78,6 @@ rate_u   = cell(MC,N_TAU,N_ALG);
 rate_d   = cell(MC,N_TAU,N_ALG);
 psi      = cell(MC,N_TAU,N_ALG);
 
-channel_type   = 'ur-los';
 algorithm_type = {'correlation-based selection','ici-based selection'};
 
 for mc = 1:MC
@@ -89,8 +96,8 @@ for mc = 1:MC
             pow_upl = ones(L(mc,tau_idx,alg_idx),1);
             pow_dow = ones(L(mc,tau_idx,alg_idx),1)/L(mc,tau_idx,alg_idx);
             
-            rate_u{mc,tau_idx,alg_idx} = rateCalculation(H_sel,Q,pow_upl,snr_u,'uplink');
-            rate_d{mc,tau_idx,alg_idx} = rateCalculation(H_sel,W,pow_dow,snr_d,'downlink');
+            rate_u{mc,tau_idx,alg_idx} = rateCalculation(H_sel,Q,pow_upl,snr,'uplink');
+            rate_d{mc,tau_idx,alg_idx} = rateCalculation(H_sel,W,pow_dow,snr,'downlink');
             
             psi{mc,tau_idx,alg_idx} = ici(H_sel);
         end
@@ -98,9 +105,9 @@ for mc = 1:MC
 end
 
 save([root_downlink strrep(channel_type,'-','_') '_M_' num2str(M) '_K_' ...
-      num2str(K) '_tau_' num2str(N_TAU) '_SNR_' num2str(snr_u_eff) '_dB_MC_' ...
+      num2str(K) '_tau_' num2str(N_TAU) '_SNR_' num2str(snr_dB) '_dB_MC_' ...
       num2str(MC) '.mat'],'user_sel','rate_d','psi','L');
 
 save([root_uplink strrep(channel_type,'-','_') '_M_' num2str(M) '_K_' ...
-      num2str(K) '_tau_' num2str(N_TAU) '_SNR_' num2str(snr_u_eff) '_dB_MC_' ...
+      num2str(K) '_tau_' num2str(N_TAU) '_SNR_' num2str(snr_dB) '_dB_MC_' ...
       num2str(MC) '.mat'],'user_sel','rate_u','psi','L');
