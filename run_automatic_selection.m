@@ -7,7 +7,7 @@ for chn_idx = [1 2]
     for M = [64 256]                                                       % Number of antennas at the base station
         for K = [18 36 72]                                                 % Number of users at the cell
             for snr_db = [-20 -15 -10 -5 0 5 10]                           % SNR in dB
-                run user_selection.m 
+                run automatic_selection.m 
             end
         end
     end
