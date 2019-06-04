@@ -7,7 +7,7 @@ clc;
 MC = 10000;                                                                % Size of the monte-carlo ensemble
 
 M = [64];                                                              % Number of antennas at base station
-K = 72;                                                                    % Number of mobile users
+K = [72];                                                            % Number of mobile users
 L = 13;                                                                    % Number of selected users
 
 %snr = (-20:5:10)';                                                         % SNR in dB
@@ -20,8 +20,8 @@ N_CHN = 2;                                                                 % Num
 
 % Roots
 
-root_load = '../results/scheduling/uplink/rate_mf_';
-root_save = '../figures/scheduling/uplink/out_prob_mf_norm_sum_rate_';
+root_load = '../../../../Google Drive/UFRJ/PhD/Codes/user-scheduling-massive-mimo/Results/Scheduling/Uplink/';
+root_save = '../../../../Google Drive/UFRJ/PhD/Codes/user-scheduling-massive-mimo/Figures/Scheduling/Uplink/';
 
 chn_type = {'ur_los','rayleigh'};
 
@@ -33,7 +33,7 @@ rate_sel = zeros(L,MC,N_ALG,M_SIZ,N_SNR,N_CHN);                            % Rat
 for chn_idx = 1:N_CHN
     for m = 1:M_SIZ
         for snr_idx = 1:N_SNR
-            load([root_load chn_type{chn_idx} '_M_' num2str(M(m)) '_K_' num2str(K) '_L_' num2str(L) '_SNR_' num2str(snr(snr_idx)) '_dB_MC_' num2str(MC) '.mat']);
+            load([root_load num2str(M(m)) '/rate_mf_' chn_type{chn_idx} '_M_' num2str(M(m)) '_K_' num2str(K) '_L_' num2str(L) '_SNR_' num2str(snr(snr_idx)) '_dB_MC_' num2str(MC) '.mat']);
             
             rate(:,:,m,snr_idx,chn_idx)       = rate_u;
             rate_sel(:,:,:,m,snr_idx,chn_idx) = rate_u_sel;
@@ -79,7 +79,7 @@ markersize = 10;
 fontname   = 'Times New Roman';
 fontsize   = 20;
 
-savefig = 0;
+savefig = 1;
 
 % NS - No selection
 % RS - Random selection
@@ -149,6 +149,7 @@ for chn_idx = 1:N_CHN
         ylabel('Outage probability','fontname',fontname,'fontsize',fontsize);
         
         legend(legend_algo,'fontname',fontname,'fontsize',fontsize,'location',location);
+        legend box off;
         
         if((snr_idx == 7 && chn_idx == 1) || (snr_idx == 7 && chn_idx == 3))
             legend box off;
@@ -163,9 +164,9 @@ for chn_idx = 1:N_CHN
         ylim([0 1]);
         
         if (savefig == 1)
-            saveas(gcf,[root_save chn_type{chn_idx} '_K_' num2str(K) '_L_' num2str(L) '_SNR_' num2str(snr(snr_idx))],'fig');
-            saveas(gcf,[root_save chn_type{chn_idx} '_K_' num2str(K) '_L_' num2str(L) '_SNR_' num2str(snr(snr_idx))],'png');
-            saveas(gcf,[root_save chn_type{chn_idx} '_K_' num2str(K) '_L_' num2str(L) '_SNR_' num2str(snr(snr_idx))],'epsc2');
+            saveas(gcf,[root_save '64/out_prob_norm_sum_rate_' chn_type{chn_idx} '_K_' num2str(K) '_L_' num2str(L) '_SNR_' num2str(snr(snr_idx)) '_dB'],'fig');
+            saveas(gcf,[root_save '64/out_prob_norm_sum_rate_' chn_type{chn_idx} '_K_' num2str(K) '_L_' num2str(L) '_SNR_' num2str(snr(snr_idx)) '_dB'],'png');
+            saveas(gcf,[root_save '64/out_prob_norm_sum_rate_' chn_type{chn_idx} '_K_' num2str(K) '_L_' num2str(L) '_SNR_' num2str(snr(snr_idx)) '_dB'],'epsc2');
         end
     end
 end
