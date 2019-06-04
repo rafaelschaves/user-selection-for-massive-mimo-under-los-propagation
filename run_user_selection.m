@@ -4,8 +4,8 @@ L = 13;                                                                    % Num
 channel_type = 'rayleigh';
 
 for M = [64]                                                           % Number of antennas at the base station
-    for K = [36]                                                     % Number of users at the cell
-        for snr_db = [10]                               % SNR in dB
+    for K = [72]                                                     % Number of users at the cell
+        for snr_db = [-20 -15 -10 -5 0 5 10]                               % SNR in dB
             run user_selection.m 
         end
     end
