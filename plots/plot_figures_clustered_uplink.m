@@ -6,8 +6,8 @@
 
 MC = 10000;                                                                % Size of the monte-carlo ensemble
 
-M = [64];                                                                  % Number of antennas at base station
-K = [18];                                                                  % Number of mobile users
+M = [256];                                                                 % Number of antennas at base station
+K = [36];                                                                  % Number of mobile users
 L = 13;                                                                    % Number of selected users
 
 %snr = (-20:5:10)';                                                        % SNR in dB
