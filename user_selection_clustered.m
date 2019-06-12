@@ -5,8 +5,8 @@ addpath('./functions/')
 dir_save_dow = './results/scheduling/clustered/downlink/';
 dir_save_upl = './results/scheduling/clustered/uplink/';
 
-root_save_dow = [dir_save_dow 'rate_mf_'];
-root_save_upl = [dir_save_upl 'rate_mf_'];
+root_save_dow = [dir_save_dow 'throughput_outdoors_pedestrian_mf_ur_los_'];
+root_save_upl = [dir_save_upl 'throughput_outdoors_pedestrian_mf_ur_los_'];
 
 if ~exist(dir_save_dow,'dir')
     mkdir(dir_save_dow);
@@ -27,7 +27,7 @@ if ~exist('M','var')
 end
 
 if ~exist('K','var')
-    K = 36;                                                                % Number of users at the cell
+    K = 18;                                                                % Number of users at the cell
 end
 
 if ~exist('L','var')
@@ -46,10 +46,6 @@ if ~exist('theta_step','var')
     theta_step = pi/18;
 end
 
-if ~exist('channel_type','var')
-    channel_type = 'ur-los';
-end
-
 commcell.nAntennas       = M;                                              % Number of Antennas
 commcell.nUsers          = K;                                              % Number of Users
 commcell.radius          = 200;                                            % Cell's raidus (circumradius) in meters
@@ -63,18 +59,23 @@ commcell.city            = 'large';                                        % Typ
 
 r = sqrt(3)/2*commcell.radius;
 
-theta_0    = theta_mid - theta_step/2;
+theta_0 = theta_mid - theta_step/2;
 
 N_ALG = 4;
 
-snr = 10.^((snr_db)/10);                                                   % SNR
+settings.coherenceTime           = 15000;                                  % Coherence time in samples
+settings.PilotTime               = K;                                      % Pilot time in samples
+settings.uplinkDownlinkTimeRatio = 0.5;                                    % Ratio between the uplink and downlink payload time
+settings.bandwidth               = 20e6;                                   % Sytem bandwidth in Hz
+settings.cellArea                = 1;                                      % Cell area in km^2
+settings.snr                     = 10.^((snr_db)/10);                      % SNR
 
 % Initialization
 
-rate_u     = zeros(K,MC);
-rate_d     = zeros(K,MC);
-rate_u_sel = zeros(L,MC,N_ALG);
-rate_d_sel = zeros(L,MC,N_ALG);
+thrput_u     = zeros(K,MC);
+thrput_d     = zeros(K,MC);
+thrput_u_sel = zeros(L,MC,N_ALG);
+thrput_d_sel = zeros(L,MC,N_ALG);
 
 psi     = zeros(K,MC);
 psi_sel = zeros(L,MC,N_ALG);
@@ -99,7 +100,7 @@ for mc = 1:MC
     coordinate.x_user = radius.*cos(theta);
     coordinate.y_user = radius.*sin(theta);
     
-    [G,~] = massiveMIMOChannel(commcell,channel_type,coordinate);
+    [G,~] = massiveMIMOChannel(commcell,'ur-los',coordinate);
     
     psi(:,mc) = ici(G);
     
@@ -107,27 +108,37 @@ for mc = 1:MC
     
     [Q,W] = decoderMatrix(G,'mf');
     
-    rate_u(:,mc) = rateCalculation(G,Q,pow_upl,snr,'uplink');
-    rate_d(:,mc) = rateCalculation(G,W,pow_dow,snr,'downlink');
-        
+    settings.linkType = 'uplink';
+    
+    thrput_u(:,mc) = throughput(G,Q,pow_upl,settings);
+   
+    settings.linkType = 'downlink';
+    
+    thrput_d(:,mc) = throughput(G,W,pow_dow,settings);
+    
     for alg_idx = 1:N_ALG
         [~,H_sel] = userScheduling(G,algorithm_type{alg_idx},'fixed',L,[]);
         
         psi_sel(:,mc,alg_idx) = ici(H_sel);
 
         [Q,W] = decoderMatrix(H_sel,'mf');
-                                                      
-        rate_u_sel(:,mc,alg_idx) = rateCalculation(H_sel,Q,pow_upl_sel,snr,'uplink');
-        rate_d_sel(:,mc,alg_idx) = rateCalculation(H_sel,W,pow_dow_sel,snr,'downlink');    
+                                          
+        settings.linkType = 'uplink';                                      
+
+        thrput_u_sel(:,mc,alg_idx) = throughput(H_sel,Q,pow_upl_sel,settings);
+        
+        settings.linkType = 'downlink';                                      
+               
+        thrput_d_sel(:,mc,alg_idx) = throughput(H_sel,W,pow_dow_sel,settings);    
     end
 end
 
-save([root_save_dow strrep(channel_type,'-','_') '_M_' num2str(M) '_K_' ...
-      num2str(K) '_L_' num2str(L) '_theta_mid_' num2str(180*theta_mid/pi) ...
-      '_theta_step_' num2str(180*theta_step/pi) '_SNR_' num2str(snr_db) ...
-      '_dB_MC_' num2str(MC) '.mat'], 'rate_d','psi','rate_d_sel','psi_sel');
+save([root_save_dow 'M_' num2str(M) '_K_' num2str(K) '_L_' num2str(L) ...
+      '_theta_mid_' num2str(180*theta_mid/pi) '_theta_step_' ...
+      num2str(180*theta_step/pi) '_SNR_' num2str(snr_db) '_dB_MC_' ...
+      num2str(MC) '.mat'], 'thrput_d','psi','thrput_d_sel','psi_sel');
 
-save([root_save_upl strrep(channel_type,'-','_') '_M_' num2str(M) '_K_' ...
-      num2str(K) '_L_' num2str(L) '_theta_mid_' num2str(180*theta_mid/pi) ...
-      '_theta_step_' num2str(180*theta_step/pi) '_SNR_' num2str(snr_db) ...
-      '_dB_MC_' num2str(MC) '.mat'],'rate_u','psi','rate_u_sel','psi_sel');
+save([root_save_upl 'M_' num2str(M) '_K_' num2str(K) '_L_' num2str(L) ...
+      '_theta_mid_' num2str(180*theta_mid/pi) '_theta_step_' ...
+      num2str(180*theta_step/pi) '_SNR_' num2str(snr_db) '_dB_MC_' ...
+      num2str(MC) '.mat'],'thrput_u','psi','thrput_u_sel','psi_sel');
