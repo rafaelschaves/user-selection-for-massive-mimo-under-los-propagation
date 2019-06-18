@@ -13,11 +13,11 @@ L = 13;                                                                    % Num
 snr = 10;
 
 N_ALG        = 4;                                                          % Number of algorithms for perform user scheduling
-N_THETA_MID  = 3;
-N_THETA_STEP = 5;
+N_THETA_MID  = 1;
+N_THETA_STEP = 20;
 
-theta_mid  = [0 45 90];
-theta_step = [1 10 20 30 90];
+theta_mid  = [45];
+theta_step = 1:20;
 
 % Roots
 
@@ -72,10 +72,10 @@ end
 
 % Ploting Figures
 
-linewidth  = 2;
+linewidth  = 3;
 markersize = 10;
 fontname   = 'Times New Roman';
-fontsize   = 20;
+fontsize   = 30;
 
 savefig = 1;
 
@@ -113,7 +113,12 @@ for mid_idx = 1:N_THETA_MID
         
         set(gca,'fontname',fontname,'fontsize',fontsize);
         
-        xlim([0 inf]);
+        if K == 18 && theta_step(step_idx) == 1
+            xlim([0 1.5]);
+        else
+            xlim([0 inf]);
+        end
+        
         ylim([0 1]);
         
         if (savefig == 1)
