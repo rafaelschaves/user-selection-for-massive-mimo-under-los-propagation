@@ -1,7 +1,7 @@
-function [user_set_sel,sel_chnl_mtx] = userSelector(chnl_mtx, ...
-                                                      algorithm, ...
-                                                      type, ...
-                                                      varargin)
+function [user_sel,sel_chnl_mtx,varargout] = userSelector(chnl_mtx, ...
+                                                          algorithm, ...
+                                                          type, ...
+                                                          varargin)
 
 N_ARGIN = 5;                                                  
 
@@ -26,15 +26,21 @@ n_user    = size(chnl_mtx,2);                                              % Num
 
 switch algorithm
     case 'RANDOM SELECTION'
-        user_set_drop  = randperm(n_user,n_user - n_selected)';            % User that won't transmitt or receive data
+        user_drop  = randperm(n_user,n_user - n_selected)';            % User that won't transmitt or receive data
         
-        user_set_sel = (1:n_user)';
-        user_set_sel(user_set_drop) = []; 
+        user_sel = (1:n_user)';
+        user_sel(user_drop) = []; 
     
         sel_chnl_mtx = chnl_mtx;
-        sel_chnl_mtx(:,user_set_drop) = [];
+        sel_chnl_mtx(:,user_drop) = [];
+        
+        drop_chnl_mtx = chnl_mtx;
+        drop_chnl_mtx(:,user_sel) = [];
+        
+        varargout{1} = user_drop;
+        varargout{2} = drop_chnl_mtx;
     case 'SEMI-ORTHOGONAL SELECTION'
-        user_set_sel = zeros(n_selected,1);
+        user_sel = zeros(n_selected,1);
         ort_proj_sel = zeros(n_antenna,n_selected);
         
         eye_M = eye(n_antenna);
@@ -46,36 +52,42 @@ switch algorithm
                 ort_proj = chnl_mtx;
                 g_norm = vecnorm(ort_proj,2);
                 
-                [~,user_set_sel(i)] = max(g_norm);
+                [~,user_sel(i)] = max(g_norm);
                 
-                ort_proj_sel(:,i) = ort_proj(:,user_set_sel(i))/norm(ort_proj(:,user_set_sel(i)),2);
+                ort_proj_sel(:,i) = ort_proj(:,user_sel(i))/norm(ort_proj(:,user_sel(i)),2);
                 
-                chnl_mtx_aux(:,user_set_sel(i)) = zeros(n_antenna,1);
+                chnl_mtx_aux(:,user_sel(i)) = zeros(n_antenna,1);
             else
                 proj_mtx = eye_M - sum(ort_proj_sel*ort_proj_sel',2);
                 ort_proj = proj_mtx*chnl_mtx_aux;
                 
                 g_norm = vecnorm(ort_proj,2);
                 
-                [~,user_set_sel(i)] = max(g_norm);
+                [~,user_sel(i)] = max(g_norm);
                 
-                ort_proj_sel(:,i) = ort_proj(:,user_set_sel(i))/norm(ort_proj(:,user_set_sel(i)),2);
+                ort_proj_sel(:,i) = ort_proj(:,user_sel(i))/norm(ort_proj(:,user_sel(i)),2);
                 
-                chnl_mtx_aux(:,user_set_sel(i)) = zeros(n_antenna,1);
+                chnl_mtx_aux(:,user_sel(i)) = zeros(n_antenna,1);
             end
         end
         
-        user_set_drop = (1:n_user)';
-        user_set_drop(user_set_sel) = [];
+        user_drop = (1:n_user)';
+        user_drop(user_sel) = [];
         
-        user_set_sel = sort(user_set_sel);
+        user_sel = sort(user_sel);
         
         sel_chnl_mtx = chnl_mtx;
-        sel_chnl_mtx(:,user_set_drop) = [];
+        sel_chnl_mtx(:,user_drop) = [];
+        
+        drop_chnl_mtx = chnl_mtx;
+        drop_chnl_mtx(:,user_sel) = [];
+        
+        varargout{1} = user_drop;
+        varargout{2} = drop_chnl_mtx;
     case 'CORRELATION-BASED SELECTION'
         switch type
             case 'FIXED'
-                user_set_drop = zeros(n_user - n_selected,1);
+                user_drop = zeros(n_user - n_selected,1);
                 
                 eye_K = eye(n_user);
                 
@@ -95,19 +107,25 @@ switch algorithm
                     h_j(corr_i) = [];
                     
                     if(max(h_i) > max(h_j))
-                        user_set_drop(i) = corr_i;
+                        user_drop(i) = corr_i;
                     else
-                        user_set_drop(i) = corr_j;
+                        user_drop(i) = corr_j;
                     end
                     
-                    chnl_mtx_aux(:,user_set_drop(i)) = zeros(n_antenna,1);
+                    chnl_mtx_aux(:,user_drop(i)) = zeros(n_antenna,1);
                 end
                 
-                user_set_sel = (1:n_user)';
-                user_set_sel(user_set_drop) = [];
+                user_sel = (1:n_user)';
+                user_sel(user_drop) = [];
                 
                 sel_chnl_mtx = chnl_mtx;
-                sel_chnl_mtx(:,user_set_drop) = [];
+                sel_chnl_mtx(:,user_drop) = [];
+                
+                drop_chnl_mtx = chnl_mtx;
+                drop_chnl_mtx(:,user_sel) = [];
+        
+                varargout{1} = user_drop;
+                varargout{2} = drop_chnl_mtx;
             case 'AUTOMATIC'
                 eye_K = eye(n_user);
                 
@@ -137,12 +155,12 @@ switch algorithm
                             h_j(corr_i) = [];
                             
                             if(max(h_i) > max(h_j))
-                                user_set_drop(idx_while) = corr_i;
+                                user_drop(idx_while) = corr_i;
                             else
-                                user_set_drop(idx_while) = corr_j;
+                                user_drop(idx_while) = corr_j;
                             end
                             
-                            chnl_mtx_aux(:,user_set_drop(idx_while)) = zeros(n_antenna,1);
+                            chnl_mtx_aux(:,user_drop(idx_while)) = zeros(n_antenna,1);
                             
                             idx_while = idx_while + 1;
                         end
@@ -152,40 +170,52 @@ switch algorithm
                 n_selected = n_user - idx_while + 1;
                 
                 if(n_selected == n_user)
-                    user_set_sel = (1:n_user)';
+                    user_sel = (1:n_user)';
                     sel_chnl_mtx = chnl_mtx;
                 else
-                    user_set_sel = (1:n_user)';
-                    user_set_sel(user_set_drop) = [];
+                    user_sel = (1:n_user)';
+                    user_sel(user_drop) = [];
         
                     sel_chnl_mtx = chnl_mtx;
-                    sel_chnl_mtx(:,user_set_drop) = [];
+                    sel_chnl_mtx(:,user_drop) = [];
                 end
+                
+                drop_chnl_mtx = chnl_mtx;
+                drop_chnl_mtx(:,user_sel) = [];
+        
+                varargout{1} = user_drop;
+                varargout{2} = drop_chnl_mtx;
             otherwise
                 error('Invalid type of selection');
         end
     case 'ICI-BASED SELECTION'
         switch type
             case 'FIXED'
-                user_set_drop = zeros(n_user - n_selected,1);
+                user_drop = zeros(n_user - n_selected,1);
         
                 chnl_mtx_aux = chnl_mtx;
         
                 for i = 1:n_user-n_selected
                     psi = ici(chnl_mtx_aux);
             
-                    [~,user_set_drop(i)] = max(psi);
+                    [~,user_drop(i)] = max(psi);
  
-                    chnl_mtx_aux(:,user_set_drop(i)) = zeros(n_antenna,1);
+                    chnl_mtx_aux(:,user_drop(i)) = zeros(n_antenna,1);
                 end
         
-                user_set_sel = (1:n_user)';
-                user_set_sel(user_set_drop) = [];
+                user_sel = (1:n_user)';
+                user_sel(user_drop) = [];
         
                 sel_chnl_mtx = chnl_mtx;
-                sel_chnl_mtx(:,user_set_drop) = [];
+                sel_chnl_mtx(:,user_drop) = [];
+                
+                drop_chnl_mtx = chnl_mtx;
+                drop_chnl_mtx(:,user_sel) = [];
+        
+                varargout{1} = user_drop;
+                varargout{2} = drop_chnl_mtx;
             case 'AUTOMATIC'
-                user_set_sel = (1:n_user)';
+                user_sel = (1:n_user)';
                 
                 chnl_mtx_aux = chnl_mtx;
                 
@@ -203,13 +233,13 @@ switch algorithm
                         if(sum(decision) == 0 || idx_while == n_user)
                             selection = 0;
                         else
-                            idx_decision = user_set_sel(decision);
+                            idx_decision = user_sel(decision);
                             
                             [~,idx_aux] = max(psi(decision));
                             
-                            user_set_drop(idx_while) = idx_decision(idx_aux);
+                            user_drop(idx_while) = idx_decision(idx_aux);
                             
-                            chnl_mtx_aux(:,user_set_drop(idx_while)) = zeros(n_antenna,1);
+                            chnl_mtx_aux(:,user_drop(idx_while)) = zeros(n_antenna,1);
                             
                             idx_while = idx_while + 1;
                         end
@@ -221,11 +251,17 @@ switch algorithm
                 if(n_selected == n_user)
                     sel_chnl_mtx = chnl_mtx;
                 else
-                    user_set_sel(user_set_drop) = [];
+                    user_sel(user_drop) = [];
         
                     sel_chnl_mtx = chnl_mtx;
-                    sel_chnl_mtx(:,user_set_drop) = [];
+                    sel_chnl_mtx(:,user_drop) = [];
                 end
+                
+                drop_chnl_mtx = chnl_mtx;
+                drop_chnl_mtx(:,user_sel) = [];
+        
+                varargout{1} = user_drop;
+                varargout{2} = drop_chnl_mtx;
             otherwise
                 error('Invalid type of selection');
         end

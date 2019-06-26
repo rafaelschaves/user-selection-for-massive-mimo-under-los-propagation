@@ -5,8 +5,8 @@ addpath('./functions/')
 dir_save_dow = './results/scheduling/downlink/';
 dir_save_upl = './results/scheduling/uplink/';
 
-root_save_dow = [dir_save_dow 'rate_mf_'];
-root_save_upl = [dir_save_upl 'rate_mf_'];
+root_save_dow = [dir_save_dow 'throughput_outdoors_pedestrian_mf_'];
+root_save_upl = [dir_save_upl 'throughput_outdoors_pedestrian_mf_'];
 
 if ~exist(dir_save_dow,'dir')
     mkdir(dir_save_dow);
@@ -119,10 +119,10 @@ for mc = 1:MC
     end
 end
 
-save([root_save_dow 'M_' num2str(M) '_K_' num2str(K) '_L_' num2str(L) ...
-      '_SNR_' num2str(snr_db) '_dB_MC_' num2str(MC) '.mat'], ...
-      'thrput_d','psi','thrput_d_sel','psi_sel');
+save([root_save_dow strrep(channel_type,'-','_') '_M_' num2str(M) '_K_' ...
+      num2str(K) '_L_' num2str(L) '_SNR_' num2str(snr_db) '_dB_MC_' ...
+      num2str(MC) '.mat'],'thrput_d','psi','thrput_d_sel','psi_sel');
 
-save([root_save_upl 'M_' num2str(M) '_K_' num2str(K) '_L_' num2str(L) ...
-      '_SNR_' num2str(snr_db) '_dB_MC_' num2str(MC) '.mat'], ...
-      'thrput_u','psi','thrput_u_sel','psi_sel');
+save([root_save_upl strrep(channel_type,'-','_') '_M_' num2str(M) '_K_' ...
+      num2str(K) '_L_' num2str(L) '_SNR_' num2str(snr_db) '_dB_MC_' ...
+      num2str(MC) '.mat'],'thrput_u','psi','thrput_u_sel','psi_sel');
