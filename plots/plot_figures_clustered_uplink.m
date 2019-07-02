@@ -13,11 +13,11 @@ L = 13;                                                                    % Num
 snr = 10;
 
 N_ALG        = 4;                                                          % Number of algorithms for perform user scheduling
-N_THETA_MID  = 3;
-N_THETA_STEP = 5;
+N_THETA_MID  = 2;
+N_THETA_STEP = 20;
 
-theta_mid  = [0 45 90];
-theta_step = [1 10 20 30 90];
+theta_mid  = [0 45];
+theta_step = 1:20;
 
 % Roots
 
