@@ -1,6 +1,6 @@
 MC = 10000;                                                                % Size of the outer Monte Carlo ensemble (Varies the channel realizarions)
                                                                  
-channel_type = 'ur-los';
+channel_type = 'rayleigh';
 
 for M = [64 128 256]                                                       % Number of antennas at the base station
     for r_k = 0.25:0.25:1.25
