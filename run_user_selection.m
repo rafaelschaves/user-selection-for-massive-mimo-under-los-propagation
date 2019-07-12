@@ -1,16 +1,13 @@
 MC = 10000;                                                                % Size of the outer Monte Carlo ensemble (Varies the channel realizarions)
-% L = 13;                                                                    % Number of selected users
-M = 64;
-K = 18;
-snr_db = 10;
-channel_type = 'rayleigh';
+                                                                 
+channel_type = 'ur-los';
 
-%for M = [64]                                                           % Number of antennas at the base station
-%    for K = [18]                                                     % Number of users at the cell
-%        for snr_db = [10]                               % SNR in dB
-for L = 1:K-1
+for M = [64 128 256]                                                       % Number of antennas at the base station
+    for r_k = 0.25:0.25:1.25
+        K = M*r_k;                                                         % Number of users at the cell
+        for r_l = 0.25:0.25:0.75
+            L = K*r_l;                                                     % Number of selected users
             run user_selection.m 
+        end
+    end
 end
-%        end
-%    end
-%end

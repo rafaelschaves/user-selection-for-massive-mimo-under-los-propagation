@@ -1,20 +1,17 @@
-% Write a summary and a help
-function [thrput,varargout] = throughput(chnl_mtx,proc_mtx,pow_vec,settings)
+function [thrput,varargout] = throughput(chnl_mtx,proc_mtx,pow_vec,link,snr,settings)
 
 tau_c     = settings.coherenceTime;                                        % Coherence time in samples
 tau_p     = settings.PilotTime;                                            % Pilot time in samples
 ratio     = settings.uplinkDownlinkTimeRatio;                              % Ratio between the uplink and downlink payload time
 bandwidth = settings.bandwidth;                                            % Sytem bandwidth in Hz
 cell_area = settings.cellArea;                                             % Cell area in km^2
-snr       = settings.snr;                                                  % SNR
-link      = settings.linkType;                                             % Link type (e.g. uplink or Downlink)
 
 gamma  = sinr(chnl_mtx,proc_mtx,pow_vec,snr,link);                         % SINR
 se     = ratio*(1 - tau_p/tau_c)*log2(1 + gamma);                          % Spectral efficiency in b/s/Hz/cell
 thrput = bandwidth*se/cell_area;                                           % Throughput in b/s/km^2
 
-varargout{1} = gamma;
-varargout{2} = se;
+varargout{1} = se;
+varargout{2} = gamma;
 
 end
 

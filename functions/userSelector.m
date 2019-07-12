@@ -25,7 +25,7 @@ n_antenna = size(chnl_mtx,1);                                              % Num
 n_user    = size(chnl_mtx,2);                                              % Number users
 
 switch algorithm
-    case 'RANDOM SELECTION'
+     case 'RANDOM SELECTION'
         user_drop  = randperm(n_user,n_user - n_selected)';            % User that won't transmitt or receive data
         
         user_sel = (1:n_user)';
