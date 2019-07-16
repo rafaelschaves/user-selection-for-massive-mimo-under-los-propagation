@@ -79,6 +79,9 @@ beta_db = -148 - 37.6*log10(commcell.radius/1000);
 snr_u_eff = round(snr_u_db + beta_db);
 snr_d_eff = round(snr_d_db + beta_db);
 
+snr_u = 10.^(snr_u_eff/10);
+snr_d = 10.^(snr_d_eff/10);
+
 % Initialization
 
 se_u     = zeros(K,MC);
@@ -111,8 +114,8 @@ for mc = 1:MC
     
     [Q,W] = decoderMatrix(G,'mf');
     
-    [~,se_u(:,mc)] = throughput(G,Q,pow_ul,'uplink',snr_u_eff,settings); 
-    [~,se_d(:,mc)] = throughput(G,W,pow_dl,'downlink',snr_d_eff,settings);
+    [~,se_u(:,mc)] = throughput(G,Q,pow_ul,'uplink',snr_u,settings); 
+    [~,se_d(:,mc)] = throughput(G,W,pow_dl,'downlink',snr_d,settings);
           
     for alg_idx = 1:N_ALG
         [~,H_sel] = userSelector(G,algorithm_type{alg_idx},'fixed',L,[]);
@@ -121,8 +124,8 @@ for mc = 1:MC
 
         [Q,W] = decoderMatrix(H_sel,'mf');
                                                       
-        [~,se_u_sel(:,mc,alg_idx)] = throughput(H_sel,Q,pow_ul_sel,'uplink',snr_u_eff,settings);               
-        [~,se_d_sel(:,mc,alg_idx)] = throughput(H_sel,W,pow_dl_sel,'downlink',snr_d_eff,settings);    
+        [~,se_u_sel(:,mc,alg_idx)] = throughput(H_sel,Q,pow_ul_sel,'uplink',snr_u,settings);               
+        [~,se_d_sel(:,mc,alg_idx)] = throughput(H_sel,W,pow_dl_sel,'downlink',snr_d,settings);    
     end
 end
 
