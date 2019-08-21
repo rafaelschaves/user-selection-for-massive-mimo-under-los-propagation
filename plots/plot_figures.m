@@ -6,7 +6,7 @@ clc;
 
 MC = 10000;                                                                % Size of the monte-carlo ensemble
 
-M = [64 128 256];                                                          % Number of antennas at base station
+M = [64];                                                          % Number of antennas at base station
 r_k = 1.25;
 r_l = 0.25;
 
@@ -39,6 +39,9 @@ for m = 1:M_SIZ
     se     = zeros(K,MC,N_CHN,2);                                        % Rate using all K users
     se_sel = zeros(L,MC,N_ALG,N_CHN,2);                                  % Rate using only L users
     
+    psi_     = zeros(K,MC,N_CHN);
+    psi_sel_ = zeros(L,MC,N_ALG,N_CHN);
+    
     for chn_idx = 1:N_CHN
         load([root_load_ul 'spectral_efficiency_mf_' chn_type{chn_idx} '_M_' num2str(M(m)) '_K_' num2str(K) '_L_' num2str(L) '_SNR_' num2str(snr_ul) '_dB_MC_' num2str(MC) '.mat']);
         load([root_load_dl 'spectral_efficiency_mf_' chn_type{chn_idx} '_M_' num2str(M(m)) '_K_' num2str(K) '_L_' num2str(L) '_SNR_' num2str(snr_dl) '_dB_MC_' num2str(MC) '.mat']);
@@ -46,8 +49,12 @@ for m = 1:M_SIZ
         se(:,:,chn_idx,1) = se_u;
         se(:,:,chn_idx,2) = se_d;
                 
+        psi_(:,:,chn_idx) = psi;
+        
         se_sel(:,:,:,chn_idx,1) = se_u_sel;
         se_sel(:,:,:,chn_idx,2) = se_d_sel;
+        
+        psi_sel_(:,:,:,chn_idx) = psi_sel;
     end
     
     se_cell{m,1} = se;
@@ -57,58 +64,11 @@ end
 % Post processing - Calculating the CDF
 
 % bin_width = 0.0005;
-
 cdf_sum_se = cell(N_ALG+1,M_SIZ,N_CHN,2);
 edg_sum_se = cell(N_ALG+1,M_SIZ,N_CHN,2);
 
 cdf_se_user = cell(N_ALG+1,M_SIZ,N_CHN,2);
 edg_se_user = cell(N_ALG+1,M_SIZ,N_CHN,2);
-
-% for m = 1:M_SIZ
-%     se_aux     = se_cell{m,1};
-%     se_sel_aux = se_cell{m,2};
-%     
-%     for chn_idx = 1:N_CHN
-%         [cdf_sum_se{1,m,chn_idx,1},edg_sum_se{1,m,chn_idx,1}] = histcounts(sum(se_aux(:,:,chn_idx,1)),'binwidth',bin_width,'normalization','cdf');
-%         [cdf_sum_se{1,m,chn_idx,2},edg_sum_se{1,m,chn_idx,2}] = histcounts(sum(se_aux(:,:,chn_idx,2)),'binwidth',bin_width,'normalization','cdf');
-%         
-%         [cdf_se_user{1,m,chn_idx,1},edg_se_user{1,m,chn_idx,1}] = histcounts(se_aux(:,:,chn_idx,1),'binwidth',bin_width,'normalization','cdf');
-%         [cdf_se_user{1,m,chn_idx,2},edg_se_user{1,m,chn_idx,2}] = histcounts(se_aux(:,:,chn_idx,2),'binwidth',bin_width,'normalization','cdf');
-%         
-%         
-%         cdf_sum_se{1,m,chn_idx,1} = [cdf_sum_se{1,m,chn_idx,1} 1];
-%         cdf_sum_se{1,m,chn_idx,2} = [cdf_sum_se{1,m,chn_idx,2} 1];
-%         
-%         edg_sum_se{1,m,chn_idx,1} = edg_sum_se{1,m,chn_idx,1} + bin_width/2;
-%         edg_sum_se{1,m,chn_idx,2} = edg_sum_se{1,m,chn_idx,2} + bin_width/2;
-%         
-%         cdf_se_user{1,m,chn_idx,1} = [cdf_se_user{1,m,chn_idx,1} 1];
-%         cdf_se_user{1,m,chn_idx,2} = [cdf_se_user{1,m,chn_idx,2} 1];
-%         
-%         edg_se_user{1,m,chn_idx,1} = edg_se_user{1,m,chn_idx,1} + bin_width/2;
-%         edg_se_user{1,m,chn_idx,2} = edg_se_user{1,m,chn_idx,2} + bin_width/2;
-%         
-%         for alg_idx = 1:N_ALG
-%             [cdf_sum_se{alg_idx+1,m,chn_idx,1},edg_sum_se{alg_idx+1,m,chn_idx,1}] = histcounts(sum(se_sel_aux(:,:,alg_idx,chn_idx,1)),'binwidth',bin_width,'normalization','cdf');
-%             [cdf_sum_se{alg_idx+1,m,chn_idx,2},edg_sum_se{alg_idx+1,m,chn_idx,2}] = histcounts(sum(se_sel_aux(:,:,alg_idx,chn_idx,2)),'binwidth',bin_width,'normalization','cdf');
-%             
-%             [cdf_se_user{alg_idx+1,m,chn_idx,1},edg_se_user{alg_idx+1,m,chn_idx,1}] = histcounts(se_sel_aux(:,:,alg_idx,chn_idx,1),'binwidth',bin_width,'normalization','cdf');
-%             [cdf_se_user{alg_idx+1,m,chn_idx,2},edg_se_user{alg_idx+1,m,chn_idx,2}] = histcounts(se_sel_aux(:,:,alg_idx,chn_idx,2),'binwidth',bin_width,'normalization','cdf');
-%             
-%             cdf_sum_se{alg_idx+1,m,chn_idx,1} = [cdf_sum_se{alg_idx+1,m,chn_idx,1} 1];
-%             cdf_sum_se{alg_idx+1,m,chn_idx,2} = [cdf_sum_se{alg_idx+1,m,chn_idx,2} 1];
-%             
-%             edg_sum_se{alg_idx+1,m,chn_idx,1} = edg_sum_se{alg_idx+1,m,chn_idx,1} + bin_width/2;
-%             edg_sum_se{alg_idx+1,m,chn_idx,2} = edg_sum_se{alg_idx+1,m,chn_idx,2} + bin_width/2;
-%             
-%             cdf_se_user{alg_idx+1,m,chn_idx,1} = [cdf_se_user{alg_idx+1,m,chn_idx,1} 1];
-%             cdf_se_user{alg_idx+1,m,chn_idx,2} = [cdf_se_user{alg_idx+1,m,chn_idx,2} 1];
-%             
-%             edg_se_user{alg_idx+1,m,chn_idx,1} = edg_se_user{alg_idx+1,m,chn_idx,1} + bin_width/2;
-%             edg_se_user{alg_idx+1,m,chn_idx,2} = edg_se_user{alg_idx+1,m,chn_idx,2} + bin_width/2;
-%         end
-%     end
-% end
 
 nbins = 50;
 
@@ -122,18 +82,12 @@ for m = 1:M_SIZ
         
         [cdf_se_user{1,m,chn_idx,1},edg_se_user{1,m,chn_idx,1}] = histcounts(se_aux(:,:,chn_idx,1),nbins,'normalization','cdf');
         [cdf_se_user{1,m,chn_idx,2},edg_se_user{1,m,chn_idx,2}] = histcounts(se_aux(:,:,chn_idx,2),nbins,'normalization','cdf');
-        
+                
         cdf_sum_se{1,m,chn_idx,1} = [cdf_sum_se{1,m,chn_idx,1} 1];
         cdf_sum_se{1,m,chn_idx,2} = [cdf_sum_se{1,m,chn_idx,2} 1];
         
-        edg_sum_se{1,m,chn_idx,1} = edg_sum_se{1,m,chn_idx,1} + bin_width/2;
-        edg_sum_se{1,m,chn_idx,2} = edg_sum_se{1,m,chn_idx,2} + bin_width/2;
-        
         cdf_se_user{1,m,chn_idx,1} = [cdf_se_user{1,m,chn_idx,1} 1];
         cdf_se_user{1,m,chn_idx,2} = [cdf_se_user{1,m,chn_idx,2} 1];
-        
-        edg_se_user{1,m,chn_idx,1} = edg_se_user{1,m,chn_idx,1} + bin_width/2;
-        edg_se_user{1,m,chn_idx,2} = edg_se_user{1,m,chn_idx,2} + bin_width/2;
         
         for alg_idx = 1:N_ALG
             [cdf_sum_se{alg_idx+1,m,chn_idx,1},edg_sum_se{alg_idx+1,m,chn_idx,1}] = histcounts(sum(se_sel_aux(:,:,alg_idx,chn_idx,1)),nbins,'normalization','cdf');
@@ -145,14 +99,8 @@ for m = 1:M_SIZ
             cdf_sum_se{alg_idx+1,m,chn_idx,1} = [cdf_sum_se{alg_idx+1,m,chn_idx,1} 1];
             cdf_sum_se{alg_idx+1,m,chn_idx,2} = [cdf_sum_se{alg_idx+1,m,chn_idx,2} 1];
             
-            edg_sum_se{alg_idx+1,m,chn_idx,1} = edg_sum_se{alg_idx+1,m,chn_idx,1} + bin_width/2;
-            edg_sum_se{alg_idx+1,m,chn_idx,2} = edg_sum_se{alg_idx+1,m,chn_idx,2} + bin_width/2;
-            
             cdf_se_user{alg_idx+1,m,chn_idx,1} = [cdf_se_user{alg_idx+1,m,chn_idx,1} 1];
             cdf_se_user{alg_idx+1,m,chn_idx,2} = [cdf_se_user{alg_idx+1,m,chn_idx,2} 1];
-            
-            edg_se_user{alg_idx+1,m,chn_idx,1} = edg_se_user{alg_idx+1,m,chn_idx,1} + bin_width/2;
-            edg_se_user{alg_idx+1,m,chn_idx,2} = edg_se_user{alg_idx+1,m,chn_idx,2} + bin_width/2;
         end
     end
 end
@@ -190,6 +138,27 @@ colours = [0.0000 0.4470 0.7410;
 for m = 1:M_SIZ
     K = r_k*M(m);
     L = r_l*K;
+    
+    for chn_idx = 1:N_CHN
+        figure;
+        
+        set(gcf,'position',[0 0 800 600]);
+        
+        histogram(psi_(1,:,chn_idx),'normalization','pdf');
+        hold on;
+        histogram(psi_sel_(1,:,1,chn_idx),'normalization','pdf');
+        histogram(psi_sel_(1,:,2,chn_idx),'normalization','pdf');
+        histogram(psi_sel_(1,:,3,chn_idx),'normalization','pdf');
+        histogram(psi_sel_(1,:,4,chn_idx),'normalization','pdf');
+        
+        xlabel('Inter-channel Interference ','fontname',fontname,'fontsize',fontsize);
+        ylabel('Probability distribution','fontname',fontname,'fontsize',fontsize);
+        
+        legend(legend_algo,'fontname',fontname,'fontsize',fontsize,'location',location_2);
+        legend box off;
+        
+        set(gca,'fontname',fontname,'fontsize',fontsize);
+    end
     
     for chn_idx = 1:N_CHN
         figure;
