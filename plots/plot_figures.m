@@ -8,7 +8,7 @@ MC = 10000;                                                                % Siz
 
 M = [64];                                                          % Number of antennas at base station
 r_k = 1.25;
-r_l = 0.25;
+r_l = 0.75;
 
 % K = 320;                                                                 % Number of mobile users
 % L = 80;                                                                  % Number of selected users
@@ -158,93 +158,108 @@ for m = 1:M_SIZ
         legend box off;
         
         set(gca,'fontname',fontname,'fontsize',fontsize);
-    end
-    
-    for chn_idx = 1:N_CHN
-        figure;
-        
-        set(gcf,'position',[0 0 800 600]);
-        
-        plot(edg_sum_se{1,m,chn_idx,1},cdf_sum_se{1,m,chn_idx,1},'-','color',colours(1,:),'linewidth',linewidth);
-        hold on;
-        plot(edg_sum_se{2,m,chn_idx,1},cdf_sum_se{2,m,chn_idx,1},'-','color',colours(2,:),'linewidth',linewidth);
-        plot(edg_sum_se{3,m,chn_idx,1},cdf_sum_se{3,m,chn_idx,1},'-','color',colours(3,:),'linewidth',linewidth);
-        plot(edg_sum_se{4,m,chn_idx,1},cdf_sum_se{4,m,chn_idx,1},'-','color',colours(4,:),'linewidth',linewidth);
-        plot(edg_sum_se{5,m,chn_idx,1},cdf_sum_se{5,m,chn_idx,1},'-','color',colours(5,:),'linewidth',linewidth);
-        plot(edg_sum_se{1,m,chn_idx,2},cdf_sum_se{1,m,chn_idx,2},'--','color',colours(1,:),'linewidth',linewidth);
-        plot(edg_sum_se{2,m,chn_idx,2},cdf_sum_se{2,m,chn_idx,2},'--','color',colours(2,:),'linewidth',linewidth);
-        plot(edg_sum_se{3,m,chn_idx,2},cdf_sum_se{3,m,chn_idx,2},'--','color',colours(3,:),'linewidth',linewidth);
-        plot(edg_sum_se{4,m,chn_idx,2},cdf_sum_se{4,m,chn_idx,2},'--','color',colours(4,:),'linewidth',linewidth);
-        plot(edg_sum_se{5,m,chn_idx,2},cdf_sum_se{5,m,chn_idx,2},'--','color',colours(5,:),'linewidth',linewidth);
-        
-        xlabel('Sum-spectral efficiency (b/s/Hz)','fontname',fontname,'fontsize',fontsize);
-        ylabel('Cumulative distribution','fontname',fontname,'fontsize',fontsize);
-        
-        legend(legend_algo,'fontname',fontname,'fontsize',fontsize,'location',location_1);
-        legend box off;
-        
-        set(gca,'fontname',fontname,'fontsize',fontsize);
-        
-        if m == 1 && chn_idx == 1
-            xlim([0 50]);
-        elseif m == 1 && chn_idx == 2
-            xlim([10 35]);
-        elseif m == 2 && chn_idx == 1
-            xlim([20 110]);
-        elseif m == 2 && chn_idx == 2
-            xlim([25 70]);
-        elseif m == 3 && chn_idx == 1
-            xlim([40 225]);
-        elseif m == 3 && chn_idx == 2
-            xlim([50 140]);
-        end
-        
-        ylim([0 1]);
-        
-        if (savefig == 1)
-            saveas(gcf,[root_save 'cdf_sum_se_' chn_type{chn_idx} '_M_' num2str(M(m)) '_K_' num2str(K) '_L_' num2str(L)],'fig');
-            saveas(gcf,[root_save 'cdf_sum_se_' chn_type{chn_idx} '_M_' num2str(M(m)) '_K_' num2str(K) '_L_' num2str(L)],'png');
-            saveas(gcf,[root_save 'cdf_sum_se_' chn_type{chn_idx} '_M_' num2str(M(m)) '_K_' num2str(K) '_L_' num2str(L)],'epsc2');
-        end
-        
-        figure;
-        
-        set(gcf,'position',[0 0 800 600]);
-        
-        plot(edg_se_user{1,m,chn_idx,1},cdf_se_user{1,m,chn_idx,1},'-','color',colours(1,:),'linewidth',linewidth);
-        hold on;
-        plot(edg_se_user{2,m,chn_idx,1},cdf_se_user{2,m,chn_idx,1},'-','color',colours(2,:),'linewidth',linewidth);
-        plot(edg_se_user{3,m,chn_idx,1},cdf_se_user{3,m,chn_idx,1},'-','color',colours(3,:),'linewidth',linewidth);
-        plot(edg_se_user{4,m,chn_idx,1},cdf_se_user{4,m,chn_idx,1},'-','color',colours(4,:),'linewidth',linewidth);
-        plot(edg_se_user{5,m,chn_idx,1},cdf_se_user{5,m,chn_idx,1},'-','color',colours(5,:),'linewidth',linewidth);
-        plot(edg_se_user{1,m,chn_idx,2},cdf_se_user{1,m,chn_idx,2},'--','color',colours(1,:),'linewidth',linewidth);
-        plot(edg_se_user{2,m,chn_idx,2},cdf_se_user{2,m,chn_idx,2},'--','color',colours(2,:),'linewidth',linewidth);
-        plot(edg_se_user{3,m,chn_idx,2},cdf_se_user{3,m,chn_idx,2},'--','color',colours(3,:),'linewidth',linewidth);
-        plot(edg_se_user{4,m,chn_idx,2},cdf_se_user{4,m,chn_idx,2},'--','color',colours(4,:),'linewidth',linewidth);
-        plot(edg_se_user{5,m,chn_idx,2},cdf_se_user{5,m,chn_idx,2},'--','color',colours(5,:),'linewidth',linewidth);
-        
-        xlabel('Spectral efficiency per user (b/s/Hz)','fontname',fontname,'fontsize',fontsize);
-        ylabel('Cumulative distribution','fontname',fontname,'fontsize',fontsize);
-        
-        legend(legend_algo,'fontname',fontname,'fontsize',fontsize,'location',location_2);
-        legend box off;
-        
-        set(gca,'fontname',fontname,'fontsize',fontsize);
         
         if chn_idx == 1
-            xlim([0 4]);
-        else
-            xlim([0 2]);
-        end
+            dim = [0.185 0.18 0.075 0.7];
         
-        ylim([0 1]);
-        
-        if (savefig == 1)
-            saveas(gcf,[root_save 'cdf_se_per_user_' chn_type{chn_idx} '_M_' num2str(M(m)) '_K_' num2str(K) '_L_' num2str(L)],'fig');
-            saveas(gcf,[root_save 'cdf_se_per_user_' chn_type{chn_idx} '_M_' num2str(M(m)) '_K_' num2str(K) '_L_' num2str(L)],'png');
-            saveas(gcf,[root_save 'cdf_se_per_user_' chn_type{chn_idx} '_M_' num2str(M(m)) '_K_' num2str(K) '_L_' num2str(L)],'epsc2');
+            annotation('rectangle',dim,'linewidth',linewidth);
+       
+            axes('position',[.6 .275 .25 .25]);
+            box on;
+            
+            histogram(psi_sel_(1,:,3,chn_idx),'normalization','pdf','facecolor',colours(4,:));
+            hold on;
+            histogram(psi_sel_(1,:,4,chn_idx),'normalization','pdf','facecolor',colours(5,:));
+                        
+            set(gca,'fontname',fontname,'fontsize',fontsize);
         end
     end
+    
+%     for chn_idx = 1:N_CHN
+%         figure;
+%         
+%         set(gcf,'position',[0 0 800 600]);
+%         
+%         plot(edg_sum_se{1,m,chn_idx,1},cdf_sum_se{1,m,chn_idx,1},'-','color',colours(1,:),'linewidth',linewidth);
+%         hold on;
+%         plot(edg_sum_se{2,m,chn_idx,1},cdf_sum_se{2,m,chn_idx,1},'-','color',colours(2,:),'linewidth',linewidth);
+%         plot(edg_sum_se{3,m,chn_idx,1},cdf_sum_se{3,m,chn_idx,1},'-','color',colours(3,:),'linewidth',linewidth);
+%         plot(edg_sum_se{4,m,chn_idx,1},cdf_sum_se{4,m,chn_idx,1},'-','color',colours(4,:),'linewidth',linewidth);
+%         plot(edg_sum_se{5,m,chn_idx,1},cdf_sum_se{5,m,chn_idx,1},'-','color',colours(5,:),'linewidth',linewidth);
+%         plot(edg_sum_se{1,m,chn_idx,2},cdf_sum_se{1,m,chn_idx,2},'--','color',colours(1,:),'linewidth',linewidth);
+%         plot(edg_sum_se{2,m,chn_idx,2},cdf_sum_se{2,m,chn_idx,2},'--','color',colours(2,:),'linewidth',linewidth);
+%         plot(edg_sum_se{3,m,chn_idx,2},cdf_sum_se{3,m,chn_idx,2},'--','color',colours(3,:),'linewidth',linewidth);
+%         plot(edg_sum_se{4,m,chn_idx,2},cdf_sum_se{4,m,chn_idx,2},'--','color',colours(4,:),'linewidth',linewidth);
+%         plot(edg_sum_se{5,m,chn_idx,2},cdf_sum_se{5,m,chn_idx,2},'--','color',colours(5,:),'linewidth',linewidth);
+%         
+%         xlabel('Sum-spectral efficiency (b/s/Hz)','fontname',fontname,'fontsize',fontsize);
+%         ylabel('Cumulative distribution','fontname',fontname,'fontsize',fontsize);
+%         
+%         legend(legend_algo,'fontname',fontname,'fontsize',fontsize,'location',location_1);
+%         legend box off;
+%         
+%         set(gca,'fontname',fontname,'fontsize',fontsize);
+%         
+%         if m == 1 && chn_idx == 1
+%             xlim([0 50]);
+%         elseif m == 1 && chn_idx == 2
+%             xlim([10 35]);
+%         elseif m == 2 && chn_idx == 1
+%             xlim([20 110]);
+%         elseif m == 2 && chn_idx == 2
+%             xlim([25 70]);
+%         elseif m == 3 && chn_idx == 1
+%             xlim([40 225]);
+%         elseif m == 3 && chn_idx == 2
+%             xlim([50 140]);
+%         end
+%         
+%         ylim([0 1]);
+%         
+%         if (savefig == 1)
+%             saveas(gcf,[root_save 'cdf_sum_se_' chn_type{chn_idx} '_M_' num2str(M(m)) '_K_' num2str(K) '_L_' num2str(L)],'fig');
+%             saveas(gcf,[root_save 'cdf_sum_se_' chn_type{chn_idx} '_M_' num2str(M(m)) '_K_' num2str(K) '_L_' num2str(L)],'png');
+%             saveas(gcf,[root_save 'cdf_sum_se_' chn_type{chn_idx} '_M_' num2str(M(m)) '_K_' num2str(K) '_L_' num2str(L)],'epsc2');
+%         end
+%         
+%         figure;
+%         
+%         set(gcf,'position',[0 0 800 600]);
+%         
+%         plot(edg_se_user{1,m,chn_idx,1},cdf_se_user{1,m,chn_idx,1},'-','color',colours(1,:),'linewidth',linewidth);
+%         hold on;
+%         plot(edg_se_user{2,m,chn_idx,1},cdf_se_user{2,m,chn_idx,1},'-','color',colours(2,:),'linewidth',linewidth);
+%         plot(edg_se_user{3,m,chn_idx,1},cdf_se_user{3,m,chn_idx,1},'-','color',colours(3,:),'linewidth',linewidth);
+%         plot(edg_se_user{4,m,chn_idx,1},cdf_se_user{4,m,chn_idx,1},'-','color',colours(4,:),'linewidth',linewidth);
+%         plot(edg_se_user{5,m,chn_idx,1},cdf_se_user{5,m,chn_idx,1},'-','color',colours(5,:),'linewidth',linewidth);
+%         plot(edg_se_user{1,m,chn_idx,2},cdf_se_user{1,m,chn_idx,2},'--','color',colours(1,:),'linewidth',linewidth);
+%         plot(edg_se_user{2,m,chn_idx,2},cdf_se_user{2,m,chn_idx,2},'--','color',colours(2,:),'linewidth',linewidth);
+%         plot(edg_se_user{3,m,chn_idx,2},cdf_se_user{3,m,chn_idx,2},'--','color',colours(3,:),'linewidth',linewidth);
+%         plot(edg_se_user{4,m,chn_idx,2},cdf_se_user{4,m,chn_idx,2},'--','color',colours(4,:),'linewidth',linewidth);
+%         plot(edg_se_user{5,m,chn_idx,2},cdf_se_user{5,m,chn_idx,2},'--','color',colours(5,:),'linewidth',linewidth);
+%         
+%         xlabel('Spectral efficiency per user (b/s/Hz)','fontname',fontname,'fontsize',fontsize);
+%         ylabel('Cumulative distribution','fontname',fontname,'fontsize',fontsize);
+%         
+%         legend(legend_algo,'fontname',fontname,'fontsize',fontsize,'location',location_2);
+%         legend box off;
+%         
+%         set(gca,'fontname',fontname,'fontsize',fontsize);
+%         
+%         if chn_idx == 1
+%             xlim([0 4]);
+%         else
+%             xlim([0 2]);
+%         end
+%         
+%         ylim([0 1]);
+%         
+%         if (savefig == 1)
+%             saveas(gcf,[root_save 'cdf_se_per_user_' chn_type{chn_idx} '_M_' num2str(M(m)) '_K_' num2str(K) '_L_' num2str(L)],'fig');
+%             saveas(gcf,[root_save 'cdf_se_per_user_' chn_type{chn_idx} '_M_' num2str(M(m)) '_K_' num2str(K) '_L_' num2str(L)],'png');
+%             saveas(gcf,[root_save 'cdf_se_per_user_' chn_type{chn_idx} '_M_' num2str(M(m)) '_K_' num2str(K) '_L_' num2str(L)],'epsc2');
+%         end
+%     end
 end
 
 % for chn_idx = 1:N_CHN
