@@ -6,9 +6,9 @@ clc;
 
 MC = 10000;                                                                % Size of the monte-carlo ensemble
 
-M = [64];                                                          % Number of antennas at base station
+M = [64 128 256];                                                          % Number of antennas at base station
 r_k = 1.25;
-r_l = 0.75;
+r_l = 0.25;
 
 % K = 320;                                                                 % Number of mobile users
 % L = 80;                                                                  % Number of selected users
@@ -30,7 +30,8 @@ chn_type = {'ur_los','rayleigh'};
 
 % Loading data
 
-se_cell = cell(M_SIZ,2);
+se_cell  = cell(M_SIZ,2);
+psi_cell = cell(M_SIZ,2);
 
 for m = 1:M_SIZ
     K = r_k*M(m);
@@ -59,29 +60,36 @@ for m = 1:M_SIZ
     
     se_cell{m,1} = se;
     se_cell{m,2} = se_sel;
+    
+    psi_cell{m,1} = psi_;
+    psi_cell{m,2} = psi_sel_;
 end
 
 % Post processing - Calculating the CDF
 
-% bin_width = 0.0005;
+N_BIN = 50;
+N_PDF = 100;
+
 cdf_sum_se = cell(N_ALG+1,M_SIZ,N_CHN,2);
 edg_sum_se = cell(N_ALG+1,M_SIZ,N_CHN,2);
 
 cdf_se_user = cell(N_ALG+1,M_SIZ,N_CHN,2);
 edg_se_user = cell(N_ALG+1,M_SIZ,N_CHN,2);
 
-nbins = 50;
+pdf_psi_y = zeros(N_ALG+1,N_PDF,M_SIZ,N_CHN);
+pdf_psi_x = zeros(N_ALG+1,N_PDF,M_SIZ,N_CHN);
 
 for m = 1:M_SIZ
-    se_aux     = se_cell{m,1};
-    se_sel_aux = se_cell{m,2};
-    
     for chn_idx = 1:N_CHN
-        [cdf_sum_se{1,m,chn_idx,1},edg_sum_se{1,m,chn_idx,1}] = histcounts(sum(se_aux(:,:,chn_idx,1)),nbins,'normalization','cdf');
-        [cdf_sum_se{1,m,chn_idx,2},edg_sum_se{1,m,chn_idx,2}] = histcounts(sum(se_aux(:,:,chn_idx,2)),nbins,'normalization','cdf');
+        % [pdf_psi{1,m,chn_idx},edg_psi{1,m,chn_idx}] = histcounts(psi_cell{m,1}(1,:,chn_idx),'binwidth',binwid,'normalization','pdf');
         
-        [cdf_se_user{1,m,chn_idx,1},edg_se_user{1,m,chn_idx,1}] = histcounts(se_aux(:,:,chn_idx,1),nbins,'normalization','cdf');
-        [cdf_se_user{1,m,chn_idx,2},edg_se_user{1,m,chn_idx,2}] = histcounts(se_aux(:,:,chn_idx,2),nbins,'normalization','cdf');
+        [pdf_psi_y(1,:,m,chn_idx), pdf_psi_x(1,:,m,chn_idx)] = ksdensity(psi_cell{m,1}(1,:,chn_idx),'support','positive');
+        
+        [cdf_sum_se{1,m,chn_idx,1},edg_sum_se{1,m,chn_idx,1}] = histcounts(sum(se_cell{m,1}(:,:,chn_idx,1)),N_BIN,'normalization','cdf');
+        [cdf_sum_se{1,m,chn_idx,2},edg_sum_se{1,m,chn_idx,2}] = histcounts(sum(se_cell{m,1}(:,:,chn_idx,2)),N_BIN,'normalization','cdf');
+        
+        [cdf_se_user{1,m,chn_idx,1},edg_se_user{1,m,chn_idx,1}] = histcounts(se_cell{m,1}(:,:,chn_idx,1),N_BIN,'normalization','cdf');
+        [cdf_se_user{1,m,chn_idx,2},edg_se_user{1,m,chn_idx,2}] = histcounts(se_cell{m,1}(:,:,chn_idx,2),N_BIN,'normalization','cdf');
                 
         cdf_sum_se{1,m,chn_idx,1} = [cdf_sum_se{1,m,chn_idx,1} 1];
         cdf_sum_se{1,m,chn_idx,2} = [cdf_sum_se{1,m,chn_idx,2} 1];
@@ -90,11 +98,15 @@ for m = 1:M_SIZ
         cdf_se_user{1,m,chn_idx,2} = [cdf_se_user{1,m,chn_idx,2} 1];
         
         for alg_idx = 1:N_ALG
-            [cdf_sum_se{alg_idx+1,m,chn_idx,1},edg_sum_se{alg_idx+1,m,chn_idx,1}] = histcounts(sum(se_sel_aux(:,:,alg_idx,chn_idx,1)),nbins,'normalization','cdf');
-            [cdf_sum_se{alg_idx+1,m,chn_idx,2},edg_sum_se{alg_idx+1,m,chn_idx,2}] = histcounts(sum(se_sel_aux(:,:,alg_idx,chn_idx,2)),nbins,'normalization','cdf');
+            % [pdf_psi{alg_idx+1,m,chn_idx},edg_psi{alg_idx+1,m,chn_idx}] = histcounts(psi_cell{m,2}(1,:,alg_idx,chn_idx),N_BIN,'normalization','pdf');
             
-            [cdf_se_user{alg_idx+1,m,chn_idx,1},edg_se_user{alg_idx+1,m,chn_idx,1}] = histcounts(se_sel_aux(:,:,alg_idx,chn_idx,1),nbins,'normalization','cdf');
-            [cdf_se_user{alg_idx+1,m,chn_idx,2},edg_se_user{alg_idx+1,m,chn_idx,2}] = histcounts(se_sel_aux(:,:,alg_idx,chn_idx,2),nbins,'normalization','cdf');
+            [pdf_psi_y(alg_idx+1,:,m,chn_idx), pdf_psi_x(alg_idx+1,:,m,chn_idx)] = ksdensity(psi_cell{m,2}(1,:,alg_idx,chn_idx),'support','positive');
+
+            [cdf_sum_se{alg_idx+1,m,chn_idx,1},edg_sum_se{alg_idx+1,m,chn_idx,1}] = histcounts(sum(se_cell{m,2}(:,:,alg_idx,chn_idx,1)),N_BIN,'normalization','cdf');
+            [cdf_sum_se{alg_idx+1,m,chn_idx,2},edg_sum_se{alg_idx+1,m,chn_idx,2}] = histcounts(sum(se_cell{m,2}(:,:,alg_idx,chn_idx,2)),N_BIN,'normalization','cdf');
+            
+            [cdf_se_user{alg_idx+1,m,chn_idx,1},edg_se_user{alg_idx+1,m,chn_idx,1}] = histcounts(se_cell{m,2}(:,:,alg_idx,chn_idx,1),N_BIN,'normalization','cdf');
+            [cdf_se_user{alg_idx+1,m,chn_idx,2},edg_se_user{alg_idx+1,m,chn_idx,2}] = histcounts(se_cell{m,2}(:,:,alg_idx,chn_idx,2),N_BIN,'normalization','cdf');
             
             cdf_sum_se{alg_idx+1,m,chn_idx,1} = [cdf_sum_se{alg_idx+1,m,chn_idx,1} 1];
             cdf_sum_se{alg_idx+1,m,chn_idx,2} = [cdf_sum_se{alg_idx+1,m,chn_idx,2} 1];
@@ -113,6 +125,8 @@ fontname   = 'Times New Roman';
 fontsize   = 30;
 
 marker = {'o','s','^'};
+
+linestyle = {'-','--',':'};
 
 savefig = 1;
 
@@ -135,104 +149,151 @@ colours = [0.0000 0.4470 0.7410;
            0.3010 0.7450 0.9330;
            0.6350 0.0780 0.1840];
 
-for m = 1:M_SIZ
-    K = r_k*M(m);
-    L = r_l*K;
-    
-    for chn_idx = 1:N_CHN
-        figure;
+for chn_idx = 1:N_CHN
+    for m = 1:M_SIZ
+        K = r_k*M(m);
+        L = r_l*K;
         
-        set(gcf,'position',[0 0 800 600]);
+        if chn_idx == 1
+            figure;
+            
+            set(gcf,'position',[0 0 800 600]);
+            
+            plot(pdf_psi_x(1,:,m,chn_idx),pdf_psi_y(1,:,m,chn_idx),'-','color',colours(1,:),'linewidth',linewidth);
+            hold on;
+            plot(pdf_psi_x(2,:,m,chn_idx),pdf_psi_y(2,:,m,chn_idx),'-','color',colours(2,:),'linewidth',linewidth);
+            plot(pdf_psi_x(3,:,m,chn_idx),pdf_psi_y(3,:,m,chn_idx),'-','color',colours(3,:),'linewidth',linewidth);
+            plot(pdf_psi_x(4,:,m,chn_idx),pdf_psi_y(4,:,m,chn_idx),'-','color',colours(4,:),'linewidth',linewidth);
+            plot(pdf_psi_x(5,:,m,chn_idx),pdf_psi_y(5,:,m,chn_idx),'-','color',colours(5,:),'linewidth',linewidth);
+        else
+            if m == 1
+                figure;
+                
+                set(gcf,'position',[0 0 800 600]);
+                
+                plot(pdf_psi_x(1,:,m,chn_idx),pdf_psi_y(1,:,m,chn_idx),linestyle{m},'color',colours(1,:),'linewidth',linewidth);
+                hold on;
+                plot(pdf_psi_x(2,:,m,chn_idx),pdf_psi_y(2,:,m,chn_idx),linestyle{m},'color',colours(2,:),'linewidth',linewidth);
+                plot(pdf_psi_x(3,:,m,chn_idx),pdf_psi_y(3,:,m,chn_idx),linestyle{m},'color',colours(3,:),'linewidth',linewidth);
+                plot(pdf_psi_x(4,:,m,chn_idx),pdf_psi_y(4,:,m,chn_idx),linestyle{m},'color',colours(4,:),'linewidth',linewidth);
+                plot(pdf_psi_x(5,:,m,chn_idx),pdf_psi_y(5,:,m,chn_idx),linestyle{m},'color',colours(5,:),'linewidth',linewidth);
+            end
+            
+            plot(pdf_psi_x(1,:,m,chn_idx),pdf_psi_y(1,:,m,chn_idx),linestyle{m},'color',colours(1,:),'linewidth',linewidth);
+            plot(pdf_psi_x(2,:,m,chn_idx),pdf_psi_y(2,:,m,chn_idx),linestyle{m},'color',colours(2,:),'linewidth',linewidth);
+            plot(pdf_psi_x(3,:,m,chn_idx),pdf_psi_y(3,:,m,chn_idx),linestyle{m},'color',colours(3,:),'linewidth',linewidth);
+            plot(pdf_psi_x(4,:,m,chn_idx),pdf_psi_y(4,:,m,chn_idx),linestyle{m},'color',colours(4,:),'linewidth',linewidth);
+            plot(pdf_psi_x(5,:,m,chn_idx),pdf_psi_y(5,:,m,chn_idx),linestyle{m},'color',colours(5,:),'linewidth',linewidth);
+        end
         
-        histogram(psi_(1,:,chn_idx),'normalization','pdf');
-        hold on;
-        histogram(psi_sel_(1,:,1,chn_idx),'normalization','pdf');
-        histogram(psi_sel_(1,:,2,chn_idx),'normalization','pdf');
-        histogram(psi_sel_(1,:,3,chn_idx),'normalization','pdf');
-        histogram(psi_sel_(1,:,4,chn_idx),'normalization','pdf');
-        
-        xlabel('Inter-channel Interference ','fontname',fontname,'fontsize',fontsize);
+        xlabel('Inter-channel interference','fontname',fontname,'fontsize',fontsize);
         ylabel('Probability distribution','fontname',fontname,'fontsize',fontsize);
         
         legend(legend_algo,'fontname',fontname,'fontsize',fontsize,'location',location_2);
         legend box off;
         
         set(gca,'fontname',fontname,'fontsize',fontsize);
-        
-        if chn_idx == 1
-            dim = [0.185 0.18 0.075 0.7];
-        
-            annotation('rectangle',dim,'linewidth',linewidth);
-       
-            axes('position',[.6 .275 .25 .25]);
-            box on;
-            
-            histogram(psi_sel_(1,:,3,chn_idx),'normalization','pdf','facecolor',colours(4,:));
-            hold on;
-            histogram(psi_sel_(1,:,4,chn_idx),'normalization','pdf','facecolor',colours(5,:));
-                        
-            set(gca,'fontname',fontname,'fontsize',fontsize);
-        end
     end
-    
+end
+
+% for m = 1:M_SIZ
+%     K = r_k*M(m);
+%     L = r_l*K;
+%     
 %     for chn_idx = 1:N_CHN
 %         figure;
 %         
 %         set(gcf,'position',[0 0 800 600]);
 %         
-%         plot(edg_sum_se{1,m,chn_idx,1},cdf_sum_se{1,m,chn_idx,1},'-','color',colours(1,:),'linewidth',linewidth);
+%         plot(pdf_psi_x(1,:,m,chn_idx),pdf_psi_y(1,:,m,chn_idx),'-','color',colours(1,:),'linewidth',linewidth);
 %         hold on;
-%         plot(edg_sum_se{2,m,chn_idx,1},cdf_sum_se{2,m,chn_idx,1},'-','color',colours(2,:),'linewidth',linewidth);
-%         plot(edg_sum_se{3,m,chn_idx,1},cdf_sum_se{3,m,chn_idx,1},'-','color',colours(3,:),'linewidth',linewidth);
-%         plot(edg_sum_se{4,m,chn_idx,1},cdf_sum_se{4,m,chn_idx,1},'-','color',colours(4,:),'linewidth',linewidth);
-%         plot(edg_sum_se{5,m,chn_idx,1},cdf_sum_se{5,m,chn_idx,1},'-','color',colours(5,:),'linewidth',linewidth);
-%         plot(edg_sum_se{1,m,chn_idx,2},cdf_sum_se{1,m,chn_idx,2},'--','color',colours(1,:),'linewidth',linewidth);
-%         plot(edg_sum_se{2,m,chn_idx,2},cdf_sum_se{2,m,chn_idx,2},'--','color',colours(2,:),'linewidth',linewidth);
-%         plot(edg_sum_se{3,m,chn_idx,2},cdf_sum_se{3,m,chn_idx,2},'--','color',colours(3,:),'linewidth',linewidth);
-%         plot(edg_sum_se{4,m,chn_idx,2},cdf_sum_se{4,m,chn_idx,2},'--','color',colours(4,:),'linewidth',linewidth);
-%         plot(edg_sum_se{5,m,chn_idx,2},cdf_sum_se{5,m,chn_idx,2},'--','color',colours(5,:),'linewidth',linewidth);
+%         plot(pdf_psi_x(2,:,m,chn_idx),pdf_psi_y(2,:,m,chn_idx),'-','color',colours(2,:),'linewidth',linewidth);
+%         plot(pdf_psi_x(3,:,m,chn_idx),pdf_psi_y(3,:,m,chn_idx),'-','color',colours(3,:),'linewidth',linewidth);
+%         plot(pdf_psi_x(4,:,m,chn_idx),pdf_psi_y(4,:,m,chn_idx),'-','color',colours(4,:),'linewidth',linewidth);
+%         plot(pdf_psi_x(5,:,m,chn_idx),pdf_psi_y(5,:,m,chn_idx),'-','color',colours(5,:),'linewidth',linewidth);
 %         
-%         xlabel('Sum-spectral efficiency (b/s/Hz)','fontname',fontname,'fontsize',fontsize);
-%         ylabel('Cumulative distribution','fontname',fontname,'fontsize',fontsize);
+%         xlabel('Inter-channel interference','fontname',fontname,'fontsize',fontsize);
+%         ylabel('Probability distribution','fontname',fontname,'fontsize',fontsize);
 %         
-%         legend(legend_algo,'fontname',fontname,'fontsize',fontsize,'location',location_1);
+%         legend(legend_algo,'fontname',fontname,'fontsize',fontsize,'location',location_2);
 %         legend box off;
 %         
 %         set(gca,'fontname',fontname,'fontsize',fontsize);
 %         
-%         if m == 1 && chn_idx == 1
-%             xlim([0 50]);
-%         elseif m == 1 && chn_idx == 2
-%             xlim([10 35]);
-%         elseif m == 2 && chn_idx == 1
-%             xlim([20 110]);
-%         elseif m == 2 && chn_idx == 2
-%             xlim([25 70]);
-%         elseif m == 3 && chn_idx == 1
-%             xlim([40 225]);
-%         elseif m == 3 && chn_idx == 2
-%             xlim([50 140]);
-%         end
-%         
-%         ylim([0 1]);
-%         
-%         if (savefig == 1)
-%             saveas(gcf,[root_save 'cdf_sum_se_' chn_type{chn_idx} '_M_' num2str(M(m)) '_K_' num2str(K) '_L_' num2str(L)],'fig');
-%             saveas(gcf,[root_save 'cdf_sum_se_' chn_type{chn_idx} '_M_' num2str(M(m)) '_K_' num2str(K) '_L_' num2str(L)],'png');
-%             saveas(gcf,[root_save 'cdf_sum_se_' chn_type{chn_idx} '_M_' num2str(M(m)) '_K_' num2str(K) '_L_' num2str(L)],'epsc2');
-%         end
-%         
-%         figure;
-%         
-%         set(gcf,'position',[0 0 800 600]);
-%         
-%         plot(edg_se_user{1,m,chn_idx,1},cdf_se_user{1,m,chn_idx,1},'-','color',colours(1,:),'linewidth',linewidth);
-%         hold on;
-%         plot(edg_se_user{2,m,chn_idx,1},cdf_se_user{2,m,chn_idx,1},'-','color',colours(2,:),'linewidth',linewidth);
-%         plot(edg_se_user{3,m,chn_idx,1},cdf_se_user{3,m,chn_idx,1},'-','color',colours(3,:),'linewidth',linewidth);
-%         plot(edg_se_user{4,m,chn_idx,1},cdf_se_user{4,m,chn_idx,1},'-','color',colours(4,:),'linewidth',linewidth);
-%         plot(edg_se_user{5,m,chn_idx,1},cdf_se_user{5,m,chn_idx,1},'-','color',colours(5,:),'linewidth',linewidth);
-%         plot(edg_se_user{1,m,chn_idx,2},cdf_se_user{1,m,chn_idx,2},'--','color',colours(1,:),'linewidth',linewidth);
+% %         if chn_idx == 1
+% %             dim = [0.185 0.18 0.075 0.7];
+% %         
+% %             annotation('rectangle',dim,'linewidth',linewidth);
+% %        
+% %             axes('position',[.6 .275 .25 .25]);
+% %             box on;
+% %             
+% %             histogram(psi_sel_(1,:,3,chn_idx),'normalization','pdf','facecolor',colours(4,:));
+% %             hold on;
+% %             histogram(psi_sel_(1,:,4,chn_idx),'normalization','pdf','facecolor',colours(5,:));
+% %                         
+% %             set(gca,'fontname',fontname,'fontsize',fontsize);
+% %         end
+%     end
+%     
+% %     for chn_idx = 1:N_CHN
+% %         figure;
+% %         
+% %         set(gcf,'position',[0 0 800 600]);
+% %         
+% %         plot(edg_sum_se{1,m,chn_idx,1},cdf_sum_se{1,m,chn_idx,1},'-','color',colours(1,:),'linewidth',linewidth);
+% %         hold on;
+% %         plot(edg_sum_se{2,m,chn_idx,1},cdf_sum_se{2,m,chn_idx,1},'-','color',colours(2,:),'linewidth',linewidth);
+% %         plot(edg_sum_se{3,m,chn_idx,1},cdf_sum_se{3,m,chn_idx,1},'-','color',colours(3,:),'linewidth',linewidth);
+% %         plot(edg_sum_se{4,m,chn_idx,1},cdf_sum_se{4,m,chn_idx,1},'-','color',colours(4,:),'linewidth',linewidth);
+% %         plot(edg_sum_se{5,m,chn_idx,1},cdf_sum_se{5,m,chn_idx,1},'-','color',colours(5,:),'linewidth',linewidth);
+% %         plot(edg_sum_se{1,m,chn_idx,2},cdf_sum_se{1,m,chn_idx,2},'--','color',colours(1,:),'linewidth',linewidth);
+% %         plot(edg_sum_se{2,m,chn_idx,2},cdf_sum_se{2,m,chn_idx,2},'--','color',colours(2,:),'linewidth',linewidth);
+% %         plot(edg_sum_se{3,m,chn_idx,2},cdf_sum_se{3,m,chn_idx,2},'--','color',colours(3,:),'linewidth',linewidth);
+% %         plot(edg_sum_se{4,m,chn_idx,2},cdf_sum_se{4,m,chn_idx,2},'--','color',colours(4,:),'linewidth',linewidth);
+% %         plot(edg_sum_se{5,m,chn_idx,2},cdf_sum_se{5,m,chn_idx,2},'--','color',colours(5,:),'linewidth',linewidth);
+% %         
+% %         xlabel('Sum-spectral efficiency (b/s/Hz)','fontname',fontname,'fontsize',fontsize);
+% %         ylabel('Cumulative distribution','fontname',fontname,'fontsize',fontsize);
+% %         
+% %         legend(legend_algo,'fontname',fontname,'fontsize',fontsize,'location',location_1);
+% %         legend box off;
+% %         
+% %         set(gca,'fontname',fontname,'fontsize',fontsize);
+% %         
+% %         if m == 1 && chn_idx == 1
+% %             xlim([0 50]);
+% %         elseif m == 1 && chn_idx == 2
+% %             xlim([10 35]);
+% %         elseif m == 2 && chn_idx == 1
+% %             xlim([20 110]);
+% %         elseif m == 2 && chn_idx == 2
+% %             xlim([25 70]);
+% %         elseif m == 3 && chn_idx == 1
+% %             xlim([40 225]);
+% %         elseif m == 3 && chn_idx == 2
+% %             xlim([50 140]);
+% %         end
+% %         
+% %         ylim([0 1]);
+% %         
+% %         if (savefig == 1)
+% %             saveas(gcf,[root_save 'cdf_sum_se_' chn_type{chn_idx} '_M_' num2str(M(m)) '_K_' num2str(K) '_L_' num2str(L)],'fig');
+% %             saveas(gcf,[root_save 'cdf_sum_se_' chn_type{chn_idx} '_M_' num2str(M(m)) '_K_' num2str(K) '_L_' num2str(L)],'png');
+% %             saveas(gcf,[root_save 'cdf_sum_se_' chn_type{chn_idx} '_M_' num2str(M(m)) '_K_' num2str(K) '_L_' num2str(L)],'epsc2');
+% %         end
+% %         
+% %         figure;
+% %         
+% %         set(gcf,'position',[0 0 800 600]);
+% %         
+% %         plot(edg_se_user{1,m,chn_idx,1},cdf_se_user{1,m,chn_idx,1},'-','color',colours(1,:),'linewidth',linewidth);
+% %         hold on;
+% %         plot(edg_se_user{2,m,chn_idx,1},cdf_se_user{2,m,chn_idx,1},'-','color',colours(2,:),'linewidth',linewidth);
+% %         plot(edg_se_user{3,m,chn_idx,1},cdf_se_user{3,m,chn_idx,1},'-','color',colours(3,:),'linewidth',linewidth);
+% %         plot(edg_se_user{4,m,chn_idx,1},cdf_se_user{4,m,chn_idx,1},'-','color',colours(4,:),'linewidth',linewidth);
+% %         plot(edg_se_user{5,m,chn_idx,1},cdf_se_user{5,m,chn_idx,1},'-','color',colours(5,:),'linewidth',linewidth);
+% %         plot(edg_se_user{1,m,chn_idx,2},cdf_se_user{1,m,chn_idx,2},'--','color',colours(1,:),'linewidth',linewidth);
 %         plot(edg_se_user{2,m,chn_idx,2},cdf_se_user{2,m,chn_idx,2},'--','color',colours(2,:),'linewidth',linewidth);
 %         plot(edg_se_user{3,m,chn_idx,2},cdf_se_user{3,m,chn_idx,2},'--','color',colours(3,:),'linewidth',linewidth);
 %         plot(edg_se_user{4,m,chn_idx,2},cdf_se_user{4,m,chn_idx,2},'--','color',colours(4,:),'linewidth',linewidth);
@@ -260,7 +321,7 @@ for m = 1:M_SIZ
 %             saveas(gcf,[root_save 'cdf_se_per_user_' chn_type{chn_idx} '_M_' num2str(M(m)) '_K_' num2str(K) '_L_' num2str(L)],'epsc2');
 %         end
 %     end
-end
+%end
 
 % for chn_idx = 1:N_CHN
 %     figure;
