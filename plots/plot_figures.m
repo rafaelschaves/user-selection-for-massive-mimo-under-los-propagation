@@ -110,7 +110,7 @@ edg_se_user = cell(N_ALG+1,M_SIZ,N_CHN,2);
 %     end
 % end
 
-nbins = 50;
+nbins = 1000;
 
 for m = 1:M_SIZ
     se_aux     = se_cell{m,1};
