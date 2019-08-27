@@ -78,13 +78,13 @@ figure;
 
 set(gcf,'position',[0 0 800 600]);
 
-plot(K,1e-9*avg_sum_throughput_u(:,1,1),'-','color',colours(1,:),'linewidth',linewidth);
+plot(K,1e-9*avg_sum_throughput_d(:,1,1),'-','color',colours(1,:),'linewidth',linewidth);
 hold on;
-plot(K,1e-9*avg_sum_throughput_u(:,2,1),'-','color',colours(2,:),'linewidth',linewidth);
-plot(K,1e-9*avg_sum_throughput_u(:,3,1),'-','color',colours(3,:),'linewidth',linewidth);
-plot(K,1e-9*avg_sum_throughput_u(:,1,2),'--','color',colours(1,:),'linewidth',linewidth);
-plot(K,1e-9*avg_sum_throughput_u(:,2,2),'--','color',colours(2,:),'linewidth',linewidth);
-plot(K,1e-9*avg_sum_throughput_u(:,3,2),'--','color',colours(3,:),'linewidth',linewidth);
+plot(K,1e-9*avg_sum_throughput_d(:,2,1),'-','color',colours(2,:),'linewidth',linewidth);
+plot(K,1e-9*avg_sum_throughput_d(:,3,1),'-','color',colours(3,:),'linewidth',linewidth);
+plot(K,1e-9*avg_sum_throughput_d(:,1,2),'--','color',colours(1,:),'linewidth',linewidth);
+plot(K,1e-9*avg_sum_throughput_d(:,2,2),'--','color',colours(2,:),'linewidth',linewidth);
+plot(K,1e-9*avg_sum_throughput_d(:,3,2),'--','color',colours(3,:),'linewidth',linewidth);
 
 xlabel('Number of users','fontname',fontname,'fontsize',fontsize);
 ylabel('Average sum-throughput (Gbps)','fontname',fontname,'fontsize',fontsize);
@@ -106,13 +106,13 @@ figure;
 
 set(gcf,'position',[0 0 800 600]);
 
-plot(K,1e-6*avg_throughput_per_user_u(:,1,1),'-','color',colours(1,:),'linewidth',linewidth);
+plot(K,1e-6*avg_throughput_per_user_d(:,1,1),'-','color',colours(1,:),'linewidth',linewidth);
 hold on;
-plot(K,1e-6*avg_throughput_per_user_u(:,2,1),'-','color',colours(2,:),'linewidth',linewidth);
-plot(K,1e-6*avg_throughput_per_user_u(:,3,1),'-','color',colours(3,:),'linewidth',linewidth);
-plot(K,1e-6*avg_throughput_per_user_u(:,1,2),'--','color',colours(1,:),'linewidth',linewidth);
-plot(K,1e-6*avg_throughput_per_user_u(:,2,2),'--','color',colours(2,:),'linewidth',linewidth);
-plot(K,1e-6*avg_throughput_per_user_u(:,3,2),'--','color',colours(3,:),'linewidth',linewidth);
+plot(K,1e-6*avg_throughput_per_user_d(:,2,1),'-','color',colours(2,:),'linewidth',linewidth);
+plot(K,1e-6*avg_throughput_per_user_d(:,3,1),'-','color',colours(3,:),'linewidth',linewidth);
+plot(K,1e-6*avg_throughput_per_user_d(:,1,2),'--','color',colours(1,:),'linewidth',linewidth);
+plot(K,1e-6*avg_throughput_per_user_d(:,2,2),'--','color',colours(2,:),'linewidth',linewidth);
+plot(K,1e-6*avg_throughput_per_user_d(:,3,2),'--','color',colours(3,:),'linewidth',linewidth);
 
 xlabel('Number of users','fontname',fontname,'fontsize',fontsize);
 ylabel('Average throughput per user (Mbps)','fontname',fontname,'fontsize',fontsize);
