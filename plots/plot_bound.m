@@ -19,7 +19,7 @@ snr_db_dl = 10;
 snr_ul = 10^(snr_db_ul/10);
 snr_dl = 10^(snr_db_dl/10);
 
-n_alg = 3;
+n_alg = 4;
 
 % Roots
 
@@ -56,12 +56,12 @@ se_sel(:,:,2) = se_d_sel(:,:,n_alg);
 %psi       = reshape(sum(betarnd(1,M-1,K-1,K,MC),1),K,MC);
 
 mean_psi    = (K - 1)*mean(psi.^2);
-max_psi     = (K - 1)*max(psi.^2);
+max_psi     = (K - 1)*max(psi);
 min_psi     = (K - 1)*min(psi.^2);
 meadian_psi = (min_psi + max_psi)/2;
 
 mean_psi_sel   = (L - 1)*mean(psi_sel(:,:,n_alg).^2);
-max_psi_sel    = (L - 1)*max(psi_sel(:,:,n_alg).^2);
+max_psi_sel    = (L - 1)*max(psi_sel(:,:,n_alg));
 min_psi_sel    = (L - 1)*min(psi_sel(:,:,n_alg).^2);
 median_psi_sel = (min_psi_sel + max_psi_sel)/2;
 
