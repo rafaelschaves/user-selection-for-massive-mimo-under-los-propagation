@@ -170,6 +170,7 @@ switch algorithm
                 n_selected = n_user - idx_while + 1;
                 
                 if(n_selected == n_user)
+                    user_drop = [];
                     user_sel = (1:n_user)';
                     sel_chnl_mtx = chnl_mtx;
                 else
@@ -249,6 +250,7 @@ switch algorithm
                 n_selected = n_user - idx_while + 1;
                 
                 if(n_selected == n_user)
+                    user_drop = [];
                     sel_chnl_mtx = chnl_mtx;
                 else
                     user_sel(user_drop) = [];
