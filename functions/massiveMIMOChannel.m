@@ -12,9 +12,6 @@
 % fading channel (rich scattering fading channel), which models an
 % isotropic rich scattering fading. The second is the uniformly random 
 % line-of-sight (UR-LoS), which models an environment with only LoS.
-% Finally, the last one is the sparse multipath fading channel (poor
-% scattering fading channel), which models an environment where the BS only
-% receive signals from a sparse set of signals.
 %
 % References:
 %
@@ -24,11 +21,6 @@
 % [2] - A. M. Sayeed, "Deconstructing Multiantenna Fading Channels", IEEE
 % Transaction on Signal Processing, vol. 50, no. 10, pp. 2563-2579, Oct.
 % 2006
-%
-% [3] - Y. Gao, W. Jiang and T. Kaiser, "Bidirectional Branch and Bound
-% Based Antenna Selection in Massive MIMO Systems" in 2015 IEEE 26th Annual
-% International Symposium on Personal, Indoor, and Mobile Radio
-% Communications, 2015, pp. 563–568.
 %
 % Help:
 %
@@ -56,11 +48,6 @@
 %           * 'commcell.userHeight' is the field with the maximum and
 %           minimum user heights, it must be a positve real vector with 
 %           size 2.
-%
-%           * 'commcell.nPaths' is the field with the number of multipaths
-%           for each user, it must be a vector with the same size of the
-%           number of users. If all users have the same number of paths, a
-%           scalar can be used as input
 %
 %           * 'commcell.frequency' is the field with the carrier frequency
 %           of the transmitted signal, it must be a positive real number.
@@ -133,7 +120,6 @@ n_user                = commcell.nUsers;                                   % Num
 R                     = commcell.radius;                                   % Cell's raidus (circumradius) in meters
 bs_height             = commcell.bsHeight;                                 % Height of base station in meters
 user_height           = commcell.userHeight;                               % Minimum and maximum heights of user terminals in meters
-n_path                = commcell.nPaths;                                   % Number of multipaths for each user terminal
 f_c                   = commcell.frequency;                                % Carrier frequency of the transmitted signal
 mean_shadow_fad_dB    = commcell.meanShadowFad;                            % Shadow fading mean in dB
 std_dev_shadow_fad_dB = commcell.stdDevShadowFad;                          % Shadow fading standard deviation in dB
@@ -162,12 +148,6 @@ elseif (R <=0)
     error('Cell radius must be a positive real number');
 elseif (bs_height <= 0)
     error('Base station height must be a positive real number');
-end
-
-if (size(n_path,1) == 1)
-    n_path = repmat(n_path,n_user,1);
-elseif (size(n_path,1) ~= n_user)
-    error('Invalid size of multipath');
 end
 
 r = sqrt(3)/2*R;
@@ -245,61 +225,6 @@ switch fading
         Phase = repmat(phase.',n_antenna,1);                                
         
         G = Phase.*A;                                                      % Small-scale fading coefficient matrix
-    case 'SPARSE'
-        if (nargin < N_ARGIN)
-            x_object = zeros(n_user,n_path(1));
-            y_object = zeros(n_user,n_path(1));
-                        
-            % Generating Interferung object coordinates
-            
-            for k = 1:n_user
-                for n = 1:n_path(k)
-                    if(x_user(k) >= 0)
-                        x_object(k,n) = x_user(k)*rand(1);
-                        y_object(k,n) = -r + 2*r*rand(1);
-                        
-                        if(x_user(k) > R/2)
-                            while(y_object(k,n) + 2*r/R*x_object(k,n) - 2*r > 0 || ...
-                                    y_object(k,n) - 2*r/R*x_object(k,n) + 2*r < 0)
-                                x_object(k,n) = x_user(k)*rand(1);
-                                y_object(k,n) = -r + 2*r*rand(1);
-                            end
-                        end
-                    else
-                        x_object(k,n) = x_user(k) - x_user(k)*rand(1);
-                        y_object(k,n) = -r + 2*r*rand(1);
-                        
-                        if(x_user(k) < -R/2)
-                            while(y_object(k,n) - 2*r/R*x_object(k,n) - 2*r > 0 || ...
-                                    y_object(k,n) + 2*r/R*x_object(k,n) + 2*r < 0)
-                                x_object(k,n) = x_user(k) - x_user(k)*rand(1);
-                                y_object(k,n) = -r + 2*r*rand(1);
-                            end
-                        end
-                    end
-                end
-            end
-        elseif (nargin == N_ARGIN)
-            coordinate = varargin{2};
-            
-            x_object = coordinate.x_object;
-            y_object = coordinate.y_object;
-        end
-        
-        theta_object = atan2(y_object,x_object);                           % Departure angle in rad
-        
-        varargout{2} = [x_object y_object theta_object];
-        
-        G = zeros(n_antenna,n_user);
-        
-        for k = 1:n_user
-            A_k = steeringVector(n_antenna, theta_object(k,:)', antenna_spacing, c/f_c);
-            
-            phi   = -pi + 2*pi*rand(n_path(k),1);                          % Phase shift
-            phase = exp(1i*phi);                                               
-            
-            G(:,k) = A_k*phase;                                            % Small-scale fading coefficient matrix
-        end
     otherwise
         error('Invalid type of fading');
 end
