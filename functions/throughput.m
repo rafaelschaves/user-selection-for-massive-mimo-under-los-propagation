@@ -23,10 +23,10 @@ switch link
     case 'UPLINK'
         aux_mtx        = abs(proc_mtx'*chnl_mtx).^2;
         pow_signal_vec = pow_vec.*diag(aux_mtx);
-        pow_interf_vec = sum(pow_vec.*aux_mtx,2) - pow_signal_vec;
+        pow_interf_vec = sum(snr.*pow_vec.*aux_mtx,2) - snr.*pow_signal_vec;
         proc_mtx_norm  = vecnorm(proc_mtx,2).^2;
         
-        gamma = (snr.*pow_signal_vec)./(proc_mtx_norm' + snr.*pow_interf_vec);
+        gamma = (snr.*pow_signal_vec)./(proc_mtx_norm' + pow_interf_vec);
     case 'DOWNLINK'
         aux_mtx        = abs(chnl_mtx.'*proc_mtx).^2;
         pow_signal_vec = pow_vec.*diag(aux_mtx);
