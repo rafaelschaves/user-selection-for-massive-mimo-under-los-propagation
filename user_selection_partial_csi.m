@@ -79,7 +79,7 @@ N_ALG = 4;
 
 % Initialization
 
-psi     = zeros(K,MC_1);
+psi     = zeros(K,MC_2,N_XI,MC_1);
 psi_sel = zeros(L,MC_2,N_XI,MC_1,N_ALG);
 
 se_ep  = zeros(K,MC_2,N_XI,MC_1);
@@ -111,6 +111,8 @@ for mc_1 = 1:MC_1
             
             G_hat = xi(n_xi)*G + sqrt(1 - xi(n_xi)^2)*E;
             
+            psi(:,mc_2,n_xi,mc_1) = ici(G_hat);
+            
             [gamma_max_0(mc_2,n_xi,mc_1),eta_max(:,mc_2,n_xi,mc_1)] = maxMinFairness(G_hat,beta,snr);
     
             W = precoderMatrix(G_hat,'mf');
@@ -120,6 +122,8 @@ for mc_1 = 1:MC_1
             
             for alg_idx = 1:N_ALG
                 [~,G_sel] = userSelector(G_hat,algorithm_type{alg_idx},'fixed',L,[]);
+                
+                psi_sel(:,mc_2,n_xi,mc_1,alg_idx) = ici(G_sel);
                 
                 [gamma_max_sel_0(mc_2,n_xi,mc_1,alg_idx),eta_max_sel(:,mc_2,n_xi,mc_1,alg_idx)] = maxMinFairness(G_sel,beta,snr);
                 
