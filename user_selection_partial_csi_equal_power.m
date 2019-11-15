@@ -6,7 +6,7 @@ addpath('./functions/')
 
 % Cheking deirectory
 
-dir_save_dl  = './results/scheduling/downlink/partial_csi';
+dir_save_dl  = './results/scheduling/downlink/partial_csi/';
 root_save_dl = [dir_save_dl 'spectral_efficiency_mf_'];
 
 if ~exist(dir_save_dl,'dir')
