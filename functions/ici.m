@@ -2,7 +2,7 @@ function [psi] = ici(chnl_mtx)
 
 n_antenna  = size(chnl_mtx,1);
 n_user     = size(chnl_mtx,2);
-n_user_aux = size(chnl_mtx,2) - length(find(all(chnl_mtx == 0)));
+n_user_aux = n_user - length(find(all(chnl_mtx == 0)));
 
 norm_h_k = vecnorm(chnl_mtx,2);
 idx_aux  = find(norm_h_k ~= 0);

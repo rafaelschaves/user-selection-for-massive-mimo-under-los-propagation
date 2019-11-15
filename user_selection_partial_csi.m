@@ -16,7 +16,7 @@ end
 % Checking variables
 
 if ~exist('MC_1','var')
-    MC_1 = 10;                                                             % Size of the outer Monte Carlo ensemble (Varies the channel realizarions)
+    MC_1 = 1000;                                                           % Size of the outer Monte Carlo ensemble (Varies the channel realizarions)
 end
 
 if ~exist('MC_2','var')
@@ -125,7 +125,7 @@ for mc_1 = 1:MC_1
                 
                 W = precoderMatrix(G_sel,'mf');
                 
-                [~,se_ep_sel(:,mc_2,n_xi,mc_1,alg_idx)]  = throughput(G_sel,W,1/L                                           ,'downlink',snr,settings);
+                [~,se_ep_sel(:,mc_2,n_xi,mc_1,alg_idx)]  = throughput(G_sel,W,1/L                                  ,'downlink',snr,settings);
                 [~,se_max_sel(:,mc_2,n_xi,mc_1,alg_idx)] = throughput(G_sel,W,eta_max_sel(:,mc_2,n_xi,mc_1,alg_idx),'downlink',snr,settings);
             end
         end
@@ -133,7 +133,7 @@ for mc_1 = 1:MC_1
 end
 
 save([root_save strrep(channel_type,'-','_') '_M_' num2str(M) '_K_' ...
-      num2str(K) '_L_' num2str(L) '_SNR_' num2str(snr_eff) '_dB_radius' ...
-      num2str(commcell.radius) 'BS_power' num2str(linkprop.bsPower) '_MC_' ...
-      num2str(MC_1) '.mat'],'se_ep','se_max','gamma_max_0','eta_max', ...
-      'psi','se_ep_sel','se_max_sel','gamma_max_sel_0','eta_max_sel','psi_sel');
+      num2str(K) '_L_' num2str(L) '_radius_' num2str(commcell.radius) ...
+      '_m_BS_power' num2str(linkprop.bsPower) '_W_MC_' num2str(MC_1) ...
+      '.mat'],'se_ep','se_max','gamma_max_0','eta_max','psi','se_ep_sel', ...
+      'se_max_sel','gamma_max_sel_0','eta_max_sel','psi_sel');
