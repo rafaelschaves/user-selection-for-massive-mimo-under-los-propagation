@@ -278,18 +278,12 @@ function [corr_mtx] = correlationMatrix(mtx)
 n_row = size(mtx,1);
 n_col = size(mtx,2);
 
-mtx_norm = zeros(n_row,n_col);
+norm_mtx_k = vecnorm(mtx,2);
+idx_aux    = find(norm_mtx_k ~= 0);
 
-for k = 1:n_col
-    norm_mtx_k = norm(mtx(:,k),2);
-    
-    if(norm_mtx_k == 0)
-        mtx_norm(:,k) = 0;
-    else
-        mtx_norm(:,k) = mtx(:,k)/norm_mtx_k;
-    end
-end
+mtx_norm            = zeros(n_row,n_col);
+mtx_norm(:,idx_aux) = mtx(:,idx_aux)./norm_mtx_k(idx_aux);
 
-corr_mtx     = abs(mtx_norm'*mtx_norm);
+corr_mtx = abs(mtx_norm'*mtx_norm);
               
 end

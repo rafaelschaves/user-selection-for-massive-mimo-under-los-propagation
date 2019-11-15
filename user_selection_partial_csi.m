@@ -6,21 +6,21 @@ addpath('./functions/')
 
 % Cheking deirectory
 
-dir_save_dl  = './results/scheduling/downlink/partial_csi/';
-root_save_dl = [dir_save_dl 'spectral_efficiency_mf_'];
+dir_save  = './results/scheduling/downlink/partial_csi/';
+root_save = [dir_save 'spectral_efficiency_mf_'];
 
-if ~exist(dir_save_dl,'dir')
-    mkdir(dir_save_dl);
+if ~exist(dir_save,'dir')
+    mkdir(dir_save);
 end
 
 % Checking variables
 
-if ~exist('MC_OUTTER','var')
-    MC_OUTTER = 1000;                                                      % Size of the outer Monte Carlo ensemble (Varies the channel realizarions)
+if ~exist('MC_1','var')
+    MC_1 = 1000;                                                           % Size of the outer Monte Carlo ensemble (Varies the channel realizarions)
 end
 
-if ~exist('MC_INNER','var')
-    MC_INNER = 100;                                                        % Size of the outer Monte Carlo ensemble (Varies the channel realizarions)
+if ~exist('MC_2','var')
+    MC_2 = 100;                                                            % Size of the outer Monte Carlo ensemble (Varies the channel realizarions)
 end
 
 if ~exist('M','var')
@@ -32,7 +32,7 @@ if ~exist('K','var')
 end
 
 if ~exist('L','var')
-    L = 13;                                                                % Number of selected users
+    L = 8;                                                                 % Number of selected users
 end
 
 if ~exist('channel_type','var')
@@ -63,13 +63,14 @@ linkprop.noiseFigureBS   = 9;                                              % in 
 linkprop.noiseFigureUser = 9 ;                                             % in dB
 linkprop.bandwidth       = 20e6;                                           % in Hz
 
-[~,snr_dl_db] = linkBudgetCalculation(linkprop);                           % SNR in dB
+[~,snr_db] = linkBudgetCalculation(linkprop);                              % SNR in dB
                 
 beta_db = -148 - 37.6*log10(commcell.radius/1000);
-beta    = 10^(beta_db/10);
+% beta    = 10^(beta_db/10);
+beta = 1;
 
-snr_dl_eff = round(snr_dl_db + beta_db);
-snr_dl     = 10.^(snr_dl_eff/10);
+snr_eff = round(snr_db + beta_db);
+snr     = 10.^(snr_eff/10);
 
 xi = 0:0.1:1;
 
@@ -78,40 +79,65 @@ N_ALG = 4;
 
 % Initialization
 
-psi     = zeros(K,MC_OUTTER);
-psi_sel = zeros(L,MC_INNER,N_XI,MC_OUTTER,N_ALG);
+psi     = zeros(K,MC_2,N_XI,MC_1);
+psi_sel = zeros(L,MC_2,N_XI,MC_1,N_ALG);
 
-se_dl     = zeros(K,MC_OUTTER);
-se_dl_sel = zeros(L,MC_INNER,N_XI,MC_OUTTER,N_ALG);
+se_ep  = zeros(K,MC_2,N_XI,MC_1);
+se_max = zeros(K,MC_2,N_XI,MC_1);
+
+se_ep_sel  = zeros(L,MC_2,N_XI,MC_1,N_ALG);
+se_max_sel = zeros(L,MC_2,N_XI,MC_1,N_ALG);
+
+gamma_max_0     = zeros(MC_2,N_XI,MC_1);
+gamma_max_sel_0 = zeros(MC_2,N_XI,MC_1,N_ALG);
+
 
 algorithm_type = {'random selection', ...
                   'semi-orthogonal selection', ...
                   'correlation-based selection', ...
                   'ici-based selection'};
 
-for mc_outter = 1:MC_OUTTER
-    mc_outter
+eta_max     = zeros(K,MC_2,N_XI,MC_1);
+eta_max_sel = zeros(L,MC_2,N_XI,MC_1,N_ALG);
+
+for mc_1 = 1:MC_1
+    mc_1
     
     [G,~] = massiveMIMOChannel(commcell,channel_type);
-    
-    [~,se_dl(:,mc_outter)] = throughput(G,precoderMatrix(G,'mf'),1/K,'downlink',snr_dl,settings);
-    
+        
     for n_xi = 1:N_XI
-        for mc_inner = 1:MC_INNER
+        for mc_2 = 1:MC_2
             E = (randn(M,K) + 1i*randn(M,K))/sqrt(2);
             
             G_hat = xi(n_xi)*G + sqrt(1 - xi(n_xi)^2)*E;
             
+            psi(:,mc_2,n_xi,mc_1) = ici(G_hat);
+            
+            [gamma_max_0(mc_2,n_xi,mc_1),eta_max(:,mc_2,n_xi,mc_1)] = maxMinFairness(G_hat,beta,snr);
+    
+            W = precoderMatrix(G_hat,'mf');
+                
+            [~,se_ep(:,mc_2,n_xi,mc_1)]  = throughput(G_hat,W,1/K                      ,'downlink',snr,settings);
+            [~,se_max(:,mc_2,n_xi,mc_1)] = throughput(G_hat,W,eta_max(:,mc_2,n_xi,mc_1),'downlink',snr,settings);
+            
             for alg_idx = 1:N_ALG
                 [~,G_sel] = userSelector(G_hat,algorithm_type{alg_idx},'fixed',L,[]);
                 
-                [~,se_dl_sel(:,mc_inner,n_xi,mc_outter,alg_idx)] = throughput(G_sel,precoderMatrix(G_sel,'mf'),1/L,'downlink',snr_dl,settings);
+                psi_sel(:,mc_2,n_xi,mc_1,alg_idx) = ici(G_sel);
+                
+                [gamma_max_sel_0(mc_2,n_xi,mc_1,alg_idx),eta_max_sel(:,mc_2,n_xi,mc_1,alg_idx)] = maxMinFairness(G_sel,beta,snr);
+                
+                W = precoderMatrix(G_sel,'mf');
+                
+                [~,se_ep_sel(:,mc_2,n_xi,mc_1,alg_idx)]  = throughput(G_sel,W,1/L                                  ,'downlink',snr,settings);
+                [~,se_max_sel(:,mc_2,n_xi,mc_1,alg_idx)] = throughput(G_sel,W,eta_max_sel(:,mc_2,n_xi,mc_1,alg_idx),'downlink',snr,settings);
             end
         end
     end
 end
 
-save([root_save_dl strrep(channel_type,'-','_') '_M_' num2str(M) '_K_' ...
-      num2str(K) '_L_' num2str(L) '_SNR_' num2str(snr_dl_eff) '_dB_radius' ...
-      num2str(commcell.radius) 'BS_power' num2str(linkprop.bsPower) '_MC_' ...
-      num2str(MC_OUTTER) '.mat'],'se_dl','psi','se_dl_sel','psi_sel');
+save([root_save strrep(channel_type,'-','_') '_M_' num2str(M) '_K_' ...
+      num2str(K) '_L_' num2str(L) '_radius_' num2str(commcell.radius) ...
+      '_m_BS_power' num2str(linkprop.bsPower) '_W_MC_' num2str(MC_1) ...
+      '.mat'],'se_ep','se_max','gamma_max_0','eta_max','psi','se_ep_sel', ...
+      'se_max_sel','gamma_max_sel_0','eta_max_sel','psi_sel');
