@@ -117,17 +117,19 @@ for mc_1 = 1:MC_1
     
             W = precoderMatrix(G_hat,'mf');
                 
-            [~,se_ep(:,mc_2,n_xi,mc_1)]  = throughput(G_hat,W,1/K                      ,'downlink',snr,settings);
-            [~,se_max(:,mc_2,n_xi,mc_1)] = throughput(G_hat,W,eta_max(:,mc_2,n_xi,mc_1),'downlink',snr,settings);
+            [~,se_ep(:,mc_2,n_xi,mc_1)]  = throughput(G,W,1/K                      ,'downlink',snr,settings);
+            [~,se_max(:,mc_2,n_xi,mc_1)] = throughput(G,W,eta_max(:,mc_2,n_xi,mc_1),'downlink',snr,settings);
             
             for alg_idx = 1:N_ALG
-                [~,G_sel] = userSelector(G_hat,algorithm_type{alg_idx},'fixed',L,[]);
+                [user_sel,G_sel_hat] = userSelector(G_hat,algorithm_type{alg_idx},'fixed',L,[]);
                 
-                psi_sel(:,mc_2,n_xi,mc_1,alg_idx) = ici(G_sel);
+                G_sel = G(:,user_sel);
                 
-                [gamma_max_sel_0(mc_2,n_xi,mc_1,alg_idx),eta_max_sel(:,mc_2,n_xi,mc_1,alg_idx)] = maxMinFairness(G_sel,beta,snr);
+                psi_sel(:,mc_2,n_xi,mc_1,alg_idx) = ici(G_sel_hat);
                 
-                W = precoderMatrix(G_sel,'mf');
+                [gamma_max_sel_0(mc_2,n_xi,mc_1,alg_idx),eta_max_sel(:,mc_2,n_xi,mc_1,alg_idx)] = maxMinFairness(G_sel_hat,beta,snr);
+                
+                W = precoderMatrix(G_sel_hat,'mf');
                 
                 [~,se_ep_sel(:,mc_2,n_xi,mc_1,alg_idx)]  = throughput(G_sel,W,1/L                                  ,'downlink',snr,settings);
                 [~,se_max_sel(:,mc_2,n_xi,mc_1,alg_idx)] = throughput(G_sel,W,eta_max_sel(:,mc_2,n_xi,mc_1,alg_idx),'downlink',snr,settings);
@@ -138,6 +140,6 @@ end
 
 save([root_save strrep(channel_type,'-','_') '_M_' num2str(M) '_K_' ...
       num2str(K) '_L_' num2str(L) '_radius_' num2str(commcell.radius) ...
-      '_m_BS_power' num2str(linkprop.bsPower) '_W_MC_' num2str(MC_1) ...
+      '_m_BS_power_' num2str(linkprop.bsPower) '_W_MC_' num2str(MC_1) ...
       '.mat'],'se_ep','se_max','gamma_max_0','eta_max','psi','se_ep_sel', ...
       'se_max_sel','gamma_max_sel_0','eta_max_sel','psi_sel');
