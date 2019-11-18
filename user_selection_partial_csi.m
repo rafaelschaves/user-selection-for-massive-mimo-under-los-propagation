@@ -16,7 +16,7 @@ end
 % Checking variables
 
 if ~exist('MC_1','var')
-    MC_1 = 1000;                                                           % Size of the outer Monte Carlo ensemble (Varies the channel realizarions)
+    MC_1 = 10;                                                           % Size of the outer Monte Carlo ensemble (Varies the channel realizarions)
 end
 
 if ~exist('MC_2','var')

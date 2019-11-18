@@ -38,8 +38,8 @@ sum_se_low = zeros(MC,2);
 sum_se_upp_sel = zeros(MC,2);
 sum_se_low_sel = zeros(MC,2);
 
-load([root_load_ul 'spectral_efficiency_mf_rayleigh_M_' num2str(M) '_K_' num2str(K) '_L_' num2str(L) '_SNR_' num2str(snr_db_ul) '_dB_MC_' num2str(MC) '.mat']);
-load([root_load_dl 'spectral_efficiency_mf_rayleigh_M_' num2str(M) '_K_' num2str(K) '_L_' num2str(L) '_SNR_' num2str(snr_db_dl) '_dB_MC_' num2str(MC) '.mat']);
+load([root_load_ul 'spectral_efficiency_mf_ur_los_M_' num2str(M) '_K_' num2str(K) '_L_' num2str(L) '_SNR_' num2str(snr_db_ul) '_dB_MC_' num2str(MC) '.mat']);
+load([root_load_dl 'spectral_efficiency_mf_ur_los_M_' num2str(M) '_K_' num2str(K) '_L_' num2str(L) '_SNR_' num2str(snr_db_dl) '_dB_MC_' num2str(MC) '.mat']);
 
 se(:,:,1) = se_u;
 se(:,:,2) = se_d;
@@ -126,11 +126,13 @@ set(gcf,'position',[0 0 800 600]);
 
 plot(edg_sum_se(:,2)        ,[cdf_sum_se(:,2);         1],'-','color',colours(1,:),'linewidth',linewidth,'markersize',markersize);
 hold on;
-plot(edg_sum_se_sel(:,2)    ,[cdf_sum_se_sel(:,2);     1],'-','color',colours(2,:),'linewidth',linewidth,'markersize',markersize);
+plot(edg_sum_se_sel(:,2)    ,[cdf_sum_se_sel(:,2);     1],'-','color',colours(5,:),'linewidth',linewidth,'markersize',markersize);
+plot(1000,1000,'^k','linewidth',linewidth,'markersize',markersize);
+plot(1000,1000,'vk','linewidth',linewidth,'markersize',markersize);
 plot(edg_sum_se_upp(:,2)    ,[cdf_sum_se_upp(:,2);     1],'^','color',colours(1,:),'linewidth',linewidth,'markersize',markersize);
 plot(edg_sum_se_low(:,2)    ,[cdf_sum_se_low(:,2);     1],'v','color',colours(1,:),'linewidth',linewidth,'markersize',markersize);
-plot(edg_sum_se_upp_sel(:,2),[cdf_sum_se_upp_sel(:,2); 1],'^','color',colours(2,:),'linewidth',linewidth,'markersize',markersize);
-plot(edg_sum_se_low_sel(:,2),[cdf_sum_se_low_sel(:,2); 1],'v','color',colours(2,:),'linewidth',linewidth,'markersize',markersize);
+plot(edg_sum_se_upp_sel(:,2),[cdf_sum_se_upp_sel(:,2); 1],'^','color',colours(5,:),'linewidth',linewidth,'markersize',markersize);
+plot(edg_sum_se_low_sel(:,2),[cdf_sum_se_low_sel(:,2); 1],'v','color',colours(5,:),'linewidth',linewidth,'markersize',markersize);
 
 xlabel('Spectral efficiency (b/s/Hz)','fontname',fontname,'fontsize',fontsize);
 ylabel('Cumulative distribution','fontname',fontname,'fontsize',fontsize);
@@ -143,12 +145,12 @@ set(gca,'fontname',fontname,'fontsize',fontsize);
 ylim([0 1]);
 
 if M == 64
-    xlim([0 100]);
-%    xlim([0 150]);
+    %xlim([0 100]);
+    xlim([0 150]);
 end
 
 if (savefig == 1)
-    saveas(gcf,[root_save 'bound_cdf_sum_se_rayleigh_M_' num2str(M) '_K_' num2str(K) '_L_' num2str(L)],'fig');
-    saveas(gcf,[root_save 'bound_cdf_sum_se_rayleigh_M_' num2str(M) '_K_' num2str(K) '_L_' num2str(L)],'png');
-    saveas(gcf,[root_save 'bound_cdf_sum_se_rayleigh_M_' num2str(M) '_K_' num2str(K) '_L_' num2str(L)],'epsc2');
+    saveas(gcf,[root_save 'bound_cdf_sum_se_ur_los_M_' num2str(M) '_K_' num2str(K) '_L_' num2str(L)],'fig');
+    saveas(gcf,[root_save 'bound_cdf_sum_se_ur_los_M_' num2str(M) '_K_' num2str(K) '_L_' num2str(L)],'png');
+    saveas(gcf,[root_save 'bound_cdf_sum_se_ur_los_M_' num2str(M) '_K_' num2str(K) '_L_' num2str(L)],'epsc2');
 end
