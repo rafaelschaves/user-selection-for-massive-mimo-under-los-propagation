@@ -62,13 +62,19 @@ for mc = 1:MC
     
     [G,beta]   = massiveMIMOChannel(commcell,channel_type);
     
+    tic;
     [gamma(mc,1),eta(:,mc,1),gamma_u(mc,1),n_it(mc,1)] = maxMinFairness(G,beta,snr,'algorithm 1');
+    time(mc,1) = toc;
+    tic;
     [gamma(mc,2),eta(:,mc,2),gamma_u(mc,2),n_it(mc,2)] = maxMinFairness(G,beta,snr,'algorithm 2');
+    time(mc,2) = toc;
+    tic;
     [gamma(mc,3),eta(:,mc,3),gamma_u(mc,3),n_it(mc,3)] = maxMinFairness(G,beta,snr,'algorithm 3');
+    time(mc,3) = toc;
         
-    time(mc,1) = timeit(@() maxMinFairness(G,beta,snr,'algorithm 1'),N_PAR);
-    time(mc,2) = timeit(@() maxMinFairness(G,beta,snr,'algorithm 2'),N_PAR);
-    time(mc,3) = timeit(@() maxMinFairness(G,beta,snr,'algorithm 3'),N_PAR);
+    % time(mc,1) = timeit(@() maxMinFairness(G,beta,snr,'algorithm 1'),N_PAR);
+    % time(mc,2) = timeit(@() maxMinFairness(G,beta,snr,'algorithm 2'),N_PAR);
+    % time(mc,3) = timeit(@() maxMinFairness(G,beta,snr,'algorithm 3'),N_PAR);
 end
 
 save([root_save strrep(channel_type,'-','_') '_M_' num2str(M) '_K_' ...
