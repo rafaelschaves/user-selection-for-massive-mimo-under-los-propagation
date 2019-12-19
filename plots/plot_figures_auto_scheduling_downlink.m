@@ -4,12 +4,12 @@ clc;
 
 % Macros
 
-MC = 10000;                                                                % Size of the monte-carlo ensemble
+MC = 100;                                                                  % Size of the monte-carlo ensemble
 
-M = 256;                                                                    % Number of antennas at base station
-K = 18;                                                                    % Number of mobile users
+M = 64;                                                                    % Number of antennas at base station
+K = 72;                                                                    % Number of mobile users
 
-snr = 20;                                                                  % SNR in dB
+snr = 10;                                                                  % SNR in dB
 
 % Normalized threshold
 
@@ -32,7 +32,7 @@ time = T_c*(0:MC-1);
 
 % Root
 
-root_load = '../results/auto_scheduling/downlink/rate_downlink_mf_';
+root_load = '../results/auto_scheduling/downlink/rate_mf_';
 
 root_save_rate = '../figures/auto_scheduling/downlink/normalized_sum_rate/cdf_';
 root_save_drop = '../figures/auto_scheduling/downlink/dropped_users/pdf_';
@@ -56,22 +56,22 @@ for snr_idx = 1:N_SNR
     % rate_sel(:,:,:,m_idx,snr_idx,3) = rate_u_alg;
 end
 
-rate = zeros(MC,K,N_TAU,N_ALG);
+se = zeros(MC,K,N_TAU,N_ALG);
 
 for alg_idx = 1:N_ALG
     for mc = 1:MC
         for tau_idx = 1:N_TAU
-            rate(mc,user_sel{mc,tau_idx,alg_idx},tau_idx,alg_idx) = rate_d{mc,tau_idx,alg_idx};
+            se(mc,user_sel{mc,tau_idx,alg_idx},tau_idx,alg_idx) = se_dl{mc,tau_idx,alg_idx};
         end
     end
 end
 
 % Post processing - Calculating the CDF
 
-max_rate     = 15;
+max_rate     = 5;
 rate_samples = 15000;
 
-L_max = 19;
+L_max = K + 1;
 
 do_norm_sum_rate = zeros(MC,N_TAU,N_ALG);
 
@@ -92,7 +92,7 @@ tau_sele_grid   = repmat(tau_norm',1,L_max);
 for alg_idx = 1:N_ALG
     for tau_idx = 1:N_TAU
         for mc = 1:MC
-            do_norm_sum_rate(mc,tau_idx,alg_idx) = mean(rate_d{mc,tau_idx,alg_idx});
+            do_norm_sum_rate(mc,tau_idx,alg_idx) = mean(se_dl{mc,tau_idx,alg_idx});
         end
         
         prob_rate(:,tau_idx,alg_idx) = histcounts(do_norm_sum_rate(:,tau_idx,alg_idx),edges_rate,'normalization','cdf');
@@ -109,7 +109,7 @@ markersize = 10;
 fontname   = 'Times New Roman';
 fontsize   = 20;
 
-savefig = 1;
+savefig = 0;
       
 channel_mod = {'ur_los','sparse','rayleigh'};
 algorithm   = {'cbs','icibs'};
@@ -143,45 +143,45 @@ close;
 
 % Pictures - Rate x tau x outage probability
 
-for chn_idx = 1:N_CHN
-    for alg_idx = 1:N_ALG
-        for snr_idx = 1:N_SNR
-            figure;
-                
-            set(gcf,'position',[0 0 800 600]);
-            
-            if(alg_idx == 1)
-                surf(edges_rate_grid,tau_rate_grid,prob_rate_f(:,:,alg_idx)','edgecolor','none');
-            else
-                surf(edges_rate_grid,tau_icibs_max*tau_rate_grid,prob_rate_f(:,:,alg_idx)','edgecolor','none');
-            end
-            
-            xlabel('Uplink rate per terminal (b/s/Hz)','fontname',fontname,'fontsize',fontsize);
-            ylabel('$\tau$','fontname',fontname,'fontsize',fontsize,'interpreter','latex');
-            zlabel('Outage probability','fontname',fontname,'fontsize',fontsize);
-            
-            colorbar;
-            
-            set(gca,'fontname',fontname,'fontsize',fontsize);
-            
-            xlim([0 max_rate]);
-            
-            if(alg_idx == 1)
-                ylim([0 tau_norm_max]);
-            else
-                ylim([0 tau_icibs_max]);
-            end
-            
-            zlim([0 1]);    
-        end
-        
-        if (savefig == 1)
-            saveas(gcf,[root_save_rate channel_mod{chn_idx} '_' algorithm{alg_idx} '_M_' num2str(M) '_K_' num2str(K) '_SNR_' num2str(snr(snr_idx)) '_dB'],'fig');
-            saveas(gcf,[root_save_rate channel_mod{chn_idx} '_' algorithm{alg_idx} '_M_' num2str(M) '_K_' num2str(K) '_SNR_' num2str(snr(snr_idx)) '_dB'],'png');
-            saveas(gcf,[root_save_rate channel_mod{chn_idx} '_' algorithm{alg_idx} '_M_' num2str(M) '_K_' num2str(K) '_SNR_' num2str(snr(snr_idx)) '_dB'],'epsc2');
-        end
-    end
-end
+% for chn_idx = 1:N_CHN
+%     for alg_idx = 1:N_ALG
+%         for snr_idx = 1:N_SNR
+%             figure;
+%                 
+%             set(gcf,'position',[0 0 800 600]);
+%             
+%             if(alg_idx == 1)
+%                 surf(edges_rate_grid,tau_rate_grid,prob_rate_f(:,:,alg_idx)','edgecolor','none');
+%             else
+%                 surf(edges_rate_grid,tau_icibs_max*tau_rate_grid,prob_rate_f(:,:,alg_idx)','edgecolor','none');
+%             end
+%             
+%             xlabel('Uplink rate per terminal (b/s/Hz)','fontname',fontname,'fontsize',fontsize);
+%             ylabel('$\tau$','fontname',fontname,'fontsize',fontsize,'interpreter','latex');
+%             zlabel('Outage probability','fontname',fontname,'fontsize',fontsize);
+%             
+%             colorbar;
+%             
+%             set(gca,'fontname',fontname,'fontsize',fontsize);
+%             
+%             xlim([0 max_rate]);
+%             
+%             if(alg_idx == 1)
+%                 ylim([0 tau_norm_max]);
+%             else
+%                 ylim([0 tau_icibs_max]);
+%             end
+%             
+%             zlim([0 1]);
+%         end
+%         
+%         if (savefig == 1)
+%             saveas(gcf,[root_save_rate channel_mod{chn_idx} '_' algorithm{alg_idx} '_M_' num2str(M) '_K_' num2str(K) '_SNR_' num2str(snr(snr_idx)) '_dB'],'fig');
+%             saveas(gcf,[root_save_rate channel_mod{chn_idx} '_' algorithm{alg_idx} '_M_' num2str(M) '_K_' num2str(K) '_SNR_' num2str(snr(snr_idx)) '_dB'],'png');
+%             saveas(gcf,[root_save_rate channel_mod{chn_idx} '_' algorithm{alg_idx} '_M_' num2str(M) '_K_' num2str(K) '_SNR_' num2str(snr(snr_idx)) '_dB'],'epsc2');
+%         end
+%     end
+% end
 
 % Pictures - Contour levels for Rate x tau x outage probability
 
@@ -296,43 +296,43 @@ end
 
 % Picture - Rate x time
 
-for chn_idx = 1:N_CHN
-    for alg_idx = 1:N_ALG
-        for k = 1:K
-            figure;
-            
-            set(gcf,'position',[0 0 800 600]);
-            
-            plot(time,rate(:,k,end,chn_idx),'o-','color',colours(1,:),'linewidth',linewidth,'markersize',markersize);
-            hold on;
-            plot(time,rate(:,k,50,chn_idx),'o-','color',colours(2,:),'linewidth',linewidth,'markersize',markersize);   
-            plot(time,rate(:,k,10,chn_idx),'o-','color',colours(3,:),'linewidth',linewidth,'markersize',markersize);
-            plot(time,rate(:,k,1,chn_idx),'o-','color',colours(4,:),'linewidth',linewidth,'markersize',markersize);
-         
-            xlabel('Time (s)','fontname',fontname,'fontsize',fontsize);
-            ylabel('Rate (b/s/Hz)','fontname',fontname,'fontsize',fontsize);
-            
-            if(alg_idx == 1)
-                legend(legend_tau_cbs,'fontname',fontname,'fontsize',fontsize,'interpreter','latex','location',location_1);
-                legend box off;
-            else
-                legend(legend_tau_icibs,'fontname',fontname,'fontsize',fontsize,'interpreter','latex','location',location_1);
-                legend box off;
-            end
-            
-            set(gca,'fontname',fontname,'fontsize',fontsize);
-            
-            xlim([0 0.1]);
-            ylim([0 max_rate + 7]);
-            
-            if (savefig == 1)
-                saveas(gcf,[root_save_time 'rate/' channel_mod{chn_idx} '_' algorithm{alg_idx} '_M_' num2str(M) '_' num2str(k) '_user_SNR_' num2str(snr(snr_idx)) '_dB'],'fig');
-                saveas(gcf,[root_save_time 'rate/' channel_mod{chn_idx} '_' algorithm{alg_idx} '_M_' num2str(M) '_' num2str(k) '_user_SNR_' num2str(snr(snr_idx)) '_dB'],'png');
-                saveas(gcf,[root_save_time 'rate/' channel_mod{chn_idx} '_' algorithm{alg_idx} '_M_' num2str(M) '_' num2str(k) '_user_SNR_' num2str(snr(snr_idx)) '_dB'],'epsc2');
-            end
-        end   
-    end
-end
+% for chn_idx = 1:N_CHN
+%     for alg_idx = 1:N_ALG
+%         for k = 1:K
+%             figure;
+%             
+%             set(gcf,'position',[0 0 800 600]);
+%             
+%             plot(time,se(:,k,end,chn_idx),'o-','color',colours(1,:),'linewidth',linewidth,'markersize',markersize);
+%             hold on;
+%             plot(time,se(:,k,50,chn_idx),'o-','color',colours(2,:),'linewidth',linewidth,'markersize',markersize);   
+%             plot(time,se(:,k,10,chn_idx),'o-','color',colours(3,:),'linewidth',linewidth,'markersize',markersize);
+%             plot(time,se(:,k,1,chn_idx),'o-','color',colours(4,:),'linewidth',linewidth,'markersize',markersize);
+%          
+%             xlabel('Time (s)','fontname',fontname,'fontsize',fontsize);
+%             ylabel('Rate (b/s/Hz)','fontname',fontname,'fontsize',fontsize);
+%             
+%             if(alg_idx == 1)
+%                 legend(legend_tau_cbs,'fontname',fontname,'fontsize',fontsize,'interpreter','latex','location',location_1);
+%                 legend box off;
+%             else
+%                 legend(legend_tau_icibs,'fontname',fontname,'fontsize',fontsize,'interpreter','latex','location',location_1);
+%                 legend box off;
+%             end
+%             
+%             set(gca,'fontname',fontname,'fontsize',fontsize);
+%             
+%             xlim([0 0.1]);
+%             ylim([0 max_rate + 7]);
+%             
+%             if (savefig == 1)
+%                 saveas(gcf,[root_save_time 'rate/' channel_mod{chn_idx} '_' algorithm{alg_idx} '_M_' num2str(M) '_' num2str(k) '_user_SNR_' num2str(snr(snr_idx)) '_dB'],'fig');
+%                 saveas(gcf,[root_save_time 'rate/' channel_mod{chn_idx} '_' algorithm{alg_idx} '_M_' num2str(M) '_' num2str(k) '_user_SNR_' num2str(snr(snr_idx)) '_dB'],'png');
+%                 saveas(gcf,[root_save_time 'rate/' channel_mod{chn_idx} '_' algorithm{alg_idx} '_M_' num2str(M) '_' num2str(k) '_user_SNR_' num2str(snr(snr_idx)) '_dB'],'epsc2');
+%             end
+%         end   
+%     end
+% end
 
 % Picture - Power per user x time
 
