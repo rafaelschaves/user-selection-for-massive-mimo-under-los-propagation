@@ -4,9 +4,9 @@ clc;
 
 % Macros
 
-MC = 1000;                                                                 % Size of the monte-carlo ensemble
+MC = 10;                                                                 % Size of the monte-carlo ensemble
 
-M = [64 128];                                                          % Number of antennas at base station
+M = [64 128 256 512];                                                          % Number of antennas at base station
 K = [8 16 32 64];                                                          % Number of mobile users
 
 bs_power = 1;
@@ -40,60 +40,6 @@ for m = 1:M_SIZ
     end
 end
 
-% % Post processing - Calculating the CDF
-% 
-% N_BIN = 50;
-% N_PDF = 100;
-% 
-% cdf_sum_se = cell(N_ALG+1,M_SIZ,N_CHN,2);
-% edg_sum_se = cell(N_ALG+1,M_SIZ,N_CHN,2);
-% 
-% cdf_se_user = cell(N_ALG+1,M_SIZ,N_CHN,2);
-% edg_se_user = cell(N_ALG+1,M_SIZ,N_CHN,2);
-% 
-% 
-% nbins = 1000;
-% pdf_psi_y = zeros(N_ALG+1,N_PDF,M_SIZ,N_CHN);
-% pdf_psi_x = zeros(N_ALG+1,N_PDF,M_SIZ,N_CHN);
-% 
-% for m = 1:M_SIZ
-%     for chn_idx = 1:N_CHN
-%         % [pdf_psi{1,m,chn_idx},edg_psi{1,m,chn_idx}] = histcounts(psi_cell{m,1}(1,:,chn_idx),'binwidth',binwid,'normalization','pdf');
-%         
-%         [pdf_psi_y(1,:,m,chn_idx), pdf_psi_x(1,:,m,chn_idx)] = ksdensity(psi_cell{m,1}(1,:,chn_idx),'support','positive');
-%         
-%         [cdf_sum_se{1,m,chn_idx,1},edg_sum_se{1,m,chn_idx,1}] = histcounts(sum(se_cell{m,1}(:,:,chn_idx,1)),N_BIN,'normalization','cdf');
-%         [cdf_sum_se{1,m,chn_idx,2},edg_sum_se{1,m,chn_idx,2}] = histcounts(sum(se_cell{m,1}(:,:,chn_idx,2)),N_BIN,'normalization','cdf');
-%         
-%         [cdf_se_user{1,m,chn_idx,1},edg_se_user{1,m,chn_idx,1}] = histcounts(se_cell{m,1}(:,:,chn_idx,1),N_BIN,'normalization','cdf');
-%         [cdf_se_user{1,m,chn_idx,2},edg_se_user{1,m,chn_idx,2}] = histcounts(se_cell{m,1}(:,:,chn_idx,2),N_BIN,'normalization','cdf');
-%                 
-%         cdf_sum_se{1,m,chn_idx,1} = [cdf_sum_se{1,m,chn_idx,1} 1];
-%         cdf_sum_se{1,m,chn_idx,2} = [cdf_sum_se{1,m,chn_idx,2} 1];
-%         
-%         cdf_se_user{1,m,chn_idx,1} = [cdf_se_user{1,m,chn_idx,1} 1];
-%         cdf_se_user{1,m,chn_idx,2} = [cdf_se_user{1,m,chn_idx,2} 1];
-%         
-%         for alg_idx = 1:N_ALG
-%             % [pdf_psi{alg_idx+1,m,chn_idx},edg_psi{alg_idx+1,m,chn_idx}] = histcounts(psi_cell{m,2}(1,:,alg_idx,chn_idx),N_BIN,'normalization','pdf');
-%             
-%             [pdf_psi_y(alg_idx+1,:,m,chn_idx), pdf_psi_x(alg_idx+1,:,m,chn_idx)] = ksdensity(psi_cell{m,2}(1,:,alg_idx,chn_idx),'support','positive');
-% 
-%             [cdf_sum_se{alg_idx+1,m,chn_idx,1},edg_sum_se{alg_idx+1,m,chn_idx,1}] = histcounts(sum(se_cell{m,2}(:,:,alg_idx,chn_idx,1)),N_BIN,'normalization','cdf');
-%             [cdf_sum_se{alg_idx+1,m,chn_idx,2},edg_sum_se{alg_idx+1,m,chn_idx,2}] = histcounts(sum(se_cell{m,2}(:,:,alg_idx,chn_idx,2)),N_BIN,'normalization','cdf');
-%             
-%             [cdf_se_user{alg_idx+1,m,chn_idx,1},edg_se_user{alg_idx+1,m,chn_idx,1}] = histcounts(se_cell{m,2}(:,:,alg_idx,chn_idx,1),N_BIN,'normalization','cdf');
-%             [cdf_se_user{alg_idx+1,m,chn_idx,2},edg_se_user{alg_idx+1,m,chn_idx,2}] = histcounts(se_cell{m,2}(:,:,alg_idx,chn_idx,2),N_BIN,'normalization','cdf');
-%             
-%             cdf_sum_se{alg_idx+1,m,chn_idx,1} = [cdf_sum_se{alg_idx+1,m,chn_idx,1} 1];
-%             cdf_sum_se{alg_idx+1,m,chn_idx,2} = [cdf_sum_se{alg_idx+1,m,chn_idx,2} 1];
-%             
-%             cdf_se_user{alg_idx+1,m,chn_idx,1} = [cdf_se_user{alg_idx+1,m,chn_idx,1} 1];
-%             cdf_se_user{alg_idx+1,m,chn_idx,2} = [cdf_se_user{alg_idx+1,m,chn_idx,2} 1];
-%         end
-%     end
-% end
-
 % Post Processing
 
 n_it_avg = mean(n_it_all,1);
@@ -113,7 +59,8 @@ linestyle = {'-','--',':'};
 savefig = 0;
 
 % legend_algo = {'Algorithm 1','Algorithm 2','Algorithm 3'};
-legend_algo = {'Algorithm 1','Algorithm 2'};
+% legend_algo = {'Algorithm 1','Algorithm 2'};
+legend_M = {'$M = 64$','$M = 128$','$M = 256$','$M = 512$'};
 
 location_1 = 'northwest';
 location_2 = 'northeast';
@@ -132,26 +79,28 @@ figure;
 
 set(gcf,'position',[0 0 800 600]);
 
-plot(K,reshape(n_it_avg(:,1,:,1),1,[]),'-','color',colours(1,:),'linewidth',linewidth,'markersize',markersize);
+plot(K,reshape(n_it_avg(:,1,:,1),1,[]),'-ok','linewidth',linewidth,'markersize',markersize);
 hold on;
-plot(K,reshape(n_it_avg(:,2,:,1),1,[]),'-','color',colours(2,:),'linewidth',linewidth,'markersize',markersize);
+plot(K,reshape(n_it_avg(:,1,:,2),1,[]),'-sk','linewidth',linewidth,'markersize',markersize);
+plot(K,reshape(n_it_avg(:,1,:,3),1,[]),'-^k','linewidth',linewidth,'markersize',markersize);
+plot(K,reshape(n_it_avg(:,1,:,4),1,[]),'-vk','linewidth',linewidth,'markersize',markersize);
 plot(K,reshape(n_it_avg(:,1,:,1),1,[]),'-o','color',colours(1,:),'linewidth',linewidth,'markersize',markersize);
-plot(K,reshape(n_it_avg(:,2,:,1),1,[]),'-o','color',colours(2,:),'linewidth',linewidth,'markersize',markersize);
-% plot(K,reshape(n_it_avg(:,3,:,1),1,[]),'-o','color',colours(3,:),'linewidth',linewidth,'markersize',markersize);
 plot(K,reshape(n_it_avg(:,1,:,2),1,[]),'-s','color',colours(1,:),'linewidth',linewidth,'markersize',markersize);
-plot(K,reshape(n_it_avg(:,2,:,2),1,[]),'-s','color',colours(2,:),'linewidth',linewidth,'markersize',markersize);
-% plot(K,reshape(n_it_avg(:,3,:,2),1,[]),'-s','color',colours(3,:),'linewidth',linewidth,'markersize',markersize);
-% plot(K,reshape(n_it_avg(:,1,:,3),1,[]),'-^','color',colours(1,:),'linewidth',linewidth,'markersize',markersize);
-% plot(K,reshape(n_it_avg(:,2,:,3),1,[]),'-^','color',colours(2,:),'linewidth',linewidth,'markersize',markersize);
-% plot(K,reshape(n_it_avg(:,3,:,3),1,[]),'-^','color',colours(3,:),'linewidth',linewidth,'markersize',markersize);
-% plot(K,reshape(n_it_avg(:,1,:,4),1,[]),'-v','color',colours(1,:),'linewidth',linewidth,'markersize',markersize);
-% plot(K,reshape(n_it_avg(:,2,:,4),1,[]),'-v','color',colours(2,:),'linewidth',linewidth,'markersize',markersize);
-% plot(K,reshape(n_it_avg(:,3,:,4),1,[]),'-v','color',colours(3,:),'linewidth',linewidth,'markersize',markersize);
+plot(K,reshape(n_it_avg(:,1,:,3),1,[]),'-^','color',colours(1,:),'linewidth',linewidth,'markersize',markersize);
+plot(K,reshape(n_it_avg(:,1,:,4),1,[]),'-v','color',colours(1,:),'linewidth',linewidth,'markersize',markersize);
+plot(K,reshape(n_it_avg(:,2,:,1),1,[]),'--o','color',colours(2,:),'linewidth',linewidth,'markersize',markersize);
+plot(K,reshape(n_it_avg(:,2,:,2),1,[]),'--s','color',colours(2,:),'linewidth',linewidth,'markersize',markersize);
+plot(K,reshape(n_it_avg(:,2,:,3),1,[]),'--^','color',colours(2,:),'linewidth',linewidth,'markersize',markersize);
+plot(K,reshape(n_it_avg(:,2,:,4),1,[]),'--v','color',colours(2,:),'linewidth',linewidth,'markersize',markersize);
+plot(K,reshape(n_it_avg(:,3,:,1),1,[]),':o','color',colours(2,:),'linewidth',linewidth,'markersize',markersize);
+plot(K,reshape(n_it_avg(:,3,:,2),1,[]),':s','color',colours(2,:),'linewidth',linewidth,'markersize',markersize);
+plot(K,reshape(n_it_avg(:,3,:,3),1,[]),':^','color',colours(2,:),'linewidth',linewidth,'markersize',markersize);
+plot(K,reshape(n_it_avg(:,3,:,4),1,[]),':v','color',colours(2,:),'linewidth',linewidth,'markersize',markersize);
 
 xlabel('Number of users','fontname',fontname,'fontsize',fontsize);
 ylabel('Number of iterations','fontname',fontname,'fontsize',fontsize);
 
-legend(legend_algo,'fontname',fontname,'fontsize',fontsize,'location',location_3);
+legend(legend_M,'fontname',fontname,'fontsize',fontsize,'interpreter','latex','location',location_3);
 legend box off;
 
 xticks([8 16 24 32 40 48 56 64])
@@ -171,32 +120,46 @@ figure;
 
 set(gcf,'position',[0 0 800 600]);
 
-plot(K,reshape(time_avg(:,1,:,1),1,[]),'-','color',colours(1,:),'linewidth',linewidth,'markersize',markersize);
+yyaxis left;
+
+plot(K,1e3*reshape(time_avg(:,1,:,1),1,[]),'-ok','linewidth',linewidth,'markersize',markersize);
 hold on;
-plot(K,reshape(time_avg(:,2,:,1),1,[]),'-','color',colours(2,:),'linewidth',linewidth,'markersize',markersize);
-plot(K,reshape(time_avg(:,1,:,1),1,[]),'-o','color',colours(1,:),'linewidth',linewidth,'markersize',markersize);
-plot(K,reshape(time_avg(:,2,:,1),1,[]),'-o','color',colours(2,:),'linewidth',linewidth,'markersize',markersize);
-% plot(K,reshape(time_avg(:,3,:,1),1,[]),'-o','color',colours(3,:),'linewidth',linewidth,'markersize',markersize);
-plot(K,reshape(time_avg(:,1,:,2),1,[]),'-s','color',colours(1,:),'linewidth',linewidth,'markersize',markersize);
-plot(K,reshape(time_avg(:,2,:,2),1,[]),'-s','color',colours(2,:),'linewidth',linewidth,'markersize',markersize);
-% plot(K,reshape(time_avg(:,3,:,2),1,[]),'-s','color',colours(3,:),'linewidth',linewidth,'markersize',markersize);
-% plot(K,reshape(time_avg(:,1,:,3),1,[]),'-^','color',colours(1,:),'linewidth',linewidth,'markersize',markersize);
-% plot(K,reshape(time_avg(:,2,:,3),1,[]),'-^','color',colours(2,:),'linewidth',linewidth,'markersize',markersize);
-% plot(K,reshape(time_avg(:,3,:,3),1,[]),'-^','color',colours(3,:),'linewidth',linewidth,'markersize',markersize);
-% plot(K,reshape(time_avg(:,1,:,4),1,[]),'-v','color',colours(1,:),'linewidth',linewidth,'markersize',markersize);
-% plot(K,reshape(time_avg(:,2,:,4),1,[]),'-v','color',colours(2,:),'linewidth',linewidth,'markersize',markersize);
-% plot(K,reshape(time_avg(:,3,:,4),1,[]),'-v','color',colours(3,:),'linewidth',linewidth,'markersize',markersize);
+plot(K,1e3*reshape(time_avg(:,1,:,2),1,[]),'-sk','linewidth',linewidth,'markersize',markersize);
+plot(K,1e3*reshape(time_avg(:,1,:,3),1,[]),'-^k','linewidth',linewidth,'markersize',markersize);
+plot(K,1e3*reshape(time_avg(:,1,:,4),1,[]),'-vk','linewidth',linewidth,'markersize',markersize);
+plot(K,1e3*reshape(time_avg(:,1,:,1),1,[]),'-o','color',colours(1,:),'linewidth',linewidth,'markersize',markersize);
+plot(K,1e3*reshape(time_avg(:,1,:,2),1,[]),'-s','color',colours(1,:),'linewidth',linewidth,'markersize',markersize);
+plot(K,1e3*reshape(time_avg(:,1,:,3),1,[]),'-^','color',colours(1,:),'linewidth',linewidth,'markersize',markersize);
+plot(K,1e3*reshape(time_avg(:,1,:,4),1,[]),'-v','color',colours(1,:),'linewidth',linewidth,'markersize',markersize);
+plot(K,1e3*reshape(time_avg(:,2,:,1),1,[]),'--o','color',colours(1,:),'linewidth',linewidth,'markersize',markersize);
+plot(K,1e3*reshape(time_avg(:,2,:,2),1,[]),'--s','color',colours(1,:),'linewidth',linewidth,'markersize',markersize);
+plot(K,1e3*reshape(time_avg(:,2,:,3),1,[]),'--^','color',colours(1,:),'linewidth',linewidth,'markersize',markersize);
+plot(K,1e3*reshape(time_avg(:,2,:,4),1,[]),'--v','color',colours(1,:),'linewidth',linewidth,'markersize',markersize);
+
+ylabel('Elapsed time (ms)','fontname',fontname,'fontsize',fontsize);
+
+ylim([0.5 3]);
+
+yyaxis right;
+
+plot(K,reshape(time_avg(:,3,:,1),1,[]),':o','color',colours(2,:),'linewidth',linewidth,'markersize',markersize);
+hold on;
+plot(K,reshape(time_avg(:,3,:,2),1,[]),':s','color',colours(2,:),'linewidth',linewidth,'markersize',markersize);
+plot(K,reshape(time_avg(:,3,:,3),1,[]),':^','color',colours(2,:),'linewidth',linewidth,'markersize',markersize);
+plot(K,reshape(time_avg(:,3,:,4),1,[]),':v','color',colours(2,:),'linewidth',linewidth,'markersize',markersize);
+
+ylabel('Elapsed time (s)','fontname',fontname,'fontsize',fontsize);
+
+ylim([5 20]);
 
 xlabel('Number of users','fontname',fontname,'fontsize',fontsize);
-ylabel('Time (s)','fontname',fontname,'fontsize',fontsize);
 
-legend(legend_algo,'fontname',fontname,'fontsize',fontsize,'location',location_1);
+legend(legend_M,'fontname',fontname,'fontsize',fontsize,'interpreter','latex','location',location_1);
 legend box off;
 
 xticks([8 16 24 32 40 48 56 64])
 
 xlim([K(1) K(end)]);
-ylim([0 20]);
 
 set(gca,'fontname',fontname,'fontsize',fontsize);
 
@@ -204,43 +167,4 @@ if (savefig == 1)
     saveas(gcf,[root_save 'time_ur_los'],'fig');
     saveas(gcf,[root_save 'time_ur_los'],'png');
     saveas(gcf,[root_save 'time_ur_los'],'epsc2');
-end
-
-figure;
-
-set(gcf,'position',[0 0 800 600]);
-
-plot(K,reshape(time_avg(:,1,:,1)./n_it_avg(:,1,:,1),1,[]),'-','color',colours(1,:),'linewidth',linewidth,'markersize',markersize);
-hold on;
-plot(K,reshape(time_avg(:,2,:,1)./n_it_avg(:,2,:,1),1,[]),'-','color',colours(2,:),'linewidth',linewidth,'markersize',markersize);
-plot(K,reshape(time_avg(:,1,:,1)./n_it_avg(:,1,:,1),1,[]),'-o','color',colours(1,:),'linewidth',linewidth,'markersize',markersize);
-plot(K,reshape(time_avg(:,2,:,1)./n_it_avg(:,2,:,1),1,[]),'-o','color',colours(2,:),'linewidth',linewidth,'markersize',markersize);
-% plot(K,reshape(time_avg(:,3,:,1)./n_it_avg(:,3,:,1),1,[]),'-o','color',colours(3,:),'linewidth',linewidth,'markersize',markersize);
-plot(K,reshape(time_avg(:,1,:,2)./n_it_avg(:,1,:,1),1,[]),'-s','color',colours(1,:),'linewidth',linewidth,'markersize',markersize);
-plot(K,reshape(time_avg(:,2,:,2)./n_it_avg(:,2,:,1),1,[]),'-s','color',colours(2,:),'linewidth',linewidth,'markersize',markersize);
-% plot(K,reshape(time_avg(:,3,:,2)./n_it_avg(:,3,:,1),1,[]),'-s','color',colours(3,:),'linewidth',linewidth,'markersize',markersize);
-% plot(K,reshape(time_avg(:,1,:,3)./n_it_avg(:,1,:,1),1,[]),'-^','color',colours(1,:),'linewidth',linewidth,'markersize',markersize);
-% plot(K,reshape(time_avg(:,2,:,3)./n_it_avg(:,2,:,1),1,[]),'-^','color',colours(2,:),'linewidth',linewidth,'markersize',markersize);
-% plot(K,reshape(time_avg(:,3,:,3)./n_it_avg(:,3,:,1),1,[]),'-^','color',colours(3,:),'linewidth',linewidth,'markersize',markersize);
-% plot(K,reshape(time_avg(:,1,:,4)./n_it_avg(:,1,:,1),1,[]),'-v','color',colours(1,:),'linewidth',linewidth,'markersize',markersize);
-% plot(K,reshape(time_avg(:,2,:,4)./n_it_avg(:,2,:,1),1,[]),'-v','color',colours(2,:),'linewidth',linewidth,'markersize',markersize);
-% plot(K,reshape(time_avg(:,3,:,4)./n_it_avg(:,3,:,1),1,[]),'-v','color',colours(3,:),'linewidth',linewidth,'markersize',markersize);
-
-xlabel('Number of users','fontname',fontname,'fontsize',fontsize);
-ylabel('Time per iteration (s)','fontname',fontname,'fontsize',fontsize);
-
-legend(legend_algo,'fontname',fontname,'fontsize',fontsize,'location',location_3);
-legend box off;
-
-xticks([8 16 24 32 40 48 56 64])
-
-xlim([K(1) K(end)]);
-%ylim([0 40]);
-
-set(gca,'fontname',fontname,'fontsize',fontsize);
-
-if (savefig == 1)
-    saveas(gcf,[root_save 'number_iterations_ur_los'],'fig');
-    saveas(gcf,[root_save 'number_iterations_ur_los'],'png');
-    saveas(gcf,[root_save 'number_iterations_ur_los'],'epsc2');
 end
