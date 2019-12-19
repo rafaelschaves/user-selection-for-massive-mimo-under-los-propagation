@@ -12,7 +12,7 @@ end
 % Checking variables
 
 if ~exist('MC','var')
-    MC = 10;                                                            % Size of the outer Monte Carlo ensemble (Varies the channel realizarions)
+    MC = 10;                                                               % Size of the outer Monte Carlo ensemble (Varies the channel realizarions)
 end
 
 if ~exist('M','var')
@@ -28,7 +28,6 @@ if ~exist('channel_type','var')
 end
 
 N_ALG = 3;
-N_PAR = 2;
 
 commcell.nAntennas       = M;                                              % Number of Antennas
 commcell.nUsers          = K;                                              % Number of Users
@@ -71,10 +70,6 @@ for mc = 1:MC
     tic;
     [gamma(mc,3),eta(:,mc,3),gamma_u(mc,3),n_it(mc,3)] = maxMinFairness(G,beta,snr,'algorithm 3');
     time(mc,3) = toc;
-        
-    % time(mc,1) = timeit(@() maxMinFairness(G,beta,snr,'algorithm 1'),N_PAR);
-    % time(mc,2) = timeit(@() maxMinFairness(G,beta,snr,'algorithm 2'),N_PAR);
-    % time(mc,3) = timeit(@() maxMinFairness(G,beta,snr,'algorithm 3'),N_PAR);
 end
 
 save([root_save strrep(channel_type,'-','_') '_M_' num2str(M) '_K_' ...

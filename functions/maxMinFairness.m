@@ -33,7 +33,7 @@ else
             while (gamma_u - gamma_l) > tolerance
                 gamma = (gamma_l + gamma_u)/2;
                 eta   = (I_k/gamma - R)\b;
-                                
+                
                 if norm(eta,1) <= 1
                     gamma_l = gamma;
                 else
@@ -44,6 +44,33 @@ else
             end
             
         case 'ALGORITHM 2'
+            gamma = 1/max(sum(R,2));
+            eta   = (I_k/gamma - R)\b;
+            
+            if norm(eta,1) <= 1
+                gamma_l = gamma;
+                gamma_u = 1/max(eig(R));
+            else
+                gamma_l = 0;
+                gamma_u = gamma;
+            end
+            
+            varargout{1} = gamma_u;
+            
+            while (gamma_u - gamma_l) > tolerance
+                gamma = (gamma_l + gamma_u)/2;
+                eta   = (I_k/gamma - R)\b;
+                
+                if norm(eta,1) <= 1
+                    gamma_l = gamma;
+                else
+                    gamma_u = gamma;
+                end
+                
+                n_iterations = n_iterations + 1;
+            end
+                        
+        case 'ALGORITHM 3'
             gamma_l = 0;
             gamma_u = n_antennas*snr*max(large_scale);
             
@@ -67,7 +94,7 @@ else
                 n_iterations = n_iterations + 1;
             end
             
-        case 'ALGORITHM 3'
+        case 'ALGORITHM 4'
             gamma_l = 0;
             gamma_u = n_antennas*snr*max(large_scale);
             
@@ -75,13 +102,7 @@ else
             
             while (gamma_u - gamma_l) > tolerance
                 gamma = (gamma_l + gamma_u)/2;
-                
-                cvx_begin quiet
-                    variable eta(n_users);
-                    subject to
-                        (I_k/gamma - R)*eta == b;
-                        eta >= 0;
-                cvx_end
+                eta   = (I_k/gamma - R)\b;
                 
                 if norm(eta,1) <= 1
                     gamma_l = gamma;
@@ -91,6 +112,7 @@ else
                 
                 n_iterations = n_iterations + 1;
             end
+            
         otherwise
     end
 end
