@@ -97,25 +97,25 @@ algorithm_type = {'random selection', ...
                   'correlation-based selection', ...
                   'ici-based selection'};
 
-pow_ul = ones(K,1);
-pow_dl = ones(K,1)/K;
+pow_u = ones(K,1);
+pow_d = ones(K,1)/K;
 
-pow_ul_sel = ones(L,1);
-pow_dl_sel = ones(L,1)/L;
+pow_u_sel = ones(L,1);
+pow_d_sel = ones(L,1)/L;
               
 for mc = 1:MC
     mc
     
     [G,~] = massiveMIMOChannel(commcell,channel_type);
     
-    psi(:,mc)   = ici(G);
+    psi(:,mc) = ici(G);
     
     % No Selection
     
     [Q,W] = decoderMatrix(G,'mf');
     
-    [~,se_u(:,mc)] = throughput(G,Q,pow_ul,'uplink',snr_u,settings); 
-    [~,se_d(:,mc)] = throughput(G,W,pow_dl,'downlink',snr_d,settings);
+    [~,se_u(:,mc)] = throughput(G,Q,pow_u,'uplink',snr_u,settings); 
+    [~,se_d(:,mc)] = throughput(G,W,pow_d,'downlink',snr_d,settings);
           
     for alg_idx = 1:N_ALG
         [~,H_sel] = userSelector(G,algorithm_type{alg_idx},'fixed',L,[]);
@@ -124,8 +124,8 @@ for mc = 1:MC
 
         [Q,W] = decoderMatrix(H_sel,'mf');
                                                       
-        [~,se_u_sel(:,mc,alg_idx)] = throughput(H_sel,Q,pow_ul_sel,'uplink',snr_u,settings);               
-        [~,se_d_sel(:,mc,alg_idx)] = throughput(H_sel,W,pow_dl_sel,'downlink',snr_d,settings);    
+        [~,se_u_sel(:,mc,alg_idx)] = throughput(H_sel,Q,pow_u_sel,'uplink',snr_u,settings);               
+        [~,se_d_sel(:,mc,alg_idx)] = throughput(H_sel,W,pow_d_sel,'downlink',snr_d,settings);    
     end
 end
 
