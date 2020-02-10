@@ -3,7 +3,7 @@ function [user_sel,sel_chnl_mtx,varargout] = userSelector(chnl_mtx, ...
                                                           type, ...
                                                           varargin)
 
-N_ARGIN = 5;                                                  
+N_ARGIN = 6;                                                  
 
 algorithm = upper(algorithm);                                              % Algorithm
 type = upper(type);                                                        % Type of selection
@@ -58,7 +58,7 @@ switch algorithm
                 
                 chnl_mtx_aux(:,user_sel(i)) = zeros(n_antenna,1);
             else
-                proj_mtx = eye_M - sum(ort_proj_sel*ort_proj_sel',2);
+                proj_mtx = eye_M - ort_proj_sel*ort_proj_sel';
                 ort_proj = proj_mtx*chnl_mtx_aux;
                 
                 g_norm = vecnorm(ort_proj,2);
