@@ -1,4 +1,5 @@
 function [user_sel,sel_chnl_mtx,varargout] = userSelector(chnl_mtx, ...
+                                                          lrg_scl, ...
                                                           algorithm, ...
                                                           type, ...
                                                           varargin)
@@ -26,19 +27,7 @@ n_user    = size(chnl_mtx,2);                                              % Num
 
 switch algorithm
      case 'RANDOM SELECTION'
-        user_drop  = randperm(n_user,n_user - n_selected)';            % User that won't transmitt or receive data
-        
-        user_sel = (1:n_user)';
-        user_sel(user_drop) = []; 
-    
-        sel_chnl_mtx = chnl_mtx;
-        sel_chnl_mtx(:,user_drop) = [];
-        
-        drop_chnl_mtx = chnl_mtx;
-        drop_chnl_mtx(:,user_sel) = [];
-        
-        varargout{1} = user_drop;
-        varargout{2} = drop_chnl_mtx;
+        [user_sel,sel_chnl_mtx,varargout{1},varargout{2}] = randomSelection(chnl_mtx,n_selected);
     case 'SEMI-ORTHOGONAL SELECTION'
         user_sel = zeros(n_selected,1);
         ort_proj_sel = zeros(n_antenna,n_selected);
@@ -286,4 +275,24 @@ mtx_norm(:,idx_aux) = mtx(:,idx_aux)./norm_mtx_k(idx_aux);
 
 corr_mtx = abs(mtx_norm'*mtx_norm);
               
+end
+
+function [user_sel,sel_chnl_mtx,varargout] = randomSelection(chnl_mtx,n_selected)
+
+n_user = size(chnl_mtx,2);                                                 % Number users
+
+user_drop = randperm(n_user,n_user - n_selected)';                         % User that won't transmitt or receive data
+
+user_sel = (1:n_user)';
+user_sel(user_drop) = [];
+
+sel_chnl_mtx = chnl_mtx;
+sel_chnl_mtx(:,user_drop) = [];
+
+drop_chnl_mtx = chnl_mtx;
+drop_chnl_mtx(:,user_sel) = [];
+
+varargout{1} = user_drop;
+varargout{2} = drop_chnl_mtx;
+
 end
