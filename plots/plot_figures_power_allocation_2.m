@@ -9,8 +9,8 @@ MC = 1000;                                                                 % Siz
 M = [64 128 256 512];                                                      % Number of antennas at base station
 K = [8 16 32 64];                                                          % Number of mobile users
 
-% M = 128;
-% K = 16;
+% M = 64;
+% K = 8;
 
 bs_power = [1 10];
 radius   = [100 500 1000 2000];
@@ -23,7 +23,9 @@ R_SIZ = length(radius);
 % Roots
 
 root_load = '../../../../Google Drive/UFRJ/PhD/Codes/user-scheduling-massive-mimo/Results/Power Allocation/Downlink/';
-root_save = '../../../../Google Drive/UFRJ/PhD/Codes/user-scheduling-massive-mimo/Figures/Power Allocation/';
+root_save_eps = '../../../../Google Drive/UFRJ/PhD/Codes/user-scheduling-massive-mimo/Figures/Power Allocation/eps/';
+root_save_fig = '../../../../Google Drive/UFRJ/PhD/Codes/user-scheduling-massive-mimo/Figures/Power Allocation/fig/';
+root_save_png = '../../../../Google Drive/UFRJ/PhD/Codes/user-scheduling-massive-mimo/Figures/Power Allocation/png/';
 
 % chn_type = {'ur_los','rayleigh'};
 
@@ -56,9 +58,9 @@ marker = {'o','s','^'};
 
 linestyle = {'-','--',':'};
 
-savefig = 0;
+savefig = 1;
 
-legend_power  = {'$1$ W','$10$ W'};
+legend_power  = {'$P = 1$ W','$P = 10$ W'};
 legend_M      = {'$M = 64$','$M = 128$','$M = 256$','$M = 512$'};
 legend_K      = {'$K = 8$','$K = 16$','$K = 32$','$K = 64$'};
 
@@ -80,120 +82,26 @@ colours = [0.0000 0.4470 0.7410;
            0.3010 0.7450 0.9330;
            0.6350 0.0780 0.1840];
 
-% figure;
-% 
-% set(gcf,'position',[0 0 800 600]);
-% 
-% bar(cat,results(1,1,:,:)/MC,BAR_SIZE)
-% 
-% xlabel('Cell radius (m)','fontname',fontname,'fontsize',fontsize);
-% ylabel('$\mathrm{Pr}\{\gamma_{\mathrm{u}}^{(3)} < \gamma^{*}\}$','fontname',fontname,'fontsize',fontsize,'interpreter','latex');
-% 
-% legend(legend_power,'fontname',fontname,'fontsize',fontsize,'interpreter','latex','location',location_2);
-% legend box off;
-% 
-% set(gca,'fontname',fontname,'fontsize',fontsize);
-% 
-% if (savefig == 1)
-%     saveas(gcf,[root_save 'number_iterations_ur_los'],'fig');
-%     saveas(gcf,[root_save 'number_iterations_ur_los'],'png');
-%     saveas(gcf,[root_save 'number_iterations_ur_los'],'epsc2');
-% end
-
-figure;
-
-set(gcf,'position',[0 0 800 600]);
-
-yyaxis left;
-
-plot(cell_radius,reshape(results(1,1,:,1)/MC,1,[]),'-ok','linewidth',linewidth,'markersize',markersize);
-hold on;
-plot(cell_radius,reshape(results(2,1,:,1)/MC,1,[]),'-sk','linewidth',linewidth,'markersize',markersize);
-plot(cell_radius,reshape(results(3,1,:,1)/MC,1,[]),'-^k','linewidth',linewidth,'markersize',markersize);
-plot(cell_radius,reshape(results(4,1,:,1)/MC,1,[]),'-vk','linewidth',linewidth,'markersize',markersize);
-plot(cell_radius,reshape(results(1,1,:,1)/MC,1,[]),'-o','color',colours(1,:),'linewidth',linewidth,'markersize',markersize);
-plot(cell_radius,reshape(results(2,1,:,1)/MC,1,[]),'-s','color',colours(1,:),'linewidth',linewidth,'markersize',markersize);
-plot(cell_radius,reshape(results(3,1,:,1)/MC,1,[]),'-^','color',colours(1,:),'linewidth',linewidth,'markersize',markersize);
-plot(cell_radius,reshape(results(4,1,:,1)/MC,1,[]),'-v','color',colours(1,:),'linewidth',linewidth,'markersize',markersize);
-
-ylabel('$\mathrm{Pr}\{\gamma_{\mathrm{u}}^{(3)} < \gamma^{*}\}$','fontname',fontname,'fontsize',fontsize,'interpreter','latex');
-
-% ylim([0.5 3]);
-
-yyaxis right;
-
-plot(cell_radius,reshape(results(1,1,:,2)/MC,1,[]),'-o','color',colours(2,:),'linewidth',linewidth,'markersize',markersize);
-hold on;
-plot(cell_radius,reshape(results(2,1,:,2)/MC,1,[]),'-s','color',colours(2,:),'linewidth',linewidth,'markersize',markersize);
-plot(cell_radius,reshape(results(3,1,:,2)/MC,1,[]),'-^','color',colours(2,:),'linewidth',linewidth,'markersize',markersize);
-plot(cell_radius,reshape(results(4,1,:,2)/MC,1,[]),'-v','color',colours(2,:),'linewidth',linewidth,'markersize',markersize);
-
-ylabel('$\mathrm{Pr}\{\gamma_{\mathrm{u}}^{(3)} < \gamma^{*}\}$','fontname',fontname,'fontsize',fontsize,'interpreter','latex');
-
-% ylim([5 20]);
-
-xlabel('Cell radius (m)','fontname',fontname,'fontsize',fontsize);
-
-legend(legend_M,'fontname',fontname,'fontsize',fontsize,'interpreter','latex','location',location_2);
-legend box off;
-
-% xticks([8 16 24 32 40 48 56 64])
-
-% xlim([K(1) K(end)]);
-
-set(gca,'fontname',fontname,'fontsize',fontsize);
-
-if (savefig == 1)
-    saveas(gcf,[root_save 'time_ur_los'],'fig');
-    saveas(gcf,[root_save 'time_ur_los'],'png');
-    saveas(gcf,[root_save 'time_ur_los'],'epsc2');
-end
-
-figure;
-
-set(gcf,'position',[0 0 800 600]);
-
-yyaxis left;
-
-plot(cell_radius,reshape(results(1,1,:,1)/MC,1,[]),'-ok','linewidth',linewidth,'markersize',markersize);
-hold on;
-plot(cell_radius,reshape(results(1,2,:,1)/MC,1,[]),'-sk','linewidth',linewidth,'markersize',markersize);
-plot(cell_radius,reshape(results(1,3,:,1)/MC,1,[]),'-^k','linewidth',linewidth,'markersize',markersize);
-plot(cell_radius,reshape(results(1,4,:,1)/MC,1,[]),'-vk','linewidth',linewidth,'markersize',markersize);
-plot(cell_radius,reshape(results(1,1,:,1)/MC,1,[]),'-o','color',colours(1,:),'linewidth',linewidth,'markersize',markersize);
-plot(cell_radius,reshape(results(1,2,:,1)/MC,1,[]),'-s','color',colours(1,:),'linewidth',linewidth,'markersize',markersize);
-plot(cell_radius,reshape(results(1,3,:,1)/MC,1,[]),'-^','color',colours(1,:),'linewidth',linewidth,'markersize',markersize);
-plot(cell_radius,reshape(results(1,4,:,1)/MC,1,[]),'-v','color',colours(1,:),'linewidth',linewidth,'markersize',markersize);
-
-ylabel('$\mathrm{Pr}\{\gamma_{\mathrm{u}}^{(3)} < \gamma^{*}\}$','fontname',fontname,'fontsize',fontsize,'interpreter','latex');
-
-% ylim([0.5 3]);
-
-yyaxis right;
-
-plot(cell_radius,reshape(results(1,1,:,2)/MC,1,[]),'-o','color',colours(2,:),'linewidth',linewidth,'markersize',markersize);
-hold on;
-plot(cell_radius,reshape(results(1,2,:,2)/MC,1,[]),'-s','color',colours(2,:),'linewidth',linewidth,'markersize',markersize);
-plot(cell_radius,reshape(results(1,3,:,2)/MC,1,[]),'-^','color',colours(2,:),'linewidth',linewidth,'markersize',markersize);
-plot(cell_radius,reshape(results(1,4,:,2)/MC,1,[]),'-v','color',colours(2,:),'linewidth',linewidth,'markersize',markersize);
-
-ylabel('$\mathrm{Pr}\{\gamma_{\mathrm{u}}^{(3)} < \gamma^{*}\}$','fontname',fontname,'fontsize',fontsize,'interpreter','latex');
-
-% ylim([5 20]);
-
-xlabel('Cell radius (m)','fontname',fontname,'fontsize',fontsize);
-
-legend(legend_K,'fontname',fontname,'fontsize',fontsize,'interpreter','latex','location',location_2);
-legend box off;
-
-% xticks([8 16 24 32 40 48 56 64])
-
-% xlim([K(1) K(end)]);
-
-set(gca,'fontname',fontname,'fontsize',fontsize);
-
-if (savefig == 1)
-    saveas(gcf,[root_save 'time_ur_los'],'fig');
-    saveas(gcf,[root_save 'time_ur_los'],'png');
-    saveas(gcf,[root_save 'time_ur_los'],'epsc2');
+for m = 1:M_SIZ
+    for k = 1:K_SIZ
+        figure;
+        
+        set(gcf,'position',[0 0 800 600]);
+        
+        bar(cat,reshape(results(m,k,:,:),[],2)/MC,BAR_SIZE)
+        
+        xlabel('Cell radius (m)','fontname',fontname,'fontsize',fontsize);
+        ylabel('$\mathrm{Pr}\{\gamma_{\mathrm{r}}^{(3)} < \gamma^{\star}\}$','fontname',fontname,'fontsize',fontsize,'interpreter','latex');
+        
+        legend(legend_power,'fontname',fontname,'fontsize',fontsize,'interpreter','latex','location',location_2);
+        legend box off;
+        
+        set(gca,'fontname',fontname,'fontsize',fontsize);
+        
+        if (savefig == 1)
+            saveas(gcf,[root_save_fig 'bound_test_M_' num2str(M(m)) '_K_' num2str(K(k))],'fig');
+            saveas(gcf,[root_save_png 'bound_test_M_' num2str(M(m)) '_K_' num2str(K(k))],'png');
+            saveas(gcf,[root_save_eps 'bound_test_M_' num2str(M(m)) '_K_' num2str(K(k))],'epsc2');
+        end
+    end
 end
