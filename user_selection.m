@@ -75,6 +75,7 @@ linkprop.bandwidth       = 20e6;                                           % in 
 [snr_u_db,snr_d_db] = linkBudgetCalculation(linkprop);                     % SNR in dB
                 
 beta_db = -148 - 37.6*log10(commcell.radius/1000);
+beta = 10.^(beta_db/10);
 
 snr_u_eff = round(snr_u_db + beta_db);
 snr_d_eff = round(snr_d_db + beta_db);
@@ -118,7 +119,7 @@ for mc = 1:MC
     [~,se_d(:,mc)] = throughput(G,W,pow_d,'downlink',snr_d,settings);
           
     for alg_idx = 1:N_ALG
-        [~,H_sel] = userSelector(G,algorithm_type{alg_idx},'fixed',L,[]);
+        [~,H_sel] = userSelector(G,beta,algorithm_type{alg_idx},'fixed',L,[]);
         
         psi_sel(:,mc,alg_idx) = ici(H_sel);
 
