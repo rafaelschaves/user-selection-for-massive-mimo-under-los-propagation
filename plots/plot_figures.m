@@ -7,10 +7,10 @@ clc;
 MC = 10000;                                                                % Size of the monte-carlo ensemble
 
 M = [64];                                                          % Number of antennas at base station
-r_k = 1.25;
+% r_k = 1.25;
 r_l = 0.25;
 
-% K = 320;                                                                 % Number of mobile users
+K = 16;                                                                 % Number of mobile users
 % L = 80;                                                                  % Number of selected users
 
 snr_ul = -7;
@@ -18,7 +18,7 @@ snr_dl = 10;
 
 M_SIZ = length(M);                                                         % Size of the antennas set
 N_ALG = 4;                                                                 % Number of algorithms for perform user scheduling
-N_CHN = 2;                                                                 % Number of channel models simulated
+N_CHN = 1;                                                                 % Number of channel models simulated
 
 % Roots
 
@@ -26,7 +26,7 @@ root_load_ul = '../../../../Google Drive/UFRJ/PhD/Codes/user-scheduling-massive-
 root_load_dl = '../../../../Google Drive/UFRJ/PhD/Codes/user-scheduling-massive-mimo/Results/Selection/Downlink/';
 root_save = '../../../../Google Drive/UFRJ/PhD/Codes/user-scheduling-massive-mimo/Figures/Selection/';
 
-chn_type = {'ur_los','rayleigh'};
+chn_type = {'rayleigh'};
 
 % Loading data
 
@@ -34,7 +34,7 @@ se_cell  = cell(M_SIZ,2);
 psi_cell = cell(M_SIZ,2);
 
 for m = 1:M_SIZ
-    K = r_k*M(m);
+    %K = r_k*M(m);
     L = r_l*K;
     
     se     = zeros(K,MC,N_CHN,2);                                        % Rate using all K users
@@ -199,7 +199,7 @@ colours = [0.0000 0.4470 0.7410;
 % end
 
 for m = 1:M_SIZ
-    K = r_k*M(m);
+    %K = r_k*M(m);
     L = r_l*K;
     
     for chn_idx = 1:N_CHN
