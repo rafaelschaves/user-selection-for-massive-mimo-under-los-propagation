@@ -22,11 +22,8 @@ else
     error('Invalid number of input arguments');
 end
 
-n_antenna = size(chnl_mtx,1);                                              % Number of antennas at base station
-n_user    = size(chnl_mtx,2);                                              % Number users
-
 switch algorithm
-     case 'RANDOM SELECTION'
+    case 'RANDOM SELECTION'
         [user_sel,sel_chnl_mtx,varargout{1},varargout{2}] = randomSelection(chnl_mtx,n_selected);
     case 'SEMI-ORTHOGONAL SELECTION'
         [user_sel,sel_chnl_mtx,varargout{1},varargout{2}] = semiOrthogonalSelection(chnl_mtx,n_selected);
