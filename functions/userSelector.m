@@ -29,50 +29,7 @@ switch algorithm
      case 'RANDOM SELECTION'
         [user_sel,sel_chnl_mtx,varargout{1},varargout{2}] = randomSelection(chnl_mtx,n_selected);
     case 'SEMI-ORTHOGONAL SELECTION'
-        user_sel = zeros(n_selected,1);
-        ort_proj_sel = zeros(n_antenna,n_selected);
-        
-        eye_M = eye(n_antenna);
-        
-        chnl_mtx_aux = chnl_mtx;
-        
-        for i = 1:n_selected
-            if(i == 1)
-                ort_proj = chnl_mtx;
-                g_norm = vecnorm(ort_proj,2);
-                
-                [~,user_sel(i)] = max(g_norm);
-                
-                ort_proj_sel(:,i) = ort_proj(:,user_sel(i))/norm(ort_proj(:,user_sel(i)),2);
-                
-                chnl_mtx_aux(:,user_sel(i)) = zeros(n_antenna,1);
-            else
-                proj_mtx = eye_M - ort_proj_sel*ort_proj_sel';
-                ort_proj = proj_mtx*chnl_mtx_aux;
-                
-                g_norm = vecnorm(ort_proj,2);
-                
-                [~,user_sel(i)] = max(g_norm);
-                
-                ort_proj_sel(:,i) = ort_proj(:,user_sel(i))/norm(ort_proj(:,user_sel(i)),2);
-                
-                chnl_mtx_aux(:,user_sel(i)) = zeros(n_antenna,1);
-            end
-        end
-        
-        user_drop = (1:n_user)';
-        user_drop(user_sel) = [];
-        
-        user_sel = sort(user_sel);
-        
-        sel_chnl_mtx = chnl_mtx;
-        sel_chnl_mtx(:,user_drop) = [];
-        
-        drop_chnl_mtx = chnl_mtx;
-        drop_chnl_mtx(:,user_sel) = [];
-        
-        varargout{1} = user_drop;
-        varargout{2} = drop_chnl_mtx;
+        [user_sel,sel_chnl_mtx,varargout{1},varargout{2}] = semiOrthogonalSelection(chnl_mtx,n_selected);
     case 'CORRELATION-BASED SELECTION'
         switch type
             case 'FIXED'
@@ -285,6 +242,58 @@ user_drop = randperm(n_user,n_user - n_selected)';                         % Use
 
 user_sel = (1:n_user)';
 user_sel(user_drop) = [];
+
+sel_chnl_mtx = chnl_mtx;
+sel_chnl_mtx(:,user_drop) = [];
+
+drop_chnl_mtx = chnl_mtx;
+drop_chnl_mtx(:,user_sel) = [];
+
+varargout{1} = user_drop;
+varargout{2} = drop_chnl_mtx;
+
+end
+
+function [user_sel,sel_chnl_mtx,varargout] = semiOrthogonalSelection(chnl_mtx,n_selected)
+
+n_antenna = size(chnl_mtx,1);                                              % Number of antennas at base station
+n_user    = size(chnl_mtx,2);                                              % Number users
+
+user_sel = zeros(n_selected,1);
+ort_proj_sel = zeros(n_antenna,n_selected);
+
+eye_M = eye(n_antenna);
+
+chnl_mtx_aux = chnl_mtx;
+
+for i = 1:n_selected
+    if(i == 1)
+        ort_proj = chnl_mtx;
+        g_norm = vecnorm(ort_proj,2);
+        
+        [~,user_sel(i)] = max(g_norm);
+        
+        ort_proj_sel(:,i) = ort_proj(:,user_sel(i))/norm(ort_proj(:,user_sel(i)),2);
+        
+        chnl_mtx_aux(:,user_sel(i)) = zeros(n_antenna,1);
+    else
+        proj_mtx = eye_M - ort_proj_sel*ort_proj_sel';
+        ort_proj = proj_mtx*chnl_mtx_aux;
+        
+        g_norm = vecnorm(ort_proj,2);
+        
+        [~,user_sel(i)] = max(g_norm);
+        
+        ort_proj_sel(:,i) = ort_proj(:,user_sel(i))/norm(ort_proj(:,user_sel(i)),2);
+        
+        chnl_mtx_aux(:,user_sel(i)) = zeros(n_antenna,1);
+    end
+end
+
+user_drop = (1:n_user)';
+user_drop(user_sel) = [];
+
+user_sel = sort(user_sel);
 
 sel_chnl_mtx = chnl_mtx;
 sel_chnl_mtx(:,user_drop) = [];
