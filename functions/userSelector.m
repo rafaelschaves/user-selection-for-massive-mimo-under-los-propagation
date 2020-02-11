@@ -33,83 +33,7 @@ switch algorithm
     case 'CORRELATION-BASED SELECTION'
         [user_sel,sel_chnl_mtx,varargout{1},varargout{2}] = correlationBasedSelection(chnl_mtx,n_selected,threshold,type);
     case 'ICI-BASED SELECTION'
-        switch type
-            case 'FIXED'
-                user_drop = zeros(n_user - n_selected,1);
-        
-                chnl_mtx_aux = chnl_mtx;
-        
-                for i = 1:n_user-n_selected
-                    psi = ici(chnl_mtx_aux);
-            
-                    [~,user_drop(i)] = max(psi);
- 
-                    chnl_mtx_aux(:,user_drop(i)) = zeros(n_antenna,1);
-                end
-        
-                user_sel = (1:n_user)';
-                user_sel(user_drop) = [];
-        
-                sel_chnl_mtx = chnl_mtx;
-                sel_chnl_mtx(:,user_drop) = [];
-                
-                drop_chnl_mtx = chnl_mtx;
-                drop_chnl_mtx(:,user_sel) = [];
-        
-                varargout{1} = user_drop;
-                varargout{2} = drop_chnl_mtx;
-            case 'AUTOMATIC'
-                user_sel = (1:n_user)';
-                
-                chnl_mtx_aux = chnl_mtx;
-                
-                selection = 1;
-                idx_while = 1;
-                
-                if(threshold == 1)
-                    idx_while = 1;
-                else
-                    while(selection == 1)
-                        psi = ici(chnl_mtx_aux);
-                        
-                        decision = (psi > threshold);
-                        
-                        if(sum(decision) == 0 || idx_while == n_user)
-                            selection = 0;
-                        else
-                            idx_decision = user_sel(decision);
-                            
-                            [~,idx_aux] = max(psi(decision));
-                            
-                            user_drop(idx_while) = idx_decision(idx_aux);
-                            
-                            chnl_mtx_aux(:,user_drop(idx_while)) = zeros(n_antenna,1);
-                            
-                            idx_while = idx_while + 1;
-                        end
-                    end
-                end
-                
-                n_selected = n_user - idx_while + 1;
-                
-                if(n_selected == n_user)
-                    user_drop = [];
-                    sel_chnl_mtx = chnl_mtx;
-                else
-                    user_sel(user_drop) = [];
-        
-                    sel_chnl_mtx = chnl_mtx;
-                    sel_chnl_mtx(:,user_drop) = [];
-                end
-                
-                drop_chnl_mtx = chnl_mtx;
-                drop_chnl_mtx(:,user_sel) = [];
-        
-                varargout{1} = user_drop;
-                varargout{2} = drop_chnl_mtx;
-            otherwise
-                error('Invalid type of selection');
-        end
+        [user_sel,sel_chnl_mtx,varargout{1},varargout{2}] = iciBasesSelection(chnl_mtx,n_selected,threshold,type);
     otherwise
         error('Invalid algorithm');
 end
@@ -212,6 +136,8 @@ I_K = eye(n_user);
 
 chnl_mtx_aux = chnl_mtx;
 
+user_sel = (1:n_user)';
+
 switch type
     case 'FIXED'
         user_drop = zeros(n_user - n_selected,1);
@@ -238,7 +164,6 @@ switch type
             chnl_mtx_aux(:,user_drop(i)) = zeros(n_antenna,1);
         end
         
-        user_sel = (1:n_user)';
         user_sel(user_drop) = [];
         
         sel_chnl_mtx = chnl_mtx;
@@ -290,10 +215,90 @@ switch type
         
         if(n_selected == n_user)
             user_drop = [];
-            user_sel = (1:n_user)';
             sel_chnl_mtx = chnl_mtx;
         else
-            user_sel = (1:n_user)';
+            user_sel(user_drop) = [];
+            
+            sel_chnl_mtx = chnl_mtx;
+            sel_chnl_mtx(:,user_drop) = [];
+        end
+        
+        drop_chnl_mtx = chnl_mtx;
+        drop_chnl_mtx(:,user_sel) = [];
+        
+        varargout{1} = user_drop;
+        varargout{2} = drop_chnl_mtx;
+    otherwise
+        error('Invalid type of selection');
+end
+
+end
+
+function [user_sel,sel_chnl_mtx,varargout] = iciBasesSelection(chnl_mtx,n_selected,threshold,type)
+
+n_antenna = size(chnl_mtx,1);                                              % Number of antennas at base station
+n_user    = size(chnl_mtx,2);                                              % Number users
+
+chnl_mtx_aux = chnl_mtx;
+
+user_sel = (1:n_user)';
+
+switch type
+    case 'FIXED'
+        user_drop = zeros(n_user - n_selected,1);
+                
+        for i = 1:n_user-n_selected
+            psi = ici(chnl_mtx_aux);
+            
+            [~,user_drop(i)] = max(psi);
+            
+            chnl_mtx_aux(:,user_drop(i)) = zeros(n_antenna,1);
+        end
+        
+        user_sel(user_drop) = [];
+        
+        sel_chnl_mtx = chnl_mtx;
+        sel_chnl_mtx(:,user_drop) = [];
+        
+        drop_chnl_mtx = chnl_mtx;
+        drop_chnl_mtx(:,user_sel) = [];
+        
+        varargout{1} = user_drop;
+        varargout{2} = drop_chnl_mtx;
+    case 'AUTOMATIC'
+        selection = 1;
+        idx_while = 1;
+        
+        if(threshold == 1)
+            idx_while = 1;
+        else
+            while(selection == 1)
+                psi = ici(chnl_mtx_aux);
+                
+                decision = (psi > threshold);
+                
+                if(sum(decision) == 0 || idx_while == n_user)
+                    selection = 0;
+                else
+                    idx_decision = user_sel(decision);
+                    
+                    [~,idx_aux] = max(psi(decision));
+                    
+                    user_drop(idx_while) = idx_decision(idx_aux);
+                    
+                    chnl_mtx_aux(:,user_drop(idx_while)) = zeros(n_antenna,1);
+                    
+                    idx_while = idx_while + 1;
+                end
+            end
+        end
+        
+        n_selected = n_user - idx_while + 1;
+        
+        if(n_selected == n_user)
+            user_drop = [];
+            sel_chnl_mtx = chnl_mtx;
+        else
             user_sel(user_drop) = [];
             
             sel_chnl_mtx = chnl_mtx;
