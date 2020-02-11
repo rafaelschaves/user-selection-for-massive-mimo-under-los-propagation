@@ -31,110 +31,7 @@ switch algorithm
     case 'SEMI-ORTHOGONAL SELECTION'
         [user_sel,sel_chnl_mtx,varargout{1},varargout{2}] = semiOrthogonalSelection(chnl_mtx,n_selected);
     case 'CORRELATION-BASED SELECTION'
-        switch type
-            case 'FIXED'
-                user_drop = zeros(n_user - n_selected,1);
-                
-                eye_K = eye(n_user);
-                
-                chnl_mtx_aux = chnl_mtx;
-                
-                for i = 1:n_user-n_selected
-                    corr_mtx     = correlationMatrix(chnl_mtx_aux);
-                    corr_mtx_aux = corr_mtx - eye_K;
-                    
-                    [~,idx_corr] = max(corr_mtx_aux(:));
-                    [corr_i,corr_j] = ind2sub(size(corr_mtx_aux),idx_corr);
-                    
-                    h_i = corr_mtx_aux(:,corr_i);
-                    h_j = corr_mtx_aux(:,corr_j);
-                    
-                    h_i(corr_j) = [];
-                    h_j(corr_i) = [];
-                    
-                    if(max(h_i) > max(h_j))
-                        user_drop(i) = corr_i;
-                    else
-                        user_drop(i) = corr_j;
-                    end
-                    
-                    chnl_mtx_aux(:,user_drop(i)) = zeros(n_antenna,1);
-                end
-                
-                user_sel = (1:n_user)';
-                user_sel(user_drop) = [];
-                
-                sel_chnl_mtx = chnl_mtx;
-                sel_chnl_mtx(:,user_drop) = [];
-                
-                drop_chnl_mtx = chnl_mtx;
-                drop_chnl_mtx(:,user_sel) = [];
-        
-                varargout{1} = user_drop;
-                varargout{2} = drop_chnl_mtx;
-            case 'AUTOMATIC'
-                eye_K = eye(n_user);
-                
-                chnl_mtx_aux = chnl_mtx;
-                
-                selection = 1;
-                idx_while = 1;
-                
-                if(threshold == 1)
-                    idx_while = 1;
-                else
-                    while(selection == 1)
-                        corr_mtx = correlationMatrix(chnl_mtx_aux);
-                        corr_mtx_aux = corr_mtx - eye_K;
-                        
-                        [max_corr,idx_corr] = max(corr_mtx_aux(:));
-                        
-                        if(max_corr < threshold || idx_while == n_user)
-                            selection = 0;
-                        else
-                            [corr_i,corr_j] = ind2sub(size(corr_mtx_aux),idx_corr);
-                            
-                            h_i = corr_mtx_aux(:,corr_i);
-                            h_j = corr_mtx_aux(:,corr_j);
-                            
-                            h_i(corr_j) = [];
-                            h_j(corr_i) = [];
-                            
-                            if(max(h_i) > max(h_j))
-                                user_drop(idx_while) = corr_i;
-                            else
-                                user_drop(idx_while) = corr_j;
-                            end
-                            
-                            chnl_mtx_aux(:,user_drop(idx_while)) = zeros(n_antenna,1);
-                            
-                            idx_while = idx_while + 1;
-                        end
-                    end
-                end
-                
-                n_selected = n_user - idx_while + 1;
-                
-                if(n_selected == n_user)
-                    user_drop = [];
-                    user_sel = (1:n_user)';
-                    sel_chnl_mtx = chnl_mtx;
-                else
-                    user_sel = (1:n_user)';
-                    user_sel(user_drop) = [];
-        
-                    sel_chnl_mtx = chnl_mtx;
-                    sel_chnl_mtx(:,user_drop) = [];
-                end
-                
-                drop_chnl_mtx = chnl_mtx;
-                drop_chnl_mtx(:,user_sel) = [];
-        
-                varargout{1} = user_drop;
-                varargout{2} = drop_chnl_mtx;
-            otherwise
-                error('Invalid type of selection');
-        end
+        [user_sel,sel_chnl_mtx,varargout{1},varargout{2}] = correlationBasedSelection(chnl_mtx,n_selected,threshold,type);
     case 'ICI-BASED SELECTION'
         switch type
             case 'FIXED'
@@ -303,5 +200,113 @@ drop_chnl_mtx(:,user_sel) = [];
 
 varargout{1} = user_drop;
 varargout{2} = drop_chnl_mtx;
+
+end
+
+function [user_sel,sel_chnl_mtx,varargout] = correlationBasedSelection(chnl_mtx,n_selected,threshold,type)
+
+n_antenna = size(chnl_mtx,1);                                              % Number of antennas at base station
+n_user    = size(chnl_mtx,2);                                              % Number users
+
+I_K = eye(n_user);
+
+chnl_mtx_aux = chnl_mtx;
+
+switch type
+    case 'FIXED'
+        user_drop = zeros(n_user - n_selected,1);
+        
+        for i = 1:n_user-n_selected
+            corr_mtx     = correlationMatrix(chnl_mtx_aux);
+            corr_mtx_aux = corr_mtx - I_K;
+            
+            [~,idx_corr] = max(corr_mtx_aux(:));
+            [corr_i,corr_j] = ind2sub(size(corr_mtx_aux),idx_corr);
+            
+            h_i = corr_mtx_aux(:,corr_i);
+            h_j = corr_mtx_aux(:,corr_j);
+            
+            h_i(corr_j) = [];
+            h_j(corr_i) = [];
+            
+            if(max(h_i) > max(h_j))
+                user_drop(i) = corr_i;
+            else
+                user_drop(i) = corr_j;
+            end
+            
+            chnl_mtx_aux(:,user_drop(i)) = zeros(n_antenna,1);
+        end
+        
+        user_sel = (1:n_user)';
+        user_sel(user_drop) = [];
+        
+        sel_chnl_mtx = chnl_mtx;
+        sel_chnl_mtx(:,user_drop) = [];
+        
+        drop_chnl_mtx = chnl_mtx;
+        drop_chnl_mtx(:,user_sel) = [];
+        
+        varargout{1} = user_drop;
+        varargout{2} = drop_chnl_mtx;
+    case 'AUTOMATIC'
+        selection = 1;
+        idx_while = 1;
+        
+        if(threshold == 1)
+            idx_while = 1;
+        else
+            while(selection == 1)
+                corr_mtx = correlationMatrix(chnl_mtx_aux);
+                corr_mtx_aux = corr_mtx - I_K;
+                
+                [max_corr,idx_corr] = max(corr_mtx_aux(:));
+                
+                if(max_corr < threshold || idx_while == n_user)
+                    selection = 0;
+                else
+                    [corr_i,corr_j] = ind2sub(size(corr_mtx_aux),idx_corr);
+                    
+                    h_i = corr_mtx_aux(:,corr_i);
+                    h_j = corr_mtx_aux(:,corr_j);
+                    
+                    h_i(corr_j) = [];
+                    h_j(corr_i) = [];
+                    
+                    if(max(h_i) > max(h_j))
+                        user_drop(idx_while) = corr_i;
+                    else
+                        user_drop(idx_while) = corr_j;
+                    end
+                    
+                    chnl_mtx_aux(:,user_drop(idx_while)) = zeros(n_antenna,1);
+                    
+                    idx_while = idx_while + 1;
+                end
+            end
+        end
+        
+        n_selected = n_user - idx_while + 1;
+        
+        if(n_selected == n_user)
+            user_drop = [];
+            user_sel = (1:n_user)';
+            sel_chnl_mtx = chnl_mtx;
+        else
+            user_sel = (1:n_user)';
+            user_sel(user_drop) = [];
+            
+            sel_chnl_mtx = chnl_mtx;
+            sel_chnl_mtx(:,user_drop) = [];
+        end
+        
+        drop_chnl_mtx = chnl_mtx;
+        drop_chnl_mtx(:,user_sel) = [];
+        
+        varargout{1} = user_drop;
+        varargout{2} = drop_chnl_mtx;
+    otherwise
+        error('Invalid type of selection');
+end
 
 end
