@@ -31,8 +31,8 @@ switch algorithm
         [user_sel,sel_chnl_mtx,varargout{1},varargout{2}] = correlationBasedSelection(chnl_mtx,n_selected,threshold,type);
     case 'ICI-BASED SELECTION'
         [user_sel,sel_chnl_mtx,varargout{1},varargout{2}] = iciBasesSelection(chnl_mtx,n_selected,threshold,type);
-    case 'MAXIMUM SSLSR SELECTION'
-        [user_sel,sel_chnl_mtx,varargout{1},varargout{2}] = maximumSSLSRSelection(chnl_mtx,lrg_scl,n_selected,threshold,type);
+    case 'FR-BASED SELECTION'
+        [user_sel,sel_chnl_mtx,varargout{1},varargout{2}] = frBasedSelection(chnl_mtx,lrg_scl,n_selected,threshold,type);
     otherwise
         error('Invalid algorithm');
 end
@@ -315,13 +315,13 @@ end
 
 end
 
-function [user_sel,sel_chnl_mtx,varargout] = maximumSSLSRSelection(chnl_mtx,lrg_scl,n_selected,threshold,type)
+function [user_sel,sel_chnl_mtx,varargout] = frBasedSelection(chnl_mtx,lrg_scl,n_selected,threshold,type)
 
 n_antenna = size(chnl_mtx,1);                                              % Number of antennas at base station
 n_user    = size(chnl_mtx,2);                                              % Number users
 
 chnl_mtx_aux = chnl_mtx;
-lrg_scl_aux = lrg_scl;
+%lrg_scl_aux = lrg_scl;
 
 user_sel = (1:n_user)';
 
@@ -332,10 +332,10 @@ switch type
         for i = 1:n_user-n_selected
             psi = ici(chnl_mtx_aux);
             
-            [~,user_drop(i)] = max(psi./lrg_scl_aux);
+            [~,user_drop(i)] = max(psi./lrg_scl);
             
             chnl_mtx_aux(:,user_drop(i)) = zeros(n_antenna,1);
-            lrg_scl_aux(user_drop(i)) = 1;
+            %lrg_scl_aux(user_drop(i)) = 1;
         end
         
         user_sel(user_drop) = [];
