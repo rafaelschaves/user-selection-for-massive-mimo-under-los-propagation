@@ -1,38 +1,36 @@
-function [user_sel,sel_chnl_mtx,varargout] = userSelector(chnl_mtx, ...
-                                                          lrg_scl, ...
-                                                          algorithm, ...
-                                                          type, ...
-                                                          varargin)
+function [H_s,varargout] = userSelector(H,beta,rho,alg,type,varargin)
 
 N_ARGIN = 6;                                                  
 
-algorithm = upper(algorithm);                                              % Algorithm
+alg = upper(alg);                                                          % Algorithm
 type = upper(type);                                                        % Type of selection
 
 if(nargin == N_ARGIN-2)
-    n_selected = 5;
-    threshold  = 0.5;
+    L    = 5;
+    tau  = 0.5;
 elseif(nargin == N_ARGIN-1)
-    n_selected = varargin{1};
-    threshold  = 0.5;
+    L    = varargin{1};
+    tau  = 0.5;
 elseif(nargin == N_ARGIN)
-    n_selected = varargin{1};
-    threshold  = varargin{2};
+    L    = varargin{1};
+    tau  = varargin{2};
 else
     error('Invalid number of input arguments');
 end
 
-switch algorithm
-    case 'RANDOM SELECTION'
-        [user_sel,sel_chnl_mtx,varargout{1},varargout{2}] = randomSelection(chnl_mtx,n_selected);
+switch alg
+    case 'EXHAUSTIVE SEARCH SELECTION EP'
+        [H_s,varargout{1}] = exhaustiveSearchSelectionEP(H,beta,rho,L);
+    case 'EXHAUSTIVE SEARCH SELECTION MMF'
+        [H_s,varargout{1}] = exhaustiveSearchSelectionMMF(H,beta,rho,L);
     case 'SEMI-ORTHOGONAL SELECTION'
-        [user_sel,sel_chnl_mtx,varargout{1},varargout{2}] = semiOrthogonalSelection(chnl_mtx,n_selected);
+        [H_s,varargout{1}] = semiOrthogonalSelection(H,beta,L);
     case 'CORRELATION-BASED SELECTION'
-        [user_sel,sel_chnl_mtx,varargout{1},varargout{2}] = correlationBasedSelection(chnl_mtx,n_selected,threshold,type);
+        [H_s,varargout{1}] = correlationBasedSelection(H,L,tau,type);
     case 'ICI-BASED SELECTION'
-        [user_sel,sel_chnl_mtx,varargout{1},varargout{2}] = iciBasesSelection(chnl_mtx,n_selected,threshold,type);
+        [H_s,varargout{1}] = iciBasesSelection(H,L,tau,type);
     case 'FR-BASED SELECTION'
-        [user_sel,sel_chnl_mtx,varargout{1},varargout{2}] = frBasedSelection(chnl_mtx,lrg_scl,n_selected,threshold,type);
+        [H_s,varargout{1}] = frBasedSelection(H,beta,L,tau,type);
     otherwise
         error('Invalid algorithm');
 end
@@ -54,345 +52,342 @@ corr_mtx = abs(mtx_norm'*mtx_norm);
               
 end
 
-function [user_sel,sel_chnl_mtx,varargout] = randomSelection(chnl_mtx,n_selected)
+function [H_s,varargout] = exhaustiveSearchSelectionEP(H,beta,rho,L)
 
-n_user = size(chnl_mtx,2);                                                 % Number users
+K = size(H,2); % Number users
 
-user_drop = randperm(n_user,n_user - n_selected)';                         % User that won't transmitt or receive data
+S_set_aux = nchoosek(1:K,L);
+N_S_set   = size(S_set_aux,1);
 
-user_sel = (1:n_user)';
-user_sel(user_drop) = [];
+se_mr = zeros(L,N_S_set);
+se_zf = zeros(L,N_S_set);
 
-sel_chnl_mtx = chnl_mtx;
-sel_chnl_mtx(:,user_drop) = [];
+for n = 1:N_S_set    
+    [se_mr(:,n),se_zf(:,n)] = DLspectralEfficiency(H(:,S_set_aux(n,:)),beta(S_set_aux(n,:)),rho,1/L);
+end
 
-drop_chnl_mtx = chnl_mtx;
-drop_chnl_mtx(:,user_sel) = [];
+[~,idx_S_set_mr] = max(sum(se_mr,1));
+[~,idx_S_set_zf] = max(sum(se_zf,1));
 
-varargout{1} = user_drop;
-varargout{2} = drop_chnl_mtx;
+S_set_mr = S_set_aux(idx_S_set_mr,:);
+S_set_zf = S_set_aux(idx_S_set_zf,:);
+
+H_s_mr = H(:,S_set_aux(idx_S_set_mr,:));
+H_s_zf = H(:,S_set_aux(idx_S_set_zf,:));
+
+H_s(:,:,1) = H_s_mr;
+H_s(:,:,2) = H_s_zf;
+
+S_set(:,1) = S_set_mr';
+S_set(:,2) = S_set_zf';
+
+varargout{1} = S_set;
 
 end
 
-function [user_sel,sel_chnl_mtx,varargout] = semiOrthogonalSelection(chnl_mtx,n_selected)
+function [H_s,varargout] = exhaustiveSearchSelectionMMF(H,beta,rho,L)
 
-n_antenna = size(chnl_mtx,1);                                              % Number of antennas at base station
-n_user    = size(chnl_mtx,2);                                              % Number users
+K = size(H,2);                                              % Number users
 
-user_sel = zeros(n_selected,1);
-ort_proj_sel = zeros(n_antenna,n_selected);
+S_set_aux = nchoosek(1:K,L);
+N_S_set   = size(S_set_aux,1);
 
-eye_M = eye(n_antenna);
+se_mr = zeros(L,N_S_set);
+se_zf = zeros(L,N_S_set);
 
-chnl_mtx_aux = chnl_mtx;
+for n = 1:N_S_set
+    [~,eta_mr] = maxMinFairness(H(:,S_set_aux(n,:)),beta(S_set_aux(n,:)),'algorithm 2');
+    eta_zf = (1/sum(1./beta(S_set_aux(n,:))))./beta(S_set_aux(n,:));
+    
+    eta = [eta_mr eta_zf];
+    
+    [se_mr(:,n),se_zf(:,n)] = DLspectralEfficiency(H(:,S_set_aux(n,:)),beta(S_set_aux(n,:)),rho,eta);
+end
 
-for i = 1:n_selected
-    if(i == 1)
-        ort_proj = chnl_mtx;
-        g_norm = vecnorm(ort_proj,2);
-        
-        [~,user_sel(i)] = max(g_norm);
-        
-        ort_proj_sel(:,i) = ort_proj(:,user_sel(i))/norm(ort_proj(:,user_sel(i)),2);
-        
-        chnl_mtx_aux(:,user_sel(i)) = zeros(n_antenna,1);
+[~,idx_S_set_mr]  = max(min(se_mr,1));
+[~,idx_S_set_zf]  = max(min(se_zf,1));
+
+S_set_mr  = S_set_aux(idx_S_set_mr,:);
+S_set_zf  = S_set_aux(idx_S_set_zf,:);
+
+H_s_mr = H(:,S_set_aux(idx_S_set_mr,:));
+H_s_zf = H(:,S_set_aux(idx_S_set_zf,:));
+
+H_s(:,:,1) = H_s_mr;
+H_s(:,:,2) = H_s_zf;
+
+S_set(:,1) = S_set_mr';
+S_set(:,2) = S_set_zf';
+
+varargout{1} = S_set;
+
+end
+
+function [H_s,varargout] = semiOrthogonalSelection(H,beta,L)
+
+M = size(H,1);                                              % Number of antennas at base station
+
+S_set     = zeros(L,1);
+g_ort_sel = zeros(M,L);
+
+I_M = eye(M);
+
+G_aux = H*diag(sqrt(beta));
+
+for l = 1:L
+    if(l == 1)
+        g_ort = G_aux;
     else
-        proj_mtx = eye_M - ort_proj_sel*ort_proj_sel';
-        ort_proj = proj_mtx*chnl_mtx_aux;
-        
-        g_norm = vecnorm(ort_proj,2);
-        
-        [~,user_sel(i)] = max(g_norm);
-        
-        ort_proj_sel(:,i) = ort_proj(:,user_sel(i))/norm(ort_proj(:,user_sel(i)),2);
-        
-        chnl_mtx_aux(:,user_sel(i)) = zeros(n_antenna,1);
+        g_ort = (I_M - g_ort_sel*g_ort_sel')*G_aux;
     end
+    
+    [~,S_set(l)] = max(vecnorm(g_ort));
+    
+    g_ort_sel(:,l) = g_ort(:,S_set(l))/norm(g_ort(:,S_set(l)),2);
+    
+    G_aux(:,S_set(l)) = zeros(M,1);
 end
 
-user_drop = (1:n_user)';
-user_drop(user_sel) = [];
+S_set = sort(S_set);
 
-user_sel = sort(user_sel);
+H_s = H(:,S_set);
 
-sel_chnl_mtx = chnl_mtx;
-sel_chnl_mtx(:,user_drop) = [];
-
-drop_chnl_mtx = chnl_mtx;
-drop_chnl_mtx(:,user_sel) = [];
-
-varargout{1} = user_drop;
-varargout{2} = drop_chnl_mtx;
+varargout{1} = S_set;
 
 end
 
-function [user_sel,sel_chnl_mtx,varargout] = correlationBasedSelection(chnl_mtx,n_selected,threshold,type)
+function [H_s,varargout] = correlationBasedSelection(H,L,tau,type)
 
-n_antenna = size(chnl_mtx,1);                                              % Number of antennas at base station
-n_user    = size(chnl_mtx,2);                                              % Number users
+M = size(H,1);                                              % Number of antennas at base station
+K = size(H,2);                                              % Number users
 
-I_K = eye(n_user);
+I_K = eye(K);
 
-chnl_mtx_aux = chnl_mtx;
+H_aux = H;
 
-user_sel = (1:n_user)';
+S_set = (1:K)';
 
 switch type
     case 'FIXED'
-        user_drop = zeros(n_user - n_selected,1);
+        S_set_drop = zeros(K-L,1);
         
-        for i = 1:n_user-n_selected
-            corr_mtx     = correlationMatrix(chnl_mtx_aux);
-            corr_mtx_aux = corr_mtx - I_K;
+        for i = 1:K-L
+            R     = correlationMatrix(H_aux);
+            R_aux = R - I_K;
             
-            [~,idx_corr] = max(corr_mtx_aux(:));
-            [corr_i,corr_j] = ind2sub(size(corr_mtx_aux),idx_corr);
+            [~,idx_corr] = max(R_aux(:));
+            [corr_i,corr_j] = ind2sub(size(R_aux),idx_corr);
             
-            h_i = corr_mtx_aux(:,corr_i);
-            h_j = corr_mtx_aux(:,corr_j);
+            h_i = R_aux(:,corr_i);
+            h_j = R_aux(:,corr_j);
             
             h_i(corr_j) = [];
             h_j(corr_i) = [];
             
             if(max(h_i) > max(h_j))
-                user_drop(i) = corr_i;
+                S_set_drop(i) = corr_i;
             else
-                user_drop(i) = corr_j;
+                S_set_drop(i) = corr_j;
             end
             
-            chnl_mtx_aux(:,user_drop(i)) = zeros(n_antenna,1);
+            H_aux(:,S_set_drop(i)) = zeros(M,1);
         end
         
-        user_sel(user_drop) = [];
+        S_set(S_set_drop) = [];
         
-        sel_chnl_mtx = chnl_mtx;
-        sel_chnl_mtx(:,user_drop) = [];
-        
-        drop_chnl_mtx = chnl_mtx;
-        drop_chnl_mtx(:,user_sel) = [];
-        
-        varargout{1} = user_drop;
-        varargout{2} = drop_chnl_mtx;
+        H_s = H(:,S_set);
+                
+        varargout{1} = S_set;
     case 'AUTOMATIC'
         selection = 1;
         idx_while = 1;
         
-        if(threshold == 1)
+        if(tau == 1)
             idx_while = 1;
         else
             while(selection == 1)
-                corr_mtx = correlationMatrix(chnl_mtx_aux);
-                corr_mtx_aux = corr_mtx - I_K;
+                R = correlationMatrix(H_aux);
+                R_aux = R - I_K;
                 
-                [max_corr,idx_corr] = max(corr_mtx_aux(:));
+                [max_corr,idx_corr] = max(R_aux(:));
                 
-                if(max_corr < threshold || idx_while == n_user)
+                if(max_corr < tau || idx_while == K)
                     selection = 0;
                 else
-                    [corr_i,corr_j] = ind2sub(size(corr_mtx_aux),idx_corr);
+                    [corr_i,corr_j] = ind2sub(size(R_aux),idx_corr);
                     
-                    h_i = corr_mtx_aux(:,corr_i);
-                    h_j = corr_mtx_aux(:,corr_j);
+                    h_i = R_aux(:,corr_i);
+                    h_j = R_aux(:,corr_j);
                     
                     h_i(corr_j) = [];
                     h_j(corr_i) = [];
                     
                     if(max(h_i) > max(h_j))
-                        user_drop(idx_while) = corr_i;
+                        S_set_drop(idx_while) = corr_i;
                     else
-                        user_drop(idx_while) = corr_j;
+                        S_set_drop(idx_while) = corr_j;
                     end
                     
-                    chnl_mtx_aux(:,user_drop(idx_while)) = zeros(n_antenna,1);
+                    H_aux(:,S_set_drop(idx_while)) = zeros(M,1);
                     
                     idx_while = idx_while + 1;
                 end
             end
         end
         
-        n_selected = n_user - idx_while + 1;
+        L = K - idx_while + 1;
         
-        if(n_selected == n_user)
-            user_drop = [];
-            sel_chnl_mtx = chnl_mtx;
+        if(L == K)
+            H_s = H;
         else
-            user_sel(user_drop) = [];
+            S_set(S_set_drop) = [];
             
-            sel_chnl_mtx = chnl_mtx;
-            sel_chnl_mtx(:,user_drop) = [];
+            H_s = H(:,S_set);
         end
-        
-        drop_chnl_mtx = chnl_mtx;
-        drop_chnl_mtx(:,user_sel) = [];
-        
-        varargout{1} = user_drop;
-        varargout{2} = drop_chnl_mtx;
+                
+        varargout{1} = S_set;
     otherwise
         error('Invalid type of selection');
 end
 
 end
 
-function [user_sel,sel_chnl_mtx,varargout] = iciBasesSelection(chnl_mtx,n_selected,threshold,type)
+function [H_s,varargout] = iciBasesSelection(H,L,tau,type)
 
-n_antenna = size(chnl_mtx,1);                                              % Number of antennas at base station
-n_user    = size(chnl_mtx,2);                                              % Number users
+M = size(H,1);                                              % Number of antennas at base station
+K = size(H,2);                                              % Number users
 
-chnl_mtx_aux = chnl_mtx;
+H_aux = H;
 
-user_sel = (1:n_user)';
+S_set = (1:K)';
 
 switch type
     case 'FIXED'
-        user_drop = zeros(n_user - n_selected,1);
+        S_set_drop = zeros(K-L,1);
                 
-        for i = 1:n_user-n_selected
-            psi = ici(chnl_mtx_aux);
+        for i = 1:K-L
+            psi = ici(H_aux);
             
-            [~,user_drop(i)] = max(psi);
+            [~,S_set_drop(i)] = max(psi);
             
-            chnl_mtx_aux(:,user_drop(i)) = zeros(n_antenna,1);
+            H_aux(:,S_set_drop(i)) = zeros(M,1);
         end
         
-        user_sel(user_drop) = [];
+        S_set(S_set_drop) = [];
         
-        sel_chnl_mtx = chnl_mtx;
-        sel_chnl_mtx(:,user_drop) = [];
-        
-        drop_chnl_mtx = chnl_mtx;
-        drop_chnl_mtx(:,user_sel) = [];
-        
-        varargout{1} = user_drop;
-        varargout{2} = drop_chnl_mtx;
+        H_s = H(:,S_set);
+                
+        varargout{1} = S_set;
     case 'AUTOMATIC'
         selection = 1;
         idx_while = 1;
         
-        if(threshold == 1)
+        if(tau == 1)
             idx_while = 1;
         else
             while(selection == 1)
-                psi = ici(chnl_mtx_aux);
+                psi = ici(H_aux);
                 
-                decision = (psi > threshold);
+                decision = (psi > tau);
                 
-                if(sum(decision) == 0 || idx_while == n_user)
+                if(sum(decision) == 0 || idx_while == K)
                     selection = 0;
                 else
-                    idx_decision = user_sel(decision);
+                    idx_decision = S_set(decision);
                     
                     [~,idx_aux] = max(psi(decision));
                     
-                    user_drop(idx_while) = idx_decision(idx_aux);
+                    S_set_drop(idx_while) = idx_decision(idx_aux);
                     
-                    chnl_mtx_aux(:,user_drop(idx_while)) = zeros(n_antenna,1);
+                    H_aux(:,S_set_drop(idx_while)) = zeros(M,1);
                     
                     idx_while = idx_while + 1;
                 end
             end
         end
         
-        n_selected = n_user - idx_while + 1;
+        L = K - idx_while + 1;
         
-        if(n_selected == n_user)
-            user_drop = [];
-            sel_chnl_mtx = chnl_mtx;
+        if(L == K)
+            H_s = H;
         else
-            user_sel(user_drop) = [];
+            S_set(S_set_drop) = [];
             
-            sel_chnl_mtx = chnl_mtx;
-            sel_chnl_mtx(:,user_drop) = [];
+            H_s = H(:,S_set);
         end
         
-        drop_chnl_mtx = chnl_mtx;
-        drop_chnl_mtx(:,user_sel) = [];
-        
-        varargout{1} = user_drop;
-        varargout{2} = drop_chnl_mtx;
+        varargout{1} = S_set;
     otherwise
         error('Invalid type of selection');
 end
 
 end
 
-function [user_sel,sel_chnl_mtx,varargout] = frBasedSelection(chnl_mtx,lrg_scl,n_selected,threshold,type)
+function [H_s,varargout] = frBasedSelection(H,beta,L,tau,type)
 
-n_antenna = size(chnl_mtx,1);                                              % Number of antennas at base station
-n_user    = size(chnl_mtx,2);                                              % Number users
+M = size(H,1);                                              % Number of antennas at base station
+K = size(H,2);                                              % Number users
 
-chnl_mtx_aux = chnl_mtx;
-%lrg_scl_aux = lrg_scl;
+H_aux = H;
 
-user_sel = (1:n_user)';
+S_set = (1:K)';
 
 switch type
     case 'FIXED'
-        user_drop = zeros(n_user - n_selected,1);
+        S_set_drop = zeros(K-L,1);
                 
-        for i = 1:n_user-n_selected
-            psi = ici(chnl_mtx_aux);
+        for i = 1:K-L
+            psi = ici(H_aux);
             
-            [~,user_drop(i)] = max(psi./lrg_scl);
+            [~,S_set_drop(i)] = max(psi./beta);
             
-            chnl_mtx_aux(:,user_drop(i)) = zeros(n_antenna,1);
-            %lrg_scl_aux(user_drop(i)) = 1;
+            H_aux(:,S_set_drop(i)) = zeros(M,1);
         end
         
-        user_sel(user_drop) = [];
+        S_set(S_set_drop) = [];
         
-        sel_chnl_mtx = chnl_mtx;
-        sel_chnl_mtx(:,user_drop) = [];
-        
-        drop_chnl_mtx = chnl_mtx;
-        drop_chnl_mtx(:,user_sel) = [];
-        
-        varargout{1} = user_drop;
-        varargout{2} = drop_chnl_mtx;
+        H_s = H(:,S_set);
+           
+        varargout{1} = S_set;
     case 'AUTOMATIC'
         selection = 1;
         idx_while = 1;
         
-        if(threshold == 1)
+        if(tau == 1)
             idx_while = 1;
         else
             while(selection == 1)
-                psi = ici(chnl_mtx_aux);
+                psi = ici(H_aux);
                 
-                decision = (psi > threshold);
+                decision = (psi > tau);
                 
-                if(sum(decision) == 0 || idx_while == n_user)
+                if(sum(decision) == 0 || idx_while == K)
                     selection = 0;
                 else
-                    idx_decision = user_sel(decision);
+                    idx_decision = S_set(decision);
                     
                     [~,idx_aux] = max(psi(decision));
                     
-                    user_drop(idx_while) = idx_decision(idx_aux);
+                    S_set_drop(idx_while) = idx_decision(idx_aux);
                     
-                    chnl_mtx_aux(:,user_drop(idx_while)) = zeros(n_antenna,1);
+                    H_aux(:,S_set_drop(idx_while)) = zeros(M,1);
                     
                     idx_while = idx_while + 1;
                 end
             end
         end
         
-        n_selected = n_user - idx_while + 1;
+        L = K - idx_while + 1;
         
-        if(n_selected == n_user)
-            user_drop = [];
-            sel_chnl_mtx = chnl_mtx;
+        if(L == K)
+            H_s = H;
         else
-            user_sel(user_drop) = [];
+            S_set(S_set_drop) = [];
             
-            sel_chnl_mtx = chnl_mtx;
-            sel_chnl_mtx(:,user_drop) = [];
+            H_s = H(:,S_set);
         end
         
-        drop_chnl_mtx = chnl_mtx;
-        drop_chnl_mtx(:,user_sel) = [];
-        
-        varargout{1} = user_drop;
-        varargout{2} = drop_chnl_mtx;
+        varargout{1} = S_set;
     otherwise
         error('Invalid type of selection');
 end
