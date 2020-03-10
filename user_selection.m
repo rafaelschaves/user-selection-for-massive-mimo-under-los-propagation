@@ -31,7 +31,7 @@ if ~exist('channel_type','var')
     channel_type = 'ur-los';
 end
 
-N_ALG = 5;
+N_ALG = 3;
 N_PRE = 2;
 
 commcell.nAntennas       = M;                                              % Number of Antennas
