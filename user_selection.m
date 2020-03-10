@@ -88,16 +88,16 @@ for mc = 1:MC
     for alg_idx = 1:N_ALG
         H_s = userSelector(H,beta,snr,algorithm_type{alg_idx},'fixed',L,[]);
         
-        % if alg_idx == 1
-        %     beta_s = [beta(S_set(:,1)) beta(S_set(:,2))];
-        % else
-        %     beta_s = beta(S_set);
-        % end
+%         if alg_idx == 1
+%             beta_s = [beta(S_set(:,1)) beta(S_set(:,2))];
+%         else
+%             beta_s = beta(S_set);
+%         end
         
         [se_s(:,1,mc,alg_idx),se_s(:,2,mc,alg_idx)] = DLspectralEfficiency(H_s,beta,snr,1/L);
     end
 end
 
-save([root_save_dl strrep(channel_type,'-','_') '_M_' num2str(M) '_K_' ...
-      num2str(K) '_L_' num2str(L) '_SNR_' num2str(snr_eff) '_dB_MC_' ...
-      num2str(MC) '.mat'],'se','se_s','psi','psi_s');
+% save([root_save_dl strrep(channel_type,'-','_') '_M_' num2str(M) '_K_' ...
+%       num2str(K) '_L_' num2str(L) '_SNR_' num2str(snr_eff) '_dB_MC_' ...
+%       num2str(MC) '.mat'],'se','se_s','psi','psi_s');
