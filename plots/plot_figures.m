@@ -6,11 +6,11 @@ clc;
 
 MC = 10000;                                                                % Size of the monte-carlo ensemble
 
-M = [128];                                                          % Number of antennas at base station
+M = [64 128 256];                                                          % Number of antennas at base station
 r_k = 1.25;
-r_l = 0.75;
+r_l = 0.5;
 
-% K = 16;                                                                 % Number of mobile users
+% K = 16;                                                                  % Number of mobile users
 % L = 80;                                                                  % Number of selected users
 
 snr_ul = -7;

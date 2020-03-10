@@ -1,6 +1,6 @@
 function [H_s,varargout] = userSelector(H,beta,rho,alg,type,varargin)
 
-N_ARGIN = 6;                                                  
+N_ARGIN = 7;                                                  
 
 alg = upper(alg);                                                          % Algorithm
 type = upper(type);                                                        % Type of selection
@@ -56,6 +56,10 @@ function [H_s,varargout] = exhaustiveSearchSelectionEP(H,beta,rho,L)
 
 K = size(H,2); % Number users
 
+if size(beta,1) == 1
+    beta = repmat(beta,K,1);
+end
+
 S_set_aux = nchoosek(1:K,L);
 N_S_set   = size(S_set_aux,1);
 
@@ -89,6 +93,10 @@ function [H_s,varargout] = exhaustiveSearchSelectionMMF(H,beta,rho,L)
 
 K = size(H,2);                                              % Number users
 
+if size(beta,1) == 1
+    beta = repmat(beta,K,1);
+end
+
 S_set_aux = nchoosek(1:K,L);
 N_S_set   = size(S_set_aux,1);
 
@@ -96,7 +104,7 @@ se_mr = zeros(L,N_S_set);
 se_zf = zeros(L,N_S_set);
 
 for n = 1:N_S_set
-    [~,eta_mr] = maxMinFairness(H(:,S_set_aux(n,:)),beta(S_set_aux(n,:)),'algorithm 2');
+    [~,eta_mr] = maxMinFairness(H(:,S_set_aux(n,:)),beta(S_set_aux(n,:)),rho,'algorithm 2');
     eta_zf = (1/sum(1./beta(S_set_aux(n,:))))./beta(S_set_aux(n,:));
     
     eta = [eta_mr eta_zf];
@@ -104,8 +112,8 @@ for n = 1:N_S_set
     [se_mr(:,n),se_zf(:,n)] = DLspectralEfficiency(H(:,S_set_aux(n,:)),beta(S_set_aux(n,:)),rho,eta);
 end
 
-[~,idx_S_set_mr]  = max(min(se_mr,1));
-[~,idx_S_set_zf]  = max(min(se_zf,1));
+[~,idx_S_set_mr]  = max(min(se_mr,[],1));
+[~,idx_S_set_zf]  = max(min(se_zf,[],1));
 
 S_set_mr  = S_set_aux(idx_S_set_mr,:);
 S_set_zf  = S_set_aux(idx_S_set_zf,:);
