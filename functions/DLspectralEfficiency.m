@@ -13,6 +13,8 @@ elseif nargin == N_ARGIN
     tau_c = varargin{2};
 end
 
+K = size(H,2);
+
 % MR Processing
 
 eta_mr  = eta(:,1);             % Power allocation vector for MR processing
@@ -50,7 +52,7 @@ if nargout > 1
         eta_zf = eta(:,2);
     end
     
-    V_zf      = conj(H_zf)/(H_zf.'*conj(H_zf));
+    V_zf      = conj(H_zf)/(H_zf.'*conj(H_zf) + 1e-9*eye(K));
     v_zf_norm = vecnorm(V_zf);
     
     W_zf = V_zf*diag(1./v_zf_norm);

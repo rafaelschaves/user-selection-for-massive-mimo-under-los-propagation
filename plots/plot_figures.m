@@ -384,7 +384,7 @@ end
 %     
 %     set(gcf,'position',[0 0 800 600]);
 %     
-%     for m = 1:M_SIZ
+%     for m = 1:M_SIZjj
 %         plot(edg_se_user{1,m,chn_idx,1},cdf_se_user{1,m,chn_idx,1},['-' marker{m}],'color',colours(1,:),'linewidth',linewidth,'markersize',markersize);
 %         hold on;
 %         plot(edg_se_user{2,m,chn_idx,1},cdf_se_user{2,m,chn_idx,1},['-' marker{m}],'color',colours(2,:),'linewidth',linewidth,'markersize',markersize);
