@@ -63,27 +63,33 @@ end
 S_set_aux = nchoosek(1:K,L);
 N_S_set   = size(S_set_aux,1);
 
-se_mr = zeros(L,N_S_set);
-se_zf = zeros(L,N_S_set);
+se_mr   = zeros(L,N_S_set);
+se_zf   = zeros(L,N_S_set);
+se_mmse = zeros(L,N_S_set);
 
 for n = 1:N_S_set    
-    [se_mr(:,n),se_zf(:,n)] = DLspectralEfficiency(H(:,S_set_aux(n,:)),beta(S_set_aux(n,:)),rho,1/L);
+    [se_mr(:,n),se_zf(:,n),se_mmse(:,n)] = DLspectralEfficiency(H(:,S_set_aux(n,:)),beta(S_set_aux(n,:)),rho,1/L);
 end
 
-[~,idx_S_set_mr] = max(sum(se_mr,1));
-[~,idx_S_set_zf] = max(sum(se_zf,1));
+[~,idx_S_set_mr]   = max(sum(se_mr,1));
+[~,idx_S_set_zf]   = max(sum(se_zf,1));
+[~,idx_S_set_mmse] = max(sum(se_mmse,1));
 
-S_set_mr = S_set_aux(idx_S_set_mr,:);
-S_set_zf = S_set_aux(idx_S_set_zf,:);
+S_set_mr   = S_set_aux(idx_S_set_mr,:);
+S_set_zf   = S_set_aux(idx_S_set_zf,:);
+S_set_mmse = S_set_aux(idx_S_set_mmse,:);
 
-H_s_mr = H(:,S_set_aux(idx_S_set_mr,:));
-H_s_zf = H(:,S_set_aux(idx_S_set_zf,:));
+H_s_mr   = H(:,S_set_aux(idx_S_set_mr,:));
+H_s_zf   = H(:,S_set_aux(idx_S_set_zf,:));
+H_s_mmse = H(:,S_set_aux(idx_S_set_mmse,:));
 
 H_s(:,:,1) = H_s_mr;
 H_s(:,:,2) = H_s_zf;
+H_s(:,:,3) = H_s_mmse;
 
 S_set(:,1) = S_set_mr';
 S_set(:,2) = S_set_zf';
+S_set(:,3) = S_set_mmse';
 
 varargout{1} = S_set;
 
@@ -112,11 +118,11 @@ for n = 1:N_S_set
     [se_mr(:,n),se_zf(:,n)] = DLspectralEfficiency(H(:,S_set_aux(n,:)),beta(S_set_aux(n,:)),rho,eta);
 end
 
-[~,idx_S_set_mr]  = max(min(se_mr,[],1));
-[~,idx_S_set_zf]  = max(min(se_zf,[],1));
+[~,idx_S_set_mr] = max(min(se_mr,[],1));
+[~,idx_S_set_zf] = max(min(se_zf,[],1));
 
-S_set_mr  = S_set_aux(idx_S_set_mr,:);
-S_set_zf  = S_set_aux(idx_S_set_zf,:);
+S_set_mr = S_set_aux(idx_S_set_mr,:);
+S_set_zf = S_set_aux(idx_S_set_zf,:);
 
 H_s_mr = H(:,S_set_aux(idx_S_set_mr,:));
 H_s_zf = H(:,S_set_aux(idx_S_set_zf,:));
