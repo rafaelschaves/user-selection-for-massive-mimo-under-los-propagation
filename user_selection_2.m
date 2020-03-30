@@ -28,7 +28,7 @@ if ~exist('channel_type','var')
 end
 
 N_ALG = 3;
-N_PRE = 2;
+N_PRE = 3;
 
 commcell.nAntennas       = M;                                              % Number of Antennas
 commcell.nUsers          = K;                                              % Number of Users
@@ -63,7 +63,7 @@ algorithm_type = {'semi-orthogonal selection', ...
                   'ici-based selection'};
 
 if K > M
-    L_max = M-1;
+    L_max = M;
 else
     L_max = K-1;
 end
@@ -79,7 +79,7 @@ for mc = 1:MC
     
     [H,~] = massiveMIMOChannel(commcell,channel_type);
     
-    [se(:,1,mc),se(:,2,mc)] = DLspectralEfficiency(H,beta,snr,1/K);        % No Selection
+    [se(:,1,mc),se(:,2,mc),se(:,3,mc)] = DLspectralEfficiency(H,beta,snr,1/K);        % No Selection
         
     for L = 1:L_max                                                      % Number of selected users
         L
@@ -93,10 +93,11 @@ for mc = 1:MC
             %             beta_s = beta(S_set);
             %         end
             
-            [se_s_mf,se_s_zf] = DLspectralEfficiency(H_s,beta,snr,1/L);
+            [se_s_mf,se_s_zf,se_s_mmse] = DLspectralEfficiency(H_s,beta,snr,1/L);
             
             se_s_all_L(:,L,1,alg_idx,mc) = [se_s_mf; zeros(L_max-L,1)];
-            se_s_all_L(:,L,2,alg_idx,mc) = [se_s_zf; zeros(L_max-L,1)] ;
+            se_s_all_L(:,L,2,alg_idx,mc) = [se_s_zf; zeros(L_max-L,1)];
+            se_s_all_L(:,L,3,alg_idx,mc) = [se_s_mmse; zeros(L_max-L,1)];
         end
     end
 end
