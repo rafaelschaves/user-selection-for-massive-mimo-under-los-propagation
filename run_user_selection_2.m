@@ -6,9 +6,9 @@ MC = 1000;                                                                 % Siz
 
 channel_type = 'ur-los';
 
-M = 100;                                                                   % Number of antennas at the base station
+M = 200;                                                                   % Number of antennas at the base station
 
-for K = [75 100 150]                                      % Number of users at the cell
+for K = [50 75 100 150 200 250]                                      % Number of users at the cell
     K
     run user_selection_2.m
 end
