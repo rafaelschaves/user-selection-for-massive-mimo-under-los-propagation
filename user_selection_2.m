@@ -82,7 +82,6 @@ for mc = 1:MC
     [se(:,1,mc),se(:,2,mc),se(:,3,mc)] = DLspectralEfficiency(H,beta,snr,1/K);        % No Selection
         
     for L = 1:L_max                                                      % Number of selected users
-        L
         
         for alg_idx = 1:N_ALG
             H_s = userSelector(H,beta,snr,algorithm_type{alg_idx},'fixed',L,[]);
