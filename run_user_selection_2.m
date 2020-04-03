@@ -4,7 +4,7 @@ clc;
 
 MC = 1000;                                                                 % Size of the outer Monte Carlo ensemble (Varies the channel realizarions)
 
-channel_type = 'rayleigh';
+channel_type = 'ur-los';
 
 M = 200;                                                                   % Number of antennas at the base station
 
@@ -12,7 +12,7 @@ M = 200;                                                                   % Num
 % M = 100 and K = [10 25 50 75 100 150]
 % M = 200 and K = [10 25 50 75 100 150 200 250]
 
-for K = [100 150 200 250]                                      % Number of users at the cell
+for K = [200 250]                                      % Number of users at the cell
     K
     run user_selection_2.m
 end
