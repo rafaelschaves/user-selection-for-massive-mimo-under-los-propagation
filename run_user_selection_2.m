@@ -2,7 +2,7 @@ clear;
 close all;
 clc;
 
-MC = 1000;                                                                 % Size of the outer Monte Carlo ensemble (Varies the channel realizarions)
+MC = 250;                                                                 % Size of the outer Monte Carlo ensemble (Varies the channel realizarions)
 
 channel_type = 'ur-los';
 
