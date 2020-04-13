@@ -2,6 +2,8 @@ clear;
 close all;
 clc;
 
+rng('shuffle');
+
 MC = 1000;                                                                 % Size of the outer Monte Carlo ensemble (Varies the channel realizarions)
 
 channel_type = 'ur-los';
