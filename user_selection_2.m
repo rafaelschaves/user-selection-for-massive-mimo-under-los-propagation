@@ -5,6 +5,8 @@ addpath('./functions/')
 dir_save  = './results/scheduling/downlink/';
 root_save = [dir_save 'spectral_efficiency_all_L_'];
 
+zero_pad = '%03d';
+
 if ~exist(dir_save,'dir')
     mkdir(dir_save);
 end
@@ -102,6 +104,6 @@ for mc = 1:MC
     end
 end
 
-save([root_save strrep(channel_type,'-','_') '_M_' num2str(M) '_K_' ...
-      num2str(K) '_SNR_' num2str(snr_eff) '_dB_MC_' ...
+save([root_save strrep(channel_type,'-','_') '_M_' sprintf(zero_pad,M) ...
+      '_K_' sprintf(zero_pad,K) '_SNR_' num2str(snr_eff) '_dB_MC_' ...
       num2str(MC) '.mat'],'se','se_s_all_L');
