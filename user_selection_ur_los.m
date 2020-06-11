@@ -23,10 +23,6 @@ if ~exist('K','var')
     K = 20;                                                                % Number of users at the cell
 end
 
-if ~exist('channel_type','var')
-    channel_type = 'ur-los';
-end
-
 N_ALG = 3;
 N_PRE = 3;
 
@@ -48,6 +44,8 @@ linkprop.noiseFigureBS   = 9;                                              % in 
 linkprop.noiseFigureUser = 9 ;                                             % in dB
 linkprop.bandwidth       = 20e6;                                           % in Hz
 
+channel_type = 'ur-los';
+
 [~,snr_db] = linkBudgetCalculation(linkprop);                              % SNR in dB
 snr        = 10.^(snr_db/10);
 
@@ -68,11 +66,8 @@ else
     L_max = K-1;
 end
 
-se  = zeros(K,N_PRE,MC);
-% psi = zeros(K,MC);
-    
+se         = zeros(K,N_PRE,MC);
 se_s_all_L = zeros(L_max,L_max,N_PRE,N_ALG,MC);
-% psi_all_L = cell(L_max,MC);
               
 for mc = 1:MC
     mc
