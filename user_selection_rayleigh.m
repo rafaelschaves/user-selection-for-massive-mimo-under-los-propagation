@@ -46,13 +46,17 @@ linkprop.bandwidth       = 20e6;                                           % in 
 
 channel_type = 'rayleigh';
 
-[~,snr_db] = linkBudgetCalculation(linkprop);                              % SNR in dB
-snr        = 10.^(snr_db/10);
+[snr_ul_db,snr_dl_db] = linkBudgetCalculation(linkprop);                   % SNR in dB
+
+snr_ul = 10.^(snr_ul_db/10);
+snr_dl = 10.^(snr_dl_db/10);
 
 beta_db = -148 - 37.6*log10(commcell.radius/1000);
 beta    = 10.^(beta_db/10);
 
-snr_eff = round(snr_db + beta_db);
+snr_eff = round(snr_dl_db + beta_db);
+
+tau_p  = K;
 
 % Initialization
 
@@ -74,13 +78,24 @@ for mc = 1:MC
     
     [H,~] = massiveMIMOChannel(commcell,channel_type);
     
-    [se(:,1,mc),se(:,2,mc),se(:,3,mc)] = DLspectralEfficiency(H,beta,snr,1/K);        % No Selection
+    H_hat    = (randn(M,K) + 1i*randn(M,K))/sqrt(2);
+    beta_hat = tau_p*snr_ul*beta.^(2)./(1 + tau_p*snr_ul*beta);
+    
+    [se(:,1,mc),se(:,2,mc),se(:,3,mc)] = DLspectralEfficiency(H, ...       % No Selection
+                                                              beta_hat, ...
+                                                              snr_dl, ...
+                                                              1/K, ...
+                                                              H_hat);      
         
-    for L = 1:L_max                                                      % Number of selected users
+    for L = 1:L_max                                                        % Number of selected users
         L
         
         for alg_idx = 1:N_ALG
-            H_s = userSelector(H,beta,snr,algorithm_type{alg_idx},'fixed',L,[]);
+            [H_hat_s, S_set] = userSelector(H_hat,beta,snr_dl, ...
+                                            algorithm_type{alg_idx}, ...
+                                            'fixed',L,[]);
+            
+            H_s = H(:,S_set);
             
             %         if alg_idx == 1
             %             beta_s = [beta(S_set(:,1)) beta(S_set(:,2))];
@@ -88,7 +103,11 @@ for mc = 1:MC
             %             beta_s = beta(S_set);
             %         end
             
-            [se_s_mf,se_s_zf,se_s_mmse] = DLspectralEfficiency(H_s,beta,snr,1/L);
+            [se_s_mf,se_s_zf,se_s_mmse] = DLspectralEfficiency(H_s, ...
+                                                               beta, ...
+                                                               snr_dl, ...
+                                                               1/L, ...
+                                                               H_hat_s);
             
             se_s_all_L(:,L,1,alg_idx,mc) = [se_s_mf; zeros(L_max-L,1)];
             se_s_all_L(:,L,2,alg_idx,mc) = [se_s_zf; zeros(L_max-L,1)];
