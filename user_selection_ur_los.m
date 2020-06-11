@@ -32,7 +32,7 @@ N_PRE = 3;
 
 commcell.nAntennas       = M;                                              % Number of Antennas
 commcell.nUsers          = K;                                              % Number of Users
-commcell.radius          = 500;                                           % Cell's raidus (circumradius) in meters
+commcell.radius          = 500;                                            % Cell's raidus (circumradius) in meters
 commcell.bsHeight        = 32;                                             % Height of base station in meters
 commcell.userHeight      = [1 2];                                          % Height of user terminals in meters ([min max])
 commcell.frequency       = 1.9e9;                                          % Carrier frequency in Hz
