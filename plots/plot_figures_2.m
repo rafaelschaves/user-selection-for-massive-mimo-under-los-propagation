@@ -5,10 +5,10 @@ clc;
 % Macros
 
 MC   = 1000;                                                               % Size of the monte-carlo ensemble
-N_MC = 5;
+N_MC = 1;
 
-M = 200;                                                                   % Number of antennas at base station
-K = 150;                                                                   % Number of users at the cell 
+M = 50;                                                                   % Number of antennas at base station
+K = 75;                                                                   % Number of users at the cell 
 
 % M = 50  & K = [10 25 50 75]
 % M = 100 & K = [10 25 50 75 100 150] 
@@ -33,7 +33,7 @@ root_save = '../../../../Google Drive/UFRJ/PhD/Codes/user-scheduling-massive-mim
 zero_pad_1 = '%03d';
 zero_pad_2 = '%02d';
 
-chn_type = 'ur_los';
+chn_type = 'rayleigh';
 
 % Loading data
 
@@ -43,7 +43,7 @@ se_s_L_all_mc = zeros(L_max,L_max,N_PRE,N_ALG,MC*N_MC);
 sum_se_s      = zeros(L_max,N_PRE,N_ALG,MC*N_MC);
 
 for n_mc = 1:N_MC
-    load([root_load 'spectral_efficiency_all_L_' chn_type '_M_' sprintf(zero_pad_1,M) '_K_' sprintf(zero_pad_1,K) '_SNR_' num2str(snr) '_dB_MC_' num2str(MC) '_' sprintf(zero_pad_2,n_mc) '.mat']);
+    load([root_load 'spectral_efficiency_all_L_' chn_type '_partial_csi_M_' sprintf(zero_pad_1,M) '_K_' sprintf(zero_pad_1,K) '_SNR_' num2str(snr) '_dB_MC_' num2str(MC) '_' sprintf(zero_pad_2,n_mc) '.mat']);
     
     idx_ini = (n_mc - 1)*MC + 1;
     idx_end = n_mc*MC;
@@ -105,7 +105,7 @@ marker = {'o','s','^'};
 
 linestyle = {'-','--',':'};
 
-savefig = 1;
+savefig = 0;
 
 % NS - No selection
 % SOS - Semi-orthogonal selection
