@@ -78,7 +78,11 @@ for mc = 1:MC
     
     [H,~] = massiveMIMOChannel(commcell,channel_type);
     
-    H_hat    = (randn(M,K) + 1i*randn(M,K))/sqrt(2);
+    N = (randn(M,K) + 1i*randn(M,K))/sqrt(2);
+    
+    % H_hat    = (randn(M,K) + 1i*randn(M,K))/sqrt(2);
+    H_hat = (sqrt(tau_p*snr_ul)*H*diag(sqrt(beta)) + N)*diag(1./sqrt(1+tau_p*snr_ul*beta));
+    
     beta_hat = tau_p*snr_ul*beta.^(2)./(1 + tau_p*snr_ul*beta);
     
     [se(:,1,mc),se(:,2,mc),se(:,3,mc)] = DLspectralEfficiency(H, ...       % No Selection
