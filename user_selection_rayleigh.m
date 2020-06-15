@@ -84,7 +84,8 @@ for mc = 1:MC
     [se(:,1,mc),se(:,2,mc),se(:,3,mc)] = DLspectralEfficiency(H, ...       % No Selection
                                                               beta, ...
                                                               snr_dl, ...
-                                                              1/K);      
+                                                              1/K, ...
+                                                              H_hat);      
         
     for L = 1:L_max                                                        % Number of selected users
         L
@@ -95,6 +96,7 @@ for mc = 1:MC
                                      'fixed',L,[]);
             
             H_s = H(:,S_set);
+            H_hat_s = H_hat(:,S_set);
             
             %         if alg_idx == 1
             %             beta_s = [beta(S_set(:,1)) beta(S_set(:,2))];
@@ -105,7 +107,8 @@ for mc = 1:MC
             [se_s_mf,se_s_zf,se_s_mmse] = DLspectralEfficiency(H_s, ...
                                                                beta, ...
                                                                snr_dl, ...
-                                                               1/L);
+                                                               1/L, ...
+                                                               H_hat_s);
             
             se_s_all_L(:,L,1,alg_idx,mc) = [se_s_mf; zeros(L_max-L,1)];
             se_s_all_L(:,L,2,alg_idx,mc) = [se_s_zf; zeros(L_max-L,1)];
