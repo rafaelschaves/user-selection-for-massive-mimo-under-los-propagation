@@ -1,14 +1,14 @@
 clear;
-%close all;
+close all;
 clc;
 
 % Macros
 
 MC   = 1000;                                                               % Size of the monte-carlo ensemble
-N_MC = 1;
+N_MC = 5;
 
 M = 50;                                                                   % Number of antennas at base station
-K = 10;                                                                   % Number of users at the cell 
+K = 50;                                                                   % Number of users at the cell 
 
 % M = 50  & K = [10 25 50 75]
 % M = 100 & K = [10 25 50 75 100 150] 
@@ -43,8 +43,7 @@ se_s_L_all_mc = zeros(L_max,L_max,N_PRE,N_ALG,MC*N_MC);
 sum_se_s      = zeros(L_max,N_PRE,N_ALG,MC*N_MC);
 
 for n_mc = 1:N_MC
-    %load([root_load 'spectral_efficiency_all_L_' chn_type '_partial_csi_M_' sprintf(zero_pad_1,M) '_K_' sprintf(zero_pad_1,K) '_SNR_' num2str(snr) '_dB_MC_' num2str(MC) '_' sprintf(zero_pad_2,n_mc) '.mat']);
-    load([root_load 'spectral_efficiency_all_L_' chn_type '_partial_csi_2_M_' sprintf(zero_pad_1,M) '_K_' sprintf(zero_pad_1,K) '_SNR_' num2str(snr) '_dB_MC_' num2str(MC) '_' sprintf(zero_pad_2,n_mc) '.mat']);
+    load([root_load 'spectral_efficiency_all_L_' chn_type '_partial_csi_M_' sprintf(zero_pad_1,M) '_K_' sprintf(zero_pad_1,K) '_SNR_' num2str(snr) '_dB_MC_' num2str(MC) '_' sprintf(zero_pad_2,n_mc) '.mat']);
     %load([root_load 'spectral_efficiency_all_L_' chn_type '_M_' sprintf(zero_pad_1,M) '_K_' sprintf(zero_pad_1,K) '_SNR_' num2str(snr) '_dB_MC_' num2str(MC) '_' sprintf(zero_pad_2,n_mc) '.mat']);
     
     idx_ini = (n_mc - 1)*MC + 1;
@@ -134,20 +133,33 @@ figure;
        
 set(gcf,'position',[0 0 800 600]);
 
-plot(1:L_max,avg_sum_se(1)*ones(L_max,1),'-k','linewidth',linewidth);
-hold on;
-plot(1:L_max,avg_sum_se_s(:,1,1),'-','color',colours(1,:),'linewidth',linewidth);
-plot(1:L_max,avg_sum_se_s(:,1,2),'-','color',colours(2,:),'linewidth',linewidth);
-plot(1:L_max,avg_sum_se_s(:,1,3),'-','color',colours(3,:),'linewidth',linewidth);
-plot(1:L_max,avg_sum_se(2)*ones(L_max,1),'--k','linewidth',linewidth);
-plot(1:L_max,avg_sum_se_s(:,2,1),'--','color',colours(1,:),'linewidth',linewidth);
-plot(1:L_max,avg_sum_se_s(:,2,2),'--','color',colours(2,:),'linewidth',linewidth);
-plot(1:L_max,avg_sum_se_s(:,2,3),'--','color',colours(3,:),'linewidth',linewidth);
-plot(1:L_max,avg_sum_se(3)*ones(L_max,1),':k','linewidth',linewidth);
-plot(1:L_max,avg_sum_se_s(:,3,1),':','color',colours(1,:),'linewidth',linewidth);
-plot(1:L_max,avg_sum_se_s(:,3,2),':','color',colours(2,:),'linewidth',linewidth);
-plot(1:L_max,avg_sum_se_s(:,3,3),':','color',colours(3,:),'linewidth',linewidth);
-
+if K <= M
+    plot(1:L_max,avg_sum_se(1)*ones(L_max,1),'-k','linewidth',linewidth);
+    hold on;
+    plot(1:L_max,avg_sum_se_s(:,1,1),'-','color',colours(1,:),'linewidth',linewidth);
+    plot(1:L_max,avg_sum_se_s(:,1,2),'-','color',colours(2,:),'linewidth',linewidth);
+    plot(1:L_max,avg_sum_se_s(:,1,3),'-','color',colours(3,:),'linewidth',linewidth);
+    plot(1:L_max,avg_sum_se(2)*ones(L_max,1),'--k','linewidth',linewidth);
+    plot(1:L_max,avg_sum_se_s(:,2,1),'--','color',colours(1,:),'linewidth',linewidth);
+    plot(1:L_max,avg_sum_se_s(:,2,2),'--','color',colours(2,:),'linewidth',linewidth);
+    plot(1:L_max,avg_sum_se_s(:,2,3),'--','color',colours(3,:),'linewidth',linewidth);
+    plot(1:L_max,avg_sum_se(3)*ones(L_max,1),':k','linewidth',linewidth);
+    plot(1:L_max,avg_sum_se_s(:,3,1),':','color',colours(1,:),'linewidth',linewidth);
+    plot(1:L_max,avg_sum_se_s(:,3,2),':','color',colours(2,:),'linewidth',linewidth);
+    plot(1:L_max,avg_sum_se_s(:,3,3),':','color',colours(3,:),'linewidth',linewidth);
+else
+    plot(1:L_max,avg_sum_se(1)*ones(L_max,1),'-k','linewidth',linewidth);
+    hold on;
+    plot(1:L_max,avg_sum_se_s(:,1,1),'-','color',colours(1,:),'linewidth',linewidth);
+    plot(1:L_max,avg_sum_se_s(:,1,2),'-','color',colours(2,:),'linewidth',linewidth);
+    plot(1:L_max,avg_sum_se_s(:,1,3),'-','color',colours(3,:),'linewidth',linewidth);
+    plot(1:L_max,avg_sum_se_s(:,2,1),'--','color',colours(1,:),'linewidth',linewidth);
+    plot(1:L_max,avg_sum_se_s(:,2,2),'--','color',colours(2,:),'linewidth',linewidth);
+    plot(1:L_max,avg_sum_se_s(:,2,3),'--','color',colours(3,:),'linewidth',linewidth);
+    plot(1:L_max,avg_sum_se_s(:,3,1),':','color',colours(1,:),'linewidth',linewidth);
+    plot(1:L_max,avg_sum_se_s(:,3,2),':','color',colours(2,:),'linewidth',linewidth);
+    plot(1:L_max,avg_sum_se_s(:,3,3),':','color',colours(3,:),'linewidth',linewidth);
+end
 
 xlabel('Number of selected users','fontname',fontname,'fontsize',fontsize);
 ylabel('Sum-spectral efficiency','fontname',fontname,'fontsize',fontsize);
