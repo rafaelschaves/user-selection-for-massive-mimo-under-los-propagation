@@ -12,4 +12,6 @@ chnl_mtx_norm(:,idx_aux) = chnl_mtx(:,idx_aux)./norm_h_k(idx_aux);
 
 psi = (sum(abs(chnl_mtx_norm'*chnl_mtx_norm),2) - 1)/(n_user_aux - 1);
 
+psi(psi < 0) = 0;
+
 end
