@@ -4,7 +4,7 @@ clc;
 
 % Macros
 
-MC = 10;                                                                 % Size of the monte-carlo ensemble
+MC = 1000;                                                                 % Size of the monte-carlo ensemble
 
 M = [64 128 256 512];                                                          % Number of antennas at base station
 K = [8 16 32 64];                                                          % Number of mobile users
@@ -92,10 +92,10 @@ plot(K,reshape(n_it_avg(:,2,:,1),1,[]),'--o','color',colours(2,:),'linewidth',li
 plot(K,reshape(n_it_avg(:,2,:,2),1,[]),'--s','color',colours(2,:),'linewidth',linewidth,'markersize',markersize);
 plot(K,reshape(n_it_avg(:,2,:,3),1,[]),'--^','color',colours(2,:),'linewidth',linewidth,'markersize',markersize);
 plot(K,reshape(n_it_avg(:,2,:,4),1,[]),'--v','color',colours(2,:),'linewidth',linewidth,'markersize',markersize);
-plot(K,reshape(n_it_avg(:,3,:,1),1,[]),':o','color',colours(2,:),'linewidth',linewidth,'markersize',markersize);
-plot(K,reshape(n_it_avg(:,3,:,2),1,[]),':s','color',colours(2,:),'linewidth',linewidth,'markersize',markersize);
-plot(K,reshape(n_it_avg(:,3,:,3),1,[]),':^','color',colours(2,:),'linewidth',linewidth,'markersize',markersize);
-plot(K,reshape(n_it_avg(:,3,:,4),1,[]),':v','color',colours(2,:),'linewidth',linewidth,'markersize',markersize);
+plot(K,reshape(n_it_avg(:,3,:,1),1,[]),':o','color',colours(3,:),'linewidth',linewidth,'markersize',markersize);
+plot(K,reshape(n_it_avg(:,3,:,2),1,[]),':s','color',colours(3,:),'linewidth',linewidth,'markersize',markersize);
+plot(K,reshape(n_it_avg(:,3,:,3),1,[]),':^','color',colours(3,:),'linewidth',linewidth,'markersize',markersize);
+plot(K,reshape(n_it_avg(:,3,:,4),1,[]),':v','color',colours(3,:),'linewidth',linewidth,'markersize',markersize);
 
 xlabel('Number of users','fontname',fontname,'fontsize',fontsize);
 ylabel('Number of iterations','fontname',fontname,'fontsize',fontsize);
@@ -138,7 +138,7 @@ plot(K,1e3*reshape(time_avg(:,2,:,4),1,[]),'--v','color',colours(1,:),'linewidth
 
 ylabel('Elapsed time (ms)','fontname',fontname,'fontsize',fontsize);
 
-ylim([0.5 3]);
+ylim([0 3]);
 
 yyaxis right;
 
@@ -150,7 +150,7 @@ plot(K,reshape(time_avg(:,3,:,4),1,[]),':v','color',colours(2,:),'linewidth',lin
 
 ylabel('Elapsed time (s)','fontname',fontname,'fontsize',fontsize);
 
-ylim([5 20]);
+ylim([0 20]);
 
 xlabel('Number of users','fontname',fontname,'fontsize',fontsize);
 
