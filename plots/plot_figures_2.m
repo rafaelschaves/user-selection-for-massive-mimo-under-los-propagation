@@ -5,10 +5,10 @@ clc;
 % Macros
 
 MC   = 1000;                                                               % Size of the monte-carlo ensemble
-N_MC = 5;
+N_MC = 1;
 
-M = 50;                                                                   % Number of antennas at base station
-K = 50;                                                                   % Number of users at the cell 
+M = 100;                                                                   % Number of antennas at base station
+K = 25;                                                                   % Number of users at the cell 
 
 % M = 50  & K = [10 25 50 75]
 % M = 100 & K = [10 25 50 75 100 150] 
