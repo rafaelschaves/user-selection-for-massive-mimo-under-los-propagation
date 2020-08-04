@@ -43,7 +43,6 @@ se_s_L_all_mc = zeros(L_max,L_max,N_PRE,N_ALG,MC*N_MC);
 sum_se_s      = zeros(L_max,N_PRE,N_ALG,MC*N_MC);
 
 for n_mc = 1:N_MC
-    %load([root_load 'spectral_efficiency_all_L_' chn_type '_partial_csi_M_' sprintf(zero_pad_1,M) '_K_' sprintf(zero_pad_1,K) '_SNR_' num2str(snr) '_dB_MC_' num2str(MC) '_' sprintf(zero_pad_2,n_mc) '.mat']);
     load([root_load 'spectral_efficiency_all_L_' chn_type '_M_' sprintf(zero_pad_1,M) '_K_' sprintf(zero_pad_1,K) '_SNR_' num2str(snr) '_dB_MC_' num2str(MC) '_' sprintf(zero_pad_2,n_mc) '.mat']);
     
     idx_ini = (n_mc - 1)*MC + 1;

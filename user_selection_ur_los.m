@@ -79,15 +79,11 @@ for mc = 1:MC
     [H,~,pos_and_theta] = massiveMIMOChannel(commcell,channel_type);
     
     for err_idx = 1:N_ERR
-        err_idx
-        
         H_hat = urlosChannelEstimate(commcell,pos_and_theta(:,3),err(err_idx));
         
         [se(:,1,err_idx,mc),se(:,2,err_idx,mc),se(:,3,err_idx,mc)] = DLspectralEfficiency(H,beta,snr,1/K,H_hat);                                      % No Selection
         
         for L = 1:L_max                                                                                                                               % Number of selected users
-            L
-            
             for alg_idx = 1:N_ALG
                 [H_s, S_set_aux] = userSelector(H_hat,beta,snr,algorithm_type{alg_idx},'fixed',L,[]);
                 
