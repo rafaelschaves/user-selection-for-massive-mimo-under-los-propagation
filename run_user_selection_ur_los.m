@@ -4,7 +4,7 @@ clc;
 
 rng('shuffle');                                                            % Necessary for different seeds in each run of this script
 
-MC = 1000;                                                                 % Size of the outer Monte Carlo ensemble (Varies the channel realizarions)
+MC = 500;                                                                 % Size of the outer Monte Carlo ensemble (Varies the channel realizarions)
 
 M = 100;                                                                   % Number of antennas at the base station
 
