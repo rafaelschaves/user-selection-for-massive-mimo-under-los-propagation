@@ -1,3 +1,9 @@
+clear;
+close all;
+clc;
+
+rng('shuffle');    
+
 MC = 500;                                                            % Size of the outer Monte Carlo ensemble (Varies the channel realizarions)
 
 for M = 50                                                           % Number of antennas at the base station

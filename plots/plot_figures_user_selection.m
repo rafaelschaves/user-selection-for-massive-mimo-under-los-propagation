@@ -5,9 +5,9 @@ clc;
 % Macros
 
 MC   = 1000;                                                              % Size of the monte-carlo ensemble
-N_MC = 5;
+N_MC = 1;
 
-M = 100;                                                                   % Number of antennas at base station
+M = 50;                                                                  % Number of antennas at base station
 K = 75;                                                                   % Number of users at the cell 
 
 % M = 50  & K = [10 25 50 75]
@@ -44,7 +44,7 @@ sum_se_s      = zeros(L_max,N_PRE,N_ALG,MC*N_MC);
 
 for n_mc = 1:N_MC
     load([root_load 'spectral_efficiency_all_L_' chn_type '_M_' sprintf(zero_pad_1,M) '_K_' sprintf(zero_pad_1,K) '_SNR_' num2str(snr) '_dB_MC_' num2str(MC) '_' sprintf(zero_pad_2,n_mc) '.mat']);
-    
+     
     idx_ini = (n_mc - 1)*MC + 1;
     idx_end = n_mc*MC;
         
@@ -63,9 +63,6 @@ end
 avg_sum_se   = mean(sum_se,2);
 avg_sum_se_s = mean(sum_se_s,4);
 
-% std_sum_se = std(sum_se,[],2);
-% std_sum_se_s = std(sum_se_s,[],4);
-
 [max_sum_se_s,L_star] = max(avg_sum_se_s,[],1);
 
 max_sum_se_s = reshape(max_sum_se_s,N_PRE,N_ALG)';
@@ -78,8 +75,6 @@ for n_alg = 1:N_ALG
         sum_se_s_star(:,n_pre,n_alg) = sum_se_s(L_star(n_alg,n_pre),n_pre,n_alg,:);
     end    
 end
-
-% N_BIN = 15;
 
 N_BIN = 100;
 
@@ -105,7 +100,7 @@ marker = {'o','s','^'};
 
 linestyle = {'-','--',':'};
 
-savefig = 1;
+savefig = 0;
 
 % NS - No selection
 % SOS - Semi-orthogonal selection
@@ -214,18 +209,7 @@ switch chn_type
                         
                         axes('position',[.24 .585 .3 .3]);
                         box on;
-                        
-                        % plot(1:L_max,avg_sum_se_s(:,1,1),'-' ,'color',colours(1,:),'linewidth',linewidth);
-                        % hold on;
-                        % plot(1:L_max,avg_sum_se_s(:,1,2),'-' ,'color',colours(2,:),'linewidth',linewidth);
-                        % plot(1:L_max,avg_sum_se_s(:,1,3),'-' ,'color',colours(3,:),'linewidth',linewidth);
-                        % plot(1:L_max,avg_sum_se_s(:,2,1),'--','color',colours(1,:),'linewidth',linewidth);
-                        % plot(1:L_max,avg_sum_se_s(:,2,2),'--','color',colours(2,:),'linewidth',linewidth);
-                        % plot(1:L_max,avg_sum_se_s(:,2,3),'--','color',colours(3,:),'linewidth',linewidth);
-                        % plot(1:L_max,avg_sum_se_s(:,3,1),':' ,'color',colours(1,:),'linewidth',linewidth);
-                        % plot(1:L_max,avg_sum_se_s(:,3,2),':' ,'color',colours(2,:),'linewidth',linewidth);
-                        % plot(1:L_max,avg_sum_se_s(:,3,3),':' ,'color',colours(3,:),'linewidth',linewidth);
-                        
+                            
                         plot(1:K,[avg_sum_se_s(:,1,1); avg_sum_se(1)],'-' ,'color',colours(1,:),'linewidth',linewidth);
                         hold on;
                         plot(1:K,[avg_sum_se_s(:,1,2); avg_sum_se(1)],'-' ,'color',colours(2,:),'linewidth',linewidth);
@@ -321,17 +305,6 @@ switch chn_type
                         
                         axes('position',[.25 .575 .3 .3]);
                         box on;
-                        
-                        % plot(1:L_max,avg_sum_se_s(:,1,1),'-','color',colours(1,:),'linewidth',linewidth);
-                        % hold on;
-                        % plot(1:L_max,avg_sum_se_s(:,1,2),'-','color',colours(2,:),'linewidth',linewidth);
-                        % plot(1:L_max,avg_sum_se_s(:,1,3),'-','color',colours(3,:),'linewidth',linewidth);
-                        % plot(1:L_max,avg_sum_se_s(:,2,1),'--','color',colours(1,:),'linewidth',linewidth);
-                        % plot(1:L_max,avg_sum_se_s(:,2,2),'--','color',colours(2,:),'linewidth',linewidth);
-                        % plot(1:L_max,avg_sum_se_s(:,2,3),'--','color',colours(3,:),'linewidth',linewidth);
-                        % plot(1:L_max,avg_sum_se_s(:,3,1),':','color',colours(1,:),'linewidth',linewidth);
-                        % plot(1:L_max,avg_sum_se_s(:,3,2),':','color',colours(2,:),'linewidth',linewidth);
-                        % plot(1:L_max,avg_sum_se_s(:,3,3),':','color',colours(3,:),'linewidth',linewidth);
                         
                         plot(1:K,[avg_sum_se_s(:,1,1); avg_sum_se(1)],'-' ,'color',colours(1,:),'linewidth',linewidth);
                         hold on;
