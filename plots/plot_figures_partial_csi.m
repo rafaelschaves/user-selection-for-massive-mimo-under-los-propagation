@@ -8,7 +8,7 @@ MC   = 1000;                                                              % Size
 N_MC = 5;
 
 M = 50;                                                                   % Number of antennas at base station
-K = [10 25 50 75];                                                        % Number of users at the cell 
+K = [50 75];                                                        % Number of users at the cell 
 
 % M = 50  & K = [10 25 50 75]
 % M = 100 & K = [10 25 50 75 100 150] 
@@ -16,13 +16,12 @@ K = [10 25 50 75];                                                        % Numb
 
 snr = -5;
 
-MAX_ERR = pi/72;
-ERR_STE = pi/720;
+err = [0 pi/(6*M) pi/(3*M) pi/(2*M)];
 
 N_K = length(K);
 N_ALG = 3;                                                                 % Number of algorithms for perform user scheduling
 N_PRE = 3;
-N_ERR = 1 + MAX_ERR/ERR_STE;
+N_ERR = length(err);
 
 err = 0:ERR_STE:MAX_ERR;
 
@@ -42,7 +41,7 @@ for k = 1:N_K
     se_all_mc = zeros(K(k),N_PRE,N_ERR,MC*N_MC);
     
     for n_mc = 1:N_MC
-        load([root_load 'spectral_efficiency_all_L_' chn_type '_partial_csi_M_' sprintf(zero_pad_1,M) '_K_' sprintf(zero_pad_1,K(k)) '_SNR_' num2str(snr) '_dB_MC_' num2str(MC) '_' sprintf(zero_pad_2,n_mc) '.mat']);
+        load([root_load 'spectral_efficiency_all_L_' chn_type '_partial_csi_2_M_' sprintf(zero_pad_1,M) '_K_' sprintf(zero_pad_1,K(k)) '_SNR_' num2str(snr) '_dB_MC_' num2str(MC) '_' sprintf(zero_pad_2,n_mc) '.mat']);
         
         idx_ini = (n_mc - 1)*MC + 1;
         idx_end = n_mc*MC;

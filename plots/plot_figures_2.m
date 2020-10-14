@@ -8,7 +8,7 @@ MC   = 1000;                                                              % Size
 N_MC = 5;
 
 M = 100;                                                                   % Number of antennas at base station
-K = 150;                                                                   % Number of users at the cell 
+K = 75;                                                                   % Number of users at the cell 
 
 % M = 50  & K = [10 25 50 75]
 % M = 100 & K = [10 25 50 75 100 150] 
@@ -132,131 +132,167 @@ figure;
        
 set(gcf,'position',[0 0 800 600]);
 
+% if K <= M
+%     plot(1:L_max,avg_sum_se(1)*ones(L_max,1),'-k','linewidth',linewidth);
+%     hold on;
+%     plot(1:L_max,avg_sum_se_s(:,1,1),'-','color',colours(1,:),'linewidth',linewidth);
+%     plot(1:L_max,avg_sum_se_s(:,1,2),'-','color',colours(2,:),'linewidth',linewidth);
+%     plot(1:L_max,avg_sum_se_s(:,1,3),'-','color',colours(3,:),'linewidth',linewidth);
+%     plot(1:L_max,avg_sum_se(2)*ones(L_max,1),'--k','linewidth',linewidth);
+%     plot(1:L_max,avg_sum_se_s(:,2,1),'--','color',colours(1,:),'linewidth',linewidth);
+%     plot(1:L_max,avg_sum_se_s(:,2,2),'--','color',colours(2,:),'linewidth',linewidth);
+%     plot(1:L_max,avg_sum_se_s(:,2,3),'--','color',colours(3,:),'linewidth',linewidth);
+%     plot(1:L_max,avg_sum_se(3)*ones(L_max,1),':k','linewidth',linewidth);
+%     plot(1:L_max,avg_sum_se_s(:,3,1),':','color',colours(1,:),'linewidth',linewidth);
+%     plot(1:L_max,avg_sum_se_s(:,3,2),':','color',colours(2,:),'linewidth',linewidth);
+%     plot(1:L_max,avg_sum_se_s(:,3,3),':','color',colours(3,:),'linewidth',linewidth);
+% else
+%     plot(1:L_max,avg_sum_se(1)*ones(L_max,1),'-k','linewidth',linewidth);
+%     hold on;
+%     plot(1:L_max,avg_sum_se_s(:,1,1),'-','color',colours(1,:),'linewidth',linewidth);
+%     plot(1:L_max,avg_sum_se_s(:,1,2),'-','color',colours(2,:),'linewidth',linewidth);
+%     plot(1:L_max,avg_sum_se_s(:,1,3),'-','color',colours(3,:),'linewidth',linewidth);
+%     plot(1:L_max,avg_sum_se_s(:,2,1),'--','color',colours(1,:),'linewidth',linewidth);
+%     plot(1:L_max,avg_sum_se_s(:,2,2),'--','color',colours(2,:),'linewidth',linewidth);
+%     plot(1:L_max,avg_sum_se_s(:,2,3),'--','color',colours(3,:),'linewidth',linewidth);
+%     plot(1:L_max,avg_sum_se_s(:,3,1),':','color',colours(1,:),'linewidth',linewidth);
+%     plot(1:L_max,avg_sum_se_s(:,3,2),':','color',colours(2,:),'linewidth',linewidth);
+%     plot(1:L_max,avg_sum_se_s(:,3,3),':','color',colours(3,:),'linewidth',linewidth);
+% end
+
 if K <= M
-    plot(1:L_max,avg_sum_se(1)*ones(L_max,1),'-k','linewidth',linewidth);
+    plot(1:K,[avg_sum_se_s(:,1,1); avg_sum_se(1)],'-' ,'color',colours(1,:),'linewidth',linewidth);
     hold on;
-    plot(1:L_max,avg_sum_se_s(:,1,1),'-','color',colours(1,:),'linewidth',linewidth);
-    plot(1:L_max,avg_sum_se_s(:,1,2),'-','color',colours(2,:),'linewidth',linewidth);
-    plot(1:L_max,avg_sum_se_s(:,1,3),'-','color',colours(3,:),'linewidth',linewidth);
-    plot(1:L_max,avg_sum_se(2)*ones(L_max,1),'--k','linewidth',linewidth);
-    plot(1:L_max,avg_sum_se_s(:,2,1),'--','color',colours(1,:),'linewidth',linewidth);
-    plot(1:L_max,avg_sum_se_s(:,2,2),'--','color',colours(2,:),'linewidth',linewidth);
-    plot(1:L_max,avg_sum_se_s(:,2,3),'--','color',colours(3,:),'linewidth',linewidth);
-    plot(1:L_max,avg_sum_se(3)*ones(L_max,1),':k','linewidth',linewidth);
-    plot(1:L_max,avg_sum_se_s(:,3,1),':','color',colours(1,:),'linewidth',linewidth);
-    plot(1:L_max,avg_sum_se_s(:,3,2),':','color',colours(2,:),'linewidth',linewidth);
-    plot(1:L_max,avg_sum_se_s(:,3,3),':','color',colours(3,:),'linewidth',linewidth);
+    plot(1:K,[avg_sum_se_s(:,1,2); avg_sum_se(1)],'-' ,'color',colours(2,:),'linewidth',linewidth);
+    plot(1:K,[avg_sum_se_s(:,1,3); avg_sum_se(1)],'-' ,'color',colours(3,:),'linewidth',linewidth);
+    plot(1:K,[avg_sum_se_s(:,2,1); avg_sum_se(2)],'--','color',colours(1,:),'linewidth',linewidth);
+    plot(1:K,[avg_sum_se_s(:,2,2); avg_sum_se(2)],'--','color',colours(2,:),'linewidth',linewidth);
+    plot(1:K,[avg_sum_se_s(:,2,3); avg_sum_se(2)],'--','color',colours(3,:),'linewidth',linewidth);
+    plot(1:K,[avg_sum_se_s(:,3,1); avg_sum_se(3)],':' ,'color',colours(1,:),'linewidth',linewidth);
+    plot(1:K,[avg_sum_se_s(:,3,2); avg_sum_se(3)],':' ,'color',colours(2,:),'linewidth',linewidth);
+    plot(1:K,[avg_sum_se_s(:,3,3); avg_sum_se(3)],':' ,'color',colours(3,:),'linewidth',linewidth);
 else
-    plot(1:L_max,avg_sum_se(1)*ones(L_max,1),'-k','linewidth',linewidth);
+    plot(1:L_max,avg_sum_se_s(:,1,1),'-' ,'color',colours(1,:),'linewidth',linewidth);
     hold on;
-    plot(1:L_max,avg_sum_se_s(:,1,1),'-','color',colours(1,:),'linewidth',linewidth);
-    plot(1:L_max,avg_sum_se_s(:,1,2),'-','color',colours(2,:),'linewidth',linewidth);
-    plot(1:L_max,avg_sum_se_s(:,1,3),'-','color',colours(3,:),'linewidth',linewidth);
+    plot(1:L_max,avg_sum_se_s(:,1,2),'-' ,'color',colours(2,:),'linewidth',linewidth);
+    plot(1:L_max,avg_sum_se_s(:,1,3),'-' ,'color',colours(3,:),'linewidth',linewidth);
     plot(1:L_max,avg_sum_se_s(:,2,1),'--','color',colours(1,:),'linewidth',linewidth);
     plot(1:L_max,avg_sum_se_s(:,2,2),'--','color',colours(2,:),'linewidth',linewidth);
     plot(1:L_max,avg_sum_se_s(:,2,3),'--','color',colours(3,:),'linewidth',linewidth);
-    plot(1:L_max,avg_sum_se_s(:,3,1),':','color',colours(1,:),'linewidth',linewidth);
-    plot(1:L_max,avg_sum_se_s(:,3,2),':','color',colours(2,:),'linewidth',linewidth);
-    plot(1:L_max,avg_sum_se_s(:,3,3),':','color',colours(3,:),'linewidth',linewidth);
+    plot(1:L_max,avg_sum_se_s(:,3,1),':' ,'color',colours(1,:),'linewidth',linewidth);
+    plot(1:L_max,avg_sum_se_s(:,3,2),':' ,'color',colours(2,:),'linewidth',linewidth);
+    plot(1:L_max,avg_sum_se_s(:,3,3),':' ,'color',colours(3,:),'linewidth',linewidth);
 end
 
 xlabel('Number of selected users','fontname',fontname,'fontsize',fontsize);
 ylabel('Sum-spectral efficiency','fontname',fontname,'fontsize',fontsize);
 
 if K == 10
-    legend(legend_algo,'fontname',fontname,'fontsize',fontsize,'location',location_4);
+    legend(legend_algo_2,'fontname',fontname,'fontsize',fontsize,'location',location_4);
     legend box off;
 end
 
 set(gca,'fontname',fontname,'fontsize',fontsize);
 
-xlim([1 L_max]);
+if K <= M
+    xlim([1 K]);
+else
+    xlim([1 L_max]);
+end
 
 switch chn_type
     case 'rayleigh'
     case 'ur_los'
         switch M
             case 50
+                ylim([0 20]);
+                
                 switch K
-                    case 10
-                        ylim([4 13]);
-                        
-                        dim = [0.7 0.825 0.2 0.07];
+                    case 10                        
+                        dim = [0.7 0.6 0.2 0.07];
                         annotation('ellipse',dim,'linewidth',linewidth);
                         
-                        axes('position',[.375 .275 .3 .3]);
+                        axes('position',[.24 .585 .3 .3]);
                         box on;
                         
-                        plot(1:L_max,avg_sum_se_s(:,1,1),'-','color',colours(1,:),'linewidth',linewidth);
+                        % plot(1:L_max,avg_sum_se_s(:,1,1),'-' ,'color',colours(1,:),'linewidth',linewidth);
+                        % hold on;
+                        % plot(1:L_max,avg_sum_se_s(:,1,2),'-' ,'color',colours(2,:),'linewidth',linewidth);
+                        % plot(1:L_max,avg_sum_se_s(:,1,3),'-' ,'color',colours(3,:),'linewidth',linewidth);
+                        % plot(1:L_max,avg_sum_se_s(:,2,1),'--','color',colours(1,:),'linewidth',linewidth);
+                        % plot(1:L_max,avg_sum_se_s(:,2,2),'--','color',colours(2,:),'linewidth',linewidth);
+                        % plot(1:L_max,avg_sum_se_s(:,2,3),'--','color',colours(3,:),'linewidth',linewidth);
+                        % plot(1:L_max,avg_sum_se_s(:,3,1),':' ,'color',colours(1,:),'linewidth',linewidth);
+                        % plot(1:L_max,avg_sum_se_s(:,3,2),':' ,'color',colours(2,:),'linewidth',linewidth);
+                        % plot(1:L_max,avg_sum_se_s(:,3,3),':' ,'color',colours(3,:),'linewidth',linewidth);
+                        
+                        plot(1:K,[avg_sum_se_s(:,1,1); avg_sum_se(1)],'-' ,'color',colours(1,:),'linewidth',linewidth);
                         hold on;
-                        plot(1:L_max,avg_sum_se_s(:,1,2),'-','color',colours(2,:),'linewidth',linewidth);
-                        plot(1:L_max,avg_sum_se_s(:,1,3),'-','color',colours(3,:),'linewidth',linewidth);
-                        plot(1:L_max,avg_sum_se_s(:,2,1),'--','color',colours(1,:),'linewidth',linewidth);
-                        plot(1:L_max,avg_sum_se_s(:,2,2),'--','color',colours(2,:),'linewidth',linewidth);
-                        plot(1:L_max,avg_sum_se_s(:,2,3),'--','color',colours(3,:),'linewidth',linewidth);
-                        plot(1:L_max,avg_sum_se_s(:,3,1),':','color',colours(1,:),'linewidth',linewidth);
-                        plot(1:L_max,avg_sum_se_s(:,3,2),':','color',colours(2,:),'linewidth',linewidth);
-                        plot(1:L_max,avg_sum_se_s(:,3,3),':','color',colours(3,:),'linewidth',linewidth);
+                        plot(1:K,[avg_sum_se_s(:,1,2); avg_sum_se(1)],'-' ,'color',colours(2,:),'linewidth',linewidth);
+                        plot(1:K,[avg_sum_se_s(:,1,3); avg_sum_se(1)],'-' ,'color',colours(3,:),'linewidth',linewidth);
+                        plot(1:K,[avg_sum_se_s(:,2,1); avg_sum_se(2)],'--','color',colours(1,:),'linewidth',linewidth);
+                        plot(1:K,[avg_sum_se_s(:,2,2); avg_sum_se(2)],'--','color',colours(2,:),'linewidth',linewidth);
+                        plot(1:K,[avg_sum_se_s(:,2,3); avg_sum_se(2)],'--','color',colours(3,:),'linewidth',linewidth);
+                        plot(1:K,[avg_sum_se_s(:,3,1); avg_sum_se(3)],':' ,'color',colours(1,:),'linewidth',linewidth);
+                        plot(1:K,[avg_sum_se_s(:,3,2); avg_sum_se(3)],':' ,'color',colours(2,:),'linewidth',linewidth);
+                        plot(1:K,[avg_sum_se_s(:,3,3); avg_sum_se(3)],':' ,'color',colours(3,:),'linewidth',linewidth);
+                        
+                        % xticks([7 10]);
+                        % xticklabels({'0','1.25','2.5'})
                         
                         set(gca,'fontname',fontname,'fontsize',fontsize);
                         
-                        xlim([7 9]);
+                        xlim([7 10]);
                         ylim([12 12.5]);
                     case 25
-                        ylim([4 16]);
-                        
-                        dim = [0.56 0.85 0.2 0.07];
+                        dim = [0.56 0.725 0.2 0.07];
                         annotation('ellipse',dim,'linewidth',linewidth);
                         
-                        axes('position',[.45 .3 .3 .3]);
+                        axes('position',[.35 .275 .3 .3]);
                         box on;
                         
-                        plot(1:L_max,avg_sum_se_s(:,1,1),'-','color',colours(1,:),'linewidth',linewidth);
+                        plot(1:L_max,avg_sum_se_s(:,1,1),'-' ,'color',colours(1,:),'linewidth',linewidth);
                         hold on;
-                        plot(1:L_max,avg_sum_se_s(:,1,2),'-','color',colours(2,:),'linewidth',linewidth);
-                        plot(1:L_max,avg_sum_se_s(:,1,3),'-','color',colours(3,:),'linewidth',linewidth);
+                        plot(1:L_max,avg_sum_se_s(:,1,2),'-' ,'color',colours(2,:),'linewidth',linewidth);
+                        plot(1:L_max,avg_sum_se_s(:,1,3),'-' ,'color',colours(3,:),'linewidth',linewidth);
                         plot(1:L_max,avg_sum_se_s(:,2,1),'--','color',colours(1,:),'linewidth',linewidth);
                         plot(1:L_max,avg_sum_se_s(:,2,2),'--','color',colours(2,:),'linewidth',linewidth);
                         plot(1:L_max,avg_sum_se_s(:,2,3),'--','color',colours(3,:),'linewidth',linewidth);
-                        plot(1:L_max,avg_sum_se_s(:,3,1),':','color',colours(1,:),'linewidth',linewidth);
-                        plot(1:L_max,avg_sum_se_s(:,3,2),':','color',colours(2,:),'linewidth',linewidth);
-                        plot(1:L_max,avg_sum_se_s(:,3,3),':','color',colours(3,:),'linewidth',linewidth);
+                        plot(1:L_max,avg_sum_se_s(:,3,1),':' ,'color',colours(1,:),'linewidth',linewidth);
+                        plot(1:L_max,avg_sum_se_s(:,3,2),':' ,'color',colours(2,:),'linewidth',linewidth);
+                        plot(1:L_max,avg_sum_se_s(:,3,3),':' ,'color',colours(3,:),'linewidth',linewidth);
                         
                         set(gca,'fontname',fontname,'fontsize',fontsize);
                         
-                        xlim([15 18]);
-                        ylim([15.5 15.9]);
+                        xlim([15 20]);
+                        ylim([15.5 16]);
                     case 50
-                        ylim([0 18]);
-                        
-                        dim = [0.45 0.85 0.175 0.07];
+                        dim = [0.425 0.8 0.175 0.07];
                         annotation('ellipse',dim,'linewidth',linewidth);
                         
-                        axes('position',[.3 .375 .3 .3]);
+                        axes('position',[.275 .275 .3 .3]);
                         box on;
                         
-                        plot(1:L_max,avg_sum_se_s(:,1,1),'-','color',colours(1,:),'linewidth',linewidth);
+                        plot(1:L_max,avg_sum_se_s(:,1,1),'-' ,'color',colours(1,:),'linewidth',linewidth);
                         hold on;
-                        plot(1:L_max,avg_sum_se_s(:,1,2),'-','color',colours(2,:),'linewidth',linewidth);
-                        plot(1:L_max,avg_sum_se_s(:,1,3),'-','color',colours(3,:),'linewidth',linewidth);
+                        plot(1:L_max,avg_sum_se_s(:,1,2),'-' ,'color',colours(2,:),'linewidth',linewidth);
+                        plot(1:L_max,avg_sum_se_s(:,1,3),'-' ,'color',colours(3,:),'linewidth',linewidth);
                         plot(1:L_max,avg_sum_se_s(:,2,1),'--','color',colours(1,:),'linewidth',linewidth);
                         plot(1:L_max,avg_sum_se_s(:,2,2),'--','color',colours(2,:),'linewidth',linewidth);
                         plot(1:L_max,avg_sum_se_s(:,2,3),'--','color',colours(3,:),'linewidth',linewidth);
-                        plot(1:L_max,avg_sum_se_s(:,3,1),':','color',colours(1,:),'linewidth',linewidth);
-                        plot(1:L_max,avg_sum_se_s(:,3,2),':','color',colours(2,:),'linewidth',linewidth);
-                        plot(1:L_max,avg_sum_se_s(:,3,3),':','color',colours(3,:),'linewidth',linewidth);
+                        plot(1:L_max,avg_sum_se_s(:,3,1),':' ,'color',colours(1,:),'linewidth',linewidth);
+                        plot(1:L_max,avg_sum_se_s(:,3,2),':' ,'color',colours(2,:),'linewidth',linewidth);
+                        plot(1:L_max,avg_sum_se_s(:,3,3),':' ,'color',colours(3,:),'linewidth',linewidth);
                         
                         set(gca,'fontname',fontname,'fontsize',fontsize);
                         
                         xlim([20 30]);
-                        ylim([17 17.8]);
+                        ylim([17 18]);
                     case 75
-                        ylim([0 19]);
-                        
-                        dim = [0.5 0.85 0.2 0.07];
+                        dim = [0.5 0.825 0.2 0.07];
                         annotation('ellipse',dim,'linewidth',linewidth);
                         
-                        axes('position',[.35 .35 .3 .3]);
+                        axes('position',[.3 .275 .3 .3]);
                         box on;
                         
                         plot(1:L_max,avg_sum_se_s(:,1,1),'-','color',colours(1,:),'linewidth',linewidth);
@@ -276,41 +312,47 @@ switch chn_type
                         ylim([17.5 18.55]);
                 end
             case 100
+                ylim([0 40]);
+                
                 switch K
-                    case 10
-                        ylim([5 20]);
-                        
-                        dim = [0.825 0.825 0.075 0.075];
+                    case 10                        
+                        dim = [0.75 0.49 0.15 0.075];
                         annotation('ellipse',dim,'linewidth',linewidth);
                         
-                        axes('position',[.375 .275 .3 .3]);
+                        axes('position',[.25 .575 .3 .3]);
                         box on;
                         
-                        plot(1:L_max,avg_sum_se(1)*ones(L_max,1),'-k','linewidth',linewidth);
+                        % plot(1:L_max,avg_sum_se_s(:,1,1),'-','color',colours(1,:),'linewidth',linewidth);
+                        % hold on;
+                        % plot(1:L_max,avg_sum_se_s(:,1,2),'-','color',colours(2,:),'linewidth',linewidth);
+                        % plot(1:L_max,avg_sum_se_s(:,1,3),'-','color',colours(3,:),'linewidth',linewidth);
+                        % plot(1:L_max,avg_sum_se_s(:,2,1),'--','color',colours(1,:),'linewidth',linewidth);
+                        % plot(1:L_max,avg_sum_se_s(:,2,2),'--','color',colours(2,:),'linewidth',linewidth);
+                        % plot(1:L_max,avg_sum_se_s(:,2,3),'--','color',colours(3,:),'linewidth',linewidth);
+                        % plot(1:L_max,avg_sum_se_s(:,3,1),':','color',colours(1,:),'linewidth',linewidth);
+                        % plot(1:L_max,avg_sum_se_s(:,3,2),':','color',colours(2,:),'linewidth',linewidth);
+                        % plot(1:L_max,avg_sum_se_s(:,3,3),':','color',colours(3,:),'linewidth',linewidth);
+                        
+                        plot(1:K,[avg_sum_se_s(:,1,1); avg_sum_se(1)],'-' ,'color',colours(1,:),'linewidth',linewidth);
                         hold on;
-                        plot(1:L_max,avg_sum_se(2)*ones(L_max,1),'--k','linewidth',linewidth);
-                        plot(1:L_max,avg_sum_se(3)*ones(L_max,1),':k','linewidth',linewidth);
-                        plot(1:L_max,avg_sum_se_s(:,1,1),'-','color',colours(1,:),'linewidth',linewidth);
-                        plot(1:L_max,avg_sum_se_s(:,1,2),'-','color',colours(2,:),'linewidth',linewidth);
-                        plot(1:L_max,avg_sum_se_s(:,1,3),'-','color',colours(3,:),'linewidth',linewidth);
-                        plot(1:L_max,avg_sum_se_s(:,2,1),'--','color',colours(1,:),'linewidth',linewidth);
-                        plot(1:L_max,avg_sum_se_s(:,2,2),'--','color',colours(2,:),'linewidth',linewidth);
-                        plot(1:L_max,avg_sum_se_s(:,2,3),'--','color',colours(3,:),'linewidth',linewidth);
-                        plot(1:L_max,avg_sum_se_s(:,3,1),':','color',colours(1,:),'linewidth',linewidth);
-                        plot(1:L_max,avg_sum_se_s(:,3,2),':','color',colours(2,:),'linewidth',linewidth);
-                        plot(1:L_max,avg_sum_se_s(:,3,3),':','color',colours(3,:),'linewidth',linewidth);
+                        plot(1:K,[avg_sum_se_s(:,1,2); avg_sum_se(1)],'-' ,'color',colours(2,:),'linewidth',linewidth);
+                        plot(1:K,[avg_sum_se_s(:,1,3); avg_sum_se(1)],'-' ,'color',colours(3,:),'linewidth',linewidth);
+                        plot(1:K,[avg_sum_se_s(:,2,1); avg_sum_se(2)],'--','color',colours(1,:),'linewidth',linewidth);
+                        plot(1:K,[avg_sum_se_s(:,2,2); avg_sum_se(2)],'--','color',colours(2,:),'linewidth',linewidth);
+                        plot(1:K,[avg_sum_se_s(:,2,3); avg_sum_se(2)],'--','color',colours(3,:),'linewidth',linewidth);
+                        plot(1:K,[avg_sum_se_s(:,3,1); avg_sum_se(3)],':' ,'color',colours(1,:),'linewidth',linewidth);
+                        plot(1:K,[avg_sum_se_s(:,3,2); avg_sum_se(3)],':' ,'color',colours(2,:),'linewidth',linewidth);
+                        plot(1:K,[avg_sum_se_s(:,3,3); avg_sum_se(3)],':' ,'color',colours(3,:),'linewidth',linewidth);
                         
                         set(gca,'fontname',fontname,'fontsize',fontsize);
                         
-                        xlim([8 9]);
+                        xlim([7 10]);
                         ylim([18 19.5]);
-                    case 25
-                        ylim([5 27]);
-                        
-                        dim = [0.7 0.875 0.15 0.05];
+                    case 25                 
+                        dim = [0.7 0.65 0.15 0.05];
                         annotation('ellipse',dim,'linewidth',linewidth);
                         
-                        axes('position',[.45 .3 .3 .3]);
+                        axes('position',[.55 .275 .3 .3]);
                         box on;
                         
                         plot(1:L_max,avg_sum_se_s(:,1,1),'-','color',colours(1,:),'linewidth',linewidth);
@@ -326,12 +368,10 @@ switch chn_type
                         
                         set(gca,'fontname',fontname,'fontsize',fontsize);
                         
-                        xlim([17 22]);
+                        xlim([18 22]);
                         ylim([26 27]);
-                    case 50
-                        ylim([5 32]);
-                        
-                        dim = [0.6 0.875 0.15 0.05];
+                    case 50   
+                        dim = [0.6 0.75 0.15 0.05];
                         annotation('ellipse',dim,'linewidth',linewidth);
                         
                         axes('position',[.45 .275 .3 .3]);
@@ -353,12 +393,10 @@ switch chn_type
                         xlim([31 37]);
                         ylim([31 32]);
                     case 75
-                        ylim([5 35]);
-                        
-                        dim = [0.525 0.875 0.15 0.05];
+                        dim = [0.525 0.775 0.15 0.05];
                         annotation('ellipse',dim,'linewidth',linewidth);
                         
-                        axes('position',[.4 .265 .3 .3]);
+                        axes('position',[.275 .275 .3 .3]);
                         box on;
                         
                         plot(1:L_max,avg_sum_se_s(:,1,1),'-','color',colours(1,:),'linewidth',linewidth);
@@ -377,12 +415,10 @@ switch chn_type
                         xlim([35 50]);
                         ylim([33 34.3]);
                     case 100
-                        ylim([5 36]);
-                        
-                        dim = [0.475 0.875 0.15 0.05];
+                        dim = [0.45 0.8 0.15 0.05];
                         annotation('ellipse',dim,'linewidth',linewidth);
                         
-                        axes('position',[.325 .3 .3 .3]);
+                        axes('position',[.325 .275 .3 .3]);
                         box on;
                         
                         plot(1:L_max,avg_sum_se_s(:,1,1),'-','color',colours(1,:),'linewidth',linewidth);
@@ -401,12 +437,10 @@ switch chn_type
                         xlim([45 60]);
                         ylim([34.2 35.6]);
                     case 150
-                        ylim([0 37.1]);
-                        
-                        dim = [0.5 0.875 0.225 0.05];
+                        dim = [0.5 0.825 0.225 0.05];
                         annotation('ellipse',dim,'linewidth',linewidth);
                         
-                        axes('position',[.4 .3 .3 .3]);
+                        axes('position',[.3 .3 .3 .3]);
                         box on;
                         
                         plot(1:L_max,avg_sum_se_s(:,1,1),'-','color',colours(1,:),'linewidth',linewidth);
@@ -561,450 +595,450 @@ if (savefig == 1)
     saveas(gcf,[root_save 'sum_se_all_L_' chn_type '_M_' sprintf(zero_pad_1,M) '_K_' sprintf(zero_pad_1,K) '_SNR_' num2str(snr) '_dB_MC_' num2str(N_MC*MC)],'epsc2');
 end
 
-figure;
+% figure;
 
-set(gcf,'position',[0 0 800 600]);
-
-plot(edg_sum_se{2,1},[cdf_sum_se{2,1} 1],'-','color',colours(1,:),'linewidth',linewidth);
-hold on;
-plot(edg_sum_se{3,1},[cdf_sum_se{3,1} 1],'-','color',colours(2,:),'linewidth',linewidth);
-plot(edg_sum_se{4,1},[cdf_sum_se{4,1} 1],'-','color',colours(3,:),'linewidth',linewidth);
-plot(edg_sum_se{2,2},[cdf_sum_se{2,2} 1],'--','color',colours(1,:),'linewidth',linewidth);
-plot(edg_sum_se{3,2},[cdf_sum_se{3,2} 1],'--','color',colours(2,:),'linewidth',linewidth);
-plot(edg_sum_se{4,2},[cdf_sum_se{4,2} 1],'--','color',colours(3,:),'linewidth',linewidth);
-plot(edg_sum_se{2,3},[cdf_sum_se{2,3} 1],':','color',colours(1,:),'linewidth',linewidth);
-plot(edg_sum_se{3,3},[cdf_sum_se{3,3} 1],':','color',colours(2,:),'linewidth',linewidth);
-plot(edg_sum_se{4,3},[cdf_sum_se{4,3} 1],':','color',colours(3,:),'linewidth',linewidth);
-
-xlabel('Sum-spectral efficiency (b/s/Hz)','fontname',fontname,'fontsize',fontsize);
-ylabel('Cumulative distribution','fontname',fontname,'fontsize',fontsize);
-
-legend(legend_algo_2,'fontname',fontname,'fontsize',fontsize,'location',location_1);
-legend box off;
-
-set(gca,'fontname',fontname,'fontsize',fontsize);
-
-switch chn_type
-    case 'rayleigh'
-    case 'ur_los'
-        switch M
-            case 50
-                switch K
-                    case 10
-                        xlim([9 13])
-                        ylim([0 1]);
-                        
-                        dim = [0.2 0.2 0.4 0.035];
-                        annotation('ellipse',dim,'linewidth',linewidth);
-                        
-                        axes('position',[.25 .35 .3 .3]);
-                        box on;
-                        
-                        plot(edg_sum_se{2,1},[cdf_sum_se{2,1} 1],'-','color',colours(1,:),'linewidth',linewidth);
-                        hold on;
-                        plot(edg_sum_se{3,1},[cdf_sum_se{3,1} 1],'-','color',colours(2,:),'linewidth',linewidth);
-                        plot(edg_sum_se{4,1},[cdf_sum_se{4,1} 1],'-','color',colours(3,:),'linewidth',linewidth);
-                        plot(edg_sum_se{2,2},[cdf_sum_se{2,2} 1],'--','color',colours(1,:),'linewidth',linewidth);
-                        plot(edg_sum_se{3,2},[cdf_sum_se{3,2} 1],'--','color',colours(2,:),'linewidth',linewidth);
-                        plot(edg_sum_se{4,2},[cdf_sum_se{4,2} 1],'--','color',colours(3,:),'linewidth',linewidth);
-                        plot(edg_sum_se{2,3},[cdf_sum_se{2,3} 1],':','color',colours(1,:),'linewidth',linewidth);
-                        plot(edg_sum_se{3,3},[cdf_sum_se{3,3} 1],':','color',colours(2,:),'linewidth',linewidth);
-                        plot(edg_sum_se{4,3},[cdf_sum_se{4,3} 1],':','color',colours(3,:),'linewidth',linewidth);
-                        
-                        set(gca,'fontname',fontname,'fontsize',fontsize);
-                        
-                        xlim([9.5 11]);
-                        ylim([0.01 0.05]);
-                    case 25
-                        xlim([13 16.5]);
-                        ylim([0 1]);
-                        
-                        dim = [0.225 0.2 0.35 0.035];
-                        annotation('ellipse',dim,'linewidth',linewidth);
-                        
-                        axes('position',[.25 .35 .3 .3]);
-                        box on;
-                        
-                        plot(edg_sum_se{2,1},[cdf_sum_se{2,1} 1],'-','color',colours(1,:),'linewidth',linewidth);
-                        hold on;
-                        plot(edg_sum_se{3,1},[cdf_sum_se{3,1} 1],'-','color',colours(2,:),'linewidth',linewidth);
-                        plot(edg_sum_se{4,1},[cdf_sum_se{4,1} 1],'-','color',colours(3,:),'linewidth',linewidth);
-                        plot(edg_sum_se{2,2},[cdf_sum_se{2,2} 1],'--','color',colours(1,:),'linewidth',linewidth);
-                        plot(edg_sum_se{3,2},[cdf_sum_se{3,2} 1],'--','color',colours(2,:),'linewidth',linewidth);
-                        plot(edg_sum_se{4,2},[cdf_sum_se{4,2} 1],'--','color',colours(3,:),'linewidth',linewidth);
-                        plot(edg_sum_se{2,3},[cdf_sum_se{2,3} 1],':','color',colours(1,:),'linewidth',linewidth);
-                        plot(edg_sum_se{3,3},[cdf_sum_se{3,3} 1],':','color',colours(2,:),'linewidth',linewidth);
-                        plot(edg_sum_se{4,3},[cdf_sum_se{4,3} 1],':','color',colours(3,:),'linewidth',linewidth);
-                        
-                        set(gca,'fontname',fontname,'fontsize',fontsize);
-                        
-                        xlim([13.5 15]);
-                        ylim([0.03 0.05]);
-                    case 50
-                        xlim([15 18.2]);
-                        ylim([0 1]);
-                        
-                        dim = [0.375 0.2 0.3 0.035];
-                        annotation('ellipse',dim,'linewidth',linewidth);
-                        
-                        axes('position',[.275 .35 .3 .3]);
-                        box on;
-                        
-                        plot(edg_sum_se{2,1},[cdf_sum_se{2,1} 1],'-','color',colours(1,:),'linewidth',linewidth);
-                        hold on;
-                        plot(edg_sum_se{3,1},[cdf_sum_se{3,1} 1],'-','color',colours(2,:),'linewidth',linewidth);
-                        plot(edg_sum_se{4,1},[cdf_sum_se{4,1} 1],'-','color',colours(3,:),'linewidth',linewidth);
-                        plot(edg_sum_se{2,2},[cdf_sum_se{2,2} 1],'--','color',colours(1,:),'linewidth',linewidth);
-                        plot(edg_sum_se{3,2},[cdf_sum_se{3,2} 1],'--','color',colours(2,:),'linewidth',linewidth);
-                        plot(edg_sum_se{4,2},[cdf_sum_se{4,2} 1],'--','color',colours(3,:),'linewidth',linewidth);
-                        plot(edg_sum_se{2,3},[cdf_sum_se{2,3} 1],':','color',colours(1,:),'linewidth',linewidth);
-                        plot(edg_sum_se{3,3},[cdf_sum_se{3,3} 1],':','color',colours(2,:),'linewidth',linewidth);
-                        plot(edg_sum_se{4,3},[cdf_sum_se{4,3} 1],':','color',colours(3,:),'linewidth',linewidth);
-                        
-                        set(gca,'fontname',fontname,'fontsize',fontsize);
-                        
-                        xlim([16 17.3]);
-                        ylim([0.03 0.05]);
-                    case 75
-                        xlim([15.5 19]);
-                        ylim([0 1]);
-                        
-                        dim = [0.425 0.2 0.275 0.035];
-                        annotation('ellipse',dim,'linewidth',linewidth);
-                        
-                        axes('position',[.25 .35 .3 .3]);
-                        box on;
-                        
-                        plot(edg_sum_se{2,1},[cdf_sum_se{2,1} 1],'-','color',colours(1,:),'linewidth',linewidth);
-                        hold on;
-                        plot(edg_sum_se{3,1},[cdf_sum_se{3,1} 1],'-','color',colours(2,:),'linewidth',linewidth);
-                        plot(edg_sum_se{4,1},[cdf_sum_se{4,1} 1],'-','color',colours(3,:),'linewidth',linewidth);
-                        plot(edg_sum_se{2,2},[cdf_sum_se{2,2} 1],'--','color',colours(1,:),'linewidth',linewidth);
-                        plot(edg_sum_se{3,2},[cdf_sum_se{3,2} 1],'--','color',colours(2,:),'linewidth',linewidth);
-                        plot(edg_sum_se{4,2},[cdf_sum_se{4,2} 1],'--','color',colours(3,:),'linewidth',linewidth);
-                        plot(edg_sum_se{2,3},[cdf_sum_se{2,3} 1],':','color',colours(1,:),'linewidth',linewidth);
-                        plot(edg_sum_se{3,3},[cdf_sum_se{3,3} 1],':','color',colours(2,:),'linewidth',linewidth);
-                        plot(edg_sum_se{4,3},[cdf_sum_se{4,3} 1],':','color',colours(3,:),'linewidth',linewidth);
-                        
-                        set(gca,'fontname',fontname,'fontsize',fontsize);
-                        
-                        xlim([17.2 18]);
-                        ylim([0.03 0.05]);
-                end
-            case 100
-                switch K
-                    case 10
-                        xlim([14 20])
-                        ylim([0 1]);
-                        
-                        dim = [0.3 0.2 0.2 0.035];
-                        annotation('ellipse',dim,'linewidth',linewidth);
-                        
-                        axes('position',[.25 .35 .3 .3]);
-                        box on;
-                        
-                        plot(edg_sum_se{2,1},[cdf_sum_se{2,1} 1],'-','color',colours(1,:),'linewidth',linewidth);
-                        hold on;
-                        plot(edg_sum_se{3,1},[cdf_sum_se{3,1} 1],'-','color',colours(2,:),'linewidth',linewidth);
-                        plot(edg_sum_se{4,1},[cdf_sum_se{4,1} 1],'-','color',colours(3,:),'linewidth',linewidth);
-                        plot(edg_sum_se{2,2},[cdf_sum_se{2,2} 1],'--','color',colours(1,:),'linewidth',linewidth);
-                        plot(edg_sum_se{3,2},[cdf_sum_se{3,2} 1],'--','color',colours(2,:),'linewidth',linewidth);
-                        plot(edg_sum_se{4,2},[cdf_sum_se{4,2} 1],'--','color',colours(3,:),'linewidth',linewidth);
-                        plot(edg_sum_se{2,3},[cdf_sum_se{2,3} 1],':','color',colours(1,:),'linewidth',linewidth);
-                        plot(edg_sum_se{3,3},[cdf_sum_se{3,3} 1],':','color',colours(2,:),'linewidth',linewidth);
-                        plot(edg_sum_se{4,3},[cdf_sum_se{4,3} 1],':','color',colours(3,:),'linewidth',linewidth);
-                        
-                        set(gca,'fontname',fontname,'fontsize',fontsize);
-                        
-                        xlim([15 16.4]);
-                        ylim([0.03 0.05]);
-                    case 25
-                        xlim([22 28]);
-                        ylim([0 1]);
-                        
-                        dim = [0.225 0.2 0.35 0.035];
-                        annotation('ellipse',dim,'linewidth',linewidth);
-                        
-                        axes('position',[.25 .35 .3 .3]);
-                        box on;
-                        
-                        plot(edg_sum_se{2,1},[cdf_sum_se{2,1} 1],'-','color',colours(1,:),'linewidth',linewidth);
-                        hold on;
-                        plot(edg_sum_se{3,1},[cdf_sum_se{3,1} 1],'-','color',colours(2,:),'linewidth',linewidth);
-                        plot(edg_sum_se{4,1},[cdf_sum_se{4,1} 1],'-','color',colours(3,:),'linewidth',linewidth);
-                        plot(edg_sum_se{2,2},[cdf_sum_se{2,2} 1],'--','color',colours(1,:),'linewidth',linewidth);
-                        plot(edg_sum_se{3,2},[cdf_sum_se{3,2} 1],'--','color',colours(2,:),'linewidth',linewidth);
-                        plot(edg_sum_se{4,2},[cdf_sum_se{4,2} 1],'--','color',colours(3,:),'linewidth',linewidth);
-                        plot(edg_sum_se{2,3},[cdf_sum_se{2,3} 1],':','color',colours(1,:),'linewidth',linewidth);
-                        plot(edg_sum_se{3,3},[cdf_sum_se{3,3} 1],':','color',colours(2,:),'linewidth',linewidth);
-                        plot(edg_sum_se{4,3},[cdf_sum_se{4,3} 1],':','color',colours(3,:),'linewidth',linewidth);
-                        
-                        set(gca,'fontname',fontname,'fontsize',fontsize);
-                        
-                        xlim([23 24.6]);
-                        ylim([0.03 0.05]);
-                    case 50
-                        xlim([28 33]);
-                        ylim([0 1]);
-                        
-                        dim = [0.275 0.2 0.275 0.035];
-                        annotation('ellipse',dim,'linewidth',linewidth);
-                        
-                        axes('position',[.25 .35 .3 .3]);
-                        box on;
-                        
-                        plot(edg_sum_se{2,1},[cdf_sum_se{2,1} 1],'-','color',colours(1,:),'linewidth',linewidth);
-                        hold on;
-                        plot(edg_sum_se{3,1},[cdf_sum_se{3,1} 1],'-','color',colours(2,:),'linewidth',linewidth);
-                        plot(edg_sum_se{4,1},[cdf_sum_se{4,1} 1],'-','color',colours(3,:),'linewidth',linewidth);
-                        plot(edg_sum_se{2,2},[cdf_sum_se{2,2} 1],'--','color',colours(1,:),'linewidth',linewidth);
-                        plot(edg_sum_se{3,2},[cdf_sum_se{3,2} 1],'--','color',colours(2,:),'linewidth',linewidth);
-                        plot(edg_sum_se{4,2},[cdf_sum_se{4,2} 1],'--','color',colours(3,:),'linewidth',linewidth);
-                        plot(edg_sum_se{2,3},[cdf_sum_se{2,3} 1],':','color',colours(1,:),'linewidth',linewidth);
-                        plot(edg_sum_se{3,3},[cdf_sum_se{3,3} 1],':','color',colours(2,:),'linewidth',linewidth);
-                        plot(edg_sum_se{4,3},[cdf_sum_se{4,3} 1],':','color',colours(3,:),'linewidth',linewidth);
-                        
-                        set(gca,'fontname',fontname,'fontsize',fontsize);
-                        
-                        xlim([29 30.4]);
-                        ylim([0.03 0.05]);
-                    case 75
-                        xlim([30 35]);
-                        ylim([0 1]);
-                        
-                        dim = [0.425 0.2 0.2 0.035];
-                        annotation('ellipse',dim,'linewidth',linewidth);
-                        
-                        axes('position',[.25 .35 .3 .3]);
-                        box on;
-                        
-                        plot(edg_sum_se{2,1},[cdf_sum_se{2,1} 1],'-','color',colours(1,:),'linewidth',linewidth);
-                        hold on;
-                        plot(edg_sum_se{3,1},[cdf_sum_se{3,1} 1],'-','color',colours(2,:),'linewidth',linewidth);
-                        plot(edg_sum_se{4,1},[cdf_sum_se{4,1} 1],'-','color',colours(3,:),'linewidth',linewidth);
-                        plot(edg_sum_se{2,2},[cdf_sum_se{2,2} 1],'--','color',colours(1,:),'linewidth',linewidth);
-                        plot(edg_sum_se{3,2},[cdf_sum_se{3,2} 1],'--','color',colours(2,:),'linewidth',linewidth);
-                        plot(edg_sum_se{4,2},[cdf_sum_se{4,2} 1],'--','color',colours(3,:),'linewidth',linewidth);
-                        plot(edg_sum_se{2,3},[cdf_sum_se{2,3} 1],':','color',colours(1,:),'linewidth',linewidth);
-                        plot(edg_sum_se{3,3},[cdf_sum_se{3,3} 1],':','color',colours(2,:),'linewidth',linewidth);
-                        plot(edg_sum_se{4,3},[cdf_sum_se{4,3} 1],':','color',colours(3,:),'linewidth',linewidth);
-                        
-                        set(gca,'fontname',fontname,'fontsize',fontsize);
-                        
-                        xlim([31.8 33.2]);
-                        ylim([0.03 0.05]);
-                    case 100
-                        xlim([31.5 36.3]);
-                        ylim([0 1]);
-                        
-                        dim = [0.425 0.2 0.225 0.035];
-                        annotation('ellipse',dim,'linewidth',linewidth);
-                        
-                        axes('position',[.25 .35 .3 .3]);
-                        box on;
-                        
-                        plot(edg_sum_se{2,1},[cdf_sum_se{2,1} 1],'-','color',colours(1,:),'linewidth',linewidth);
-                        hold on;
-                        plot(edg_sum_se{3,1},[cdf_sum_se{3,1} 1],'-','color',colours(2,:),'linewidth',linewidth);
-                        plot(edg_sum_se{4,1},[cdf_sum_se{4,1} 1],'-','color',colours(3,:),'linewidth',linewidth);
-                        plot(edg_sum_se{2,2},[cdf_sum_se{2,2} 1],'--','color',colours(1,:),'linewidth',linewidth);
-                        plot(edg_sum_se{3,2},[cdf_sum_se{3,2} 1],'--','color',colours(2,:),'linewidth',linewidth);
-                        plot(edg_sum_se{4,2},[cdf_sum_se{4,2} 1],'--','color',colours(3,:),'linewidth',linewidth);
-                        plot(edg_sum_se{2,3},[cdf_sum_se{2,3} 1],':','color',colours(1,:),'linewidth',linewidth);
-                        plot(edg_sum_se{3,3},[cdf_sum_se{3,3} 1],':','color',colours(2,:),'linewidth',linewidth);
-                        plot(edg_sum_se{4,3},[cdf_sum_se{4,3} 1],':','color',colours(3,:),'linewidth',linewidth);
-                        
-                        set(gca,'fontname',fontname,'fontsize',fontsize);
-                        
-                        xlim([33.3 34.7]);
-                        ylim([0.03 0.05]);
-                    case 150
-                        xlim([32 37.7]);
-                        ylim([0 1]);
-                        
-                        dim = [0.475 0.2 0.275 0.035];
-                        annotation('ellipse',dim,'linewidth',linewidth);
-                        
-                        axes('position',[.25 .35 .3 .3]);
-                        box on;
-                        
-                        plot(edg_sum_se{2,1},[cdf_sum_se{2,1} 1],'-','color',colours(1,:),'linewidth',linewidth);
-                        hold on;
-                        plot(edg_sum_se{3,1},[cdf_sum_se{3,1} 1],'-','color',colours(2,:),'linewidth',linewidth);
-                        plot(edg_sum_se{4,1},[cdf_sum_se{4,1} 1],'-','color',colours(3,:),'linewidth',linewidth);
-                        plot(edg_sum_se{2,2},[cdf_sum_se{2,2} 1],'--','color',colours(1,:),'linewidth',linewidth);
-                        plot(edg_sum_se{3,2},[cdf_sum_se{3,2} 1],'--','color',colours(2,:),'linewidth',linewidth);
-                        plot(edg_sum_se{4,2},[cdf_sum_se{4,2} 1],'--','color',colours(3,:),'linewidth',linewidth);
-                        plot(edg_sum_se{2,3},[cdf_sum_se{2,3} 1],':','color',colours(1,:),'linewidth',linewidth);
-                        plot(edg_sum_se{3,3},[cdf_sum_se{3,3} 1],':','color',colours(2,:),'linewidth',linewidth);
-                        plot(edg_sum_se{4,3},[cdf_sum_se{4,3} 1],':','color',colours(3,:),'linewidth',linewidth);
-                        
-                        set(gca,'fontname',fontname,'fontsize',fontsize);
-                        
-                        xlim([34.6 36.4]);
-                        ylim([0.03 0.05]);
-                end
-            case 200
-                switch K
-                    case 10
-                        xlim([22 27.5]);
-                        ylim([0 1]);
-                        
-                        dim = [0.275 0.2 0.35 0.035];
-                        annotation('ellipse',dim,'linewidth',linewidth);
-                        
-                        axes('position',[.25 .35 .3 .3]);
-                        box on;
-                        
-                        plot(edg_sum_se{2,1},[cdf_sum_se{2,1} 1],'-','color',colours(1,:),'linewidth',linewidth);
-                        hold on;
-                        plot(edg_sum_se{3,1},[cdf_sum_se{3,1} 1],'-','color',colours(2,:),'linewidth',linewidth);
-                        plot(edg_sum_se{4,1},[cdf_sum_se{4,1} 1],'-','color',colours(3,:),'linewidth',linewidth);
-                        plot(edg_sum_se{2,2},[cdf_sum_se{2,2} 1],'--','color',colours(1,:),'linewidth',linewidth);
-                        plot(edg_sum_se{3,2},[cdf_sum_se{3,2} 1],'--','color',colours(2,:),'linewidth',linewidth);
-                        plot(edg_sum_se{4,2},[cdf_sum_se{4,2} 1],'--','color',colours(3,:),'linewidth',linewidth);
-                        plot(edg_sum_se{2,3},[cdf_sum_se{2,3} 1],':','color',colours(1,:),'linewidth',linewidth);
-                        plot(edg_sum_se{3,3},[cdf_sum_se{3,3} 1],':','color',colours(2,:),'linewidth',linewidth);
-                        plot(edg_sum_se{4,3},[cdf_sum_se{4,3} 1],':','color',colours(3,:),'linewidth',linewidth);
-                        
-                        set(gca,'fontname',fontname,'fontsize',fontsize);
-                        
-                        xlim([23 25.5]);
-                        ylim([0.015 0.05]);
-                    case 25
-                        xlim([35 44]);
-                        ylim([0 1]);
-                        
-                        dim = [0.225 0.2 0.2 0.035];
-                        annotation('ellipse',dim,'linewidth',linewidth);
-                        
-                        axes('position',[.25 .375 .3 .3]);
-                        box on;
-                        
-                        plot(edg_sum_se{2,1},[cdf_sum_se{2,1} 1],'-','color',colours(1,:),'linewidth',linewidth);
-                        hold on;
-                        plot(edg_sum_se{3,1},[cdf_sum_se{3,1} 1],'-','color',colours(2,:),'linewidth',linewidth);
-                        plot(edg_sum_se{4,1},[cdf_sum_se{4,1} 1],'-','color',colours(3,:),'linewidth',linewidth);
-                        plot(edg_sum_se{2,2},[cdf_sum_se{2,2} 1],'--','color',colours(1,:),'linewidth',linewidth);
-                        plot(edg_sum_se{3,2},[cdf_sum_se{3,2} 1],'--','color',colours(2,:),'linewidth',linewidth);
-                        plot(edg_sum_se{4,2},[cdf_sum_se{4,2} 1],'--','color',colours(3,:),'linewidth',linewidth);
-                        plot(edg_sum_se{2,3},[cdf_sum_se{2,3} 1],':','color',colours(1,:),'linewidth',linewidth);
-                        plot(edg_sum_se{3,3},[cdf_sum_se{3,3} 1],':','color',colours(2,:),'linewidth',linewidth);
-                        plot(edg_sum_se{4,3},[cdf_sum_se{4,3} 1],':','color',colours(3,:),'linewidth',linewidth);
-                        
-                        set(gca,'fontname',fontname,'fontsize',fontsize);
-                        
-                        xlim([36 38]);
-                        ylim([0.015 0.05]);
-                    case 50
-                        xlim([47 55.5]);
-                        ylim([0 1]);
-                        
-                        dim = [0.225 0.175 0.225 0.035];
-                        annotation('ellipse',dim,'linewidth',linewidth);
-                        
-                        axes('position',[.25 .35 .3 .3]);
-                        box on;
-                        
-                        plot(edg_sum_se{2,1},[cdf_sum_se{2,1} 1],'-','color',colours(1,:),'linewidth',linewidth);
-                        hold on;
-                        plot(edg_sum_se{3,1},[cdf_sum_se{3,1} 1],'-','color',colours(2,:),'linewidth',linewidth);
-                        plot(edg_sum_se{4,1},[cdf_sum_se{4,1} 1],'-','color',colours(3,:),'linewidth',linewidth);
-                        plot(edg_sum_se{2,2},[cdf_sum_se{2,2} 1],'--','color',colours(1,:),'linewidth',linewidth);
-                        plot(edg_sum_se{3,2},[cdf_sum_se{3,2} 1],'--','color',colours(2,:),'linewidth',linewidth);
-                        plot(edg_sum_se{4,2},[cdf_sum_se{4,2} 1],'--','color',colours(3,:),'linewidth',linewidth);
-                        plot(edg_sum_se{2,3},[cdf_sum_se{2,3} 1],':','color',colours(1,:),'linewidth',linewidth);
-                        plot(edg_sum_se{3,3},[cdf_sum_se{3,3} 1],':','color',colours(2,:),'linewidth',linewidth);
-                        plot(edg_sum_se{4,3},[cdf_sum_se{4,3} 1],':','color',colours(3,:),'linewidth',linewidth);
-                        
-                        set(gca,'fontname',fontname,'fontsize',fontsize);
-                        
-                        xlim([48 51.5]);
-                        ylim([0.02 0.05]);
-                    case 75
-                        xlim([55 61.8]);
-                        ylim([0 1]);
-                        
-                        dim = [0.15 0.175 0.225 0.035];
-                        annotation('ellipse',dim,'linewidth',linewidth);
-                        
-                        axes('position',[.25 .35 .3 .3]);
-                        box on;
-                        
-                        plot(edg_sum_se{2,1},[cdf_sum_se{2,1} 1],'-','color',colours(1,:),'linewidth',linewidth);
-                        hold on;
-                        plot(edg_sum_se{3,1},[cdf_sum_se{3,1} 1],'-','color',colours(2,:),'linewidth',linewidth);
-                        plot(edg_sum_se{4,1},[cdf_sum_se{4,1} 1],'-','color',colours(3,:),'linewidth',linewidth);
-                        plot(edg_sum_se{2,2},[cdf_sum_se{2,2} 1],'--','color',colours(1,:),'linewidth',linewidth);
-                        plot(edg_sum_se{3,2},[cdf_sum_se{3,2} 1],'--','color',colours(2,:),'linewidth',linewidth);
-                        plot(edg_sum_se{4,2},[cdf_sum_se{4,2} 1],'--','color',colours(3,:),'linewidth',linewidth);
-                        plot(edg_sum_se{2,3},[cdf_sum_se{2,3} 1],':','color',colours(1,:),'linewidth',linewidth);
-                        plot(edg_sum_se{3,3},[cdf_sum_se{3,3} 1],':','color',colours(2,:),'linewidth',linewidth);
-                        plot(edg_sum_se{4,3},[cdf_sum_se{4,3} 1],':','color',colours(3,:),'linewidth',linewidth);
-                        
-                        set(gca,'fontname',fontname,'fontsize',fontsize);
-                        
-                        xlim([55 57.5]);
-                        ylim([0.02 0.05]);
-                    case 100
-                        xlim([59 65.5]);
-                        ylim([0 1]);
-                        
-                        dim = [0.25 0.175 0.225 0.035];
-                        annotation('ellipse',dim,'linewidth',linewidth);
-                        
-                        axes('position',[.25 .35 .3 .3]);
-                        box on;
-                        
-                        plot(edg_sum_se{2,1},[cdf_sum_se{2,1} 1],'-','color',colours(1,:),'linewidth',linewidth);
-                        hold on;
-                        plot(edg_sum_se{3,1},[cdf_sum_se{3,1} 1],'-','color',colours(2,:),'linewidth',linewidth);
-                        plot(edg_sum_se{4,1},[cdf_sum_se{4,1} 1],'-','color',colours(3,:),'linewidth',linewidth);
-                        plot(edg_sum_se{2,2},[cdf_sum_se{2,2} 1],'--','color',colours(1,:),'linewidth',linewidth);
-                        plot(edg_sum_se{3,2},[cdf_sum_se{3,2} 1],'--','color',colours(2,:),'linewidth',linewidth);
-                        plot(edg_sum_se{4,2},[cdf_sum_se{4,2} 1],'--','color',colours(3,:),'linewidth',linewidth);
-                        plot(edg_sum_se{2,3},[cdf_sum_se{2,3} 1],':','color',colours(1,:),'linewidth',linewidth);
-                        plot(edg_sum_se{3,3},[cdf_sum_se{3,3} 1],':','color',colours(2,:),'linewidth',linewidth);
-                        plot(edg_sum_se{4,3},[cdf_sum_se{4,3} 1],':','color',colours(3,:),'linewidth',linewidth);
-                        
-                        set(gca,'fontname',fontname,'fontsize',fontsize);
-                        
-                        xlim([60 61.8]);
-                        ylim([0.02 0.05]);
-                    case 150
-                        xlim([62 70]);
-                        ylim([0 1]);
-                        
-                        dim = [0.3 0.175 0.3 0.035];
-                        annotation('ellipse',dim,'linewidth',linewidth);
-                        
-                        axes('position',[.25 .375 .3 .3]);
-                        box on;
-                        
-                        plot(edg_sum_se{2,1},[cdf_sum_se{2,1} 1],'-','color',colours(1,:),'linewidth',linewidth);
-                        hold on;
-                        plot(edg_sum_se{3,1},[cdf_sum_se{3,1} 1],'-','color',colours(2,:),'linewidth',linewidth);
-                        plot(edg_sum_se{4,1},[cdf_sum_se{4,1} 1],'-','color',colours(3,:),'linewidth',linewidth);
-                        plot(edg_sum_se{2,2},[cdf_sum_se{2,2} 1],'--','color',colours(1,:),'linewidth',linewidth);
-                        plot(edg_sum_se{3,2},[cdf_sum_se{3,2} 1],'--','color',colours(2,:),'linewidth',linewidth);
-                        plot(edg_sum_se{4,2},[cdf_sum_se{4,2} 1],'--','color',colours(3,:),'linewidth',linewidth);
-                        plot(edg_sum_se{2,3},[cdf_sum_se{2,3} 1],':','color',colours(1,:),'linewidth',linewidth);
-                        plot(edg_sum_se{3,3},[cdf_sum_se{3,3} 1],':','color',colours(2,:),'linewidth',linewidth);
-                        plot(edg_sum_se{4,3},[cdf_sum_se{4,3} 1],':','color',colours(3,:),'linewidth',linewidth);
-                        
-                        set(gca,'fontname',fontname,'fontsize',fontsize);
-                        
-                        xlim([64 67]);
-                        ylim([0.02 0.05]);
-                    case 200
-                    case 250
-                end
-        end
-    otherwise
-end
-
-if (savefig == 1)
-    saveas(gcf,[root_save 'cdf_sum_se_star_' chn_type '_M_' sprintf(zero_pad_1,M) '_K_' sprintf(zero_pad_1,K) '_SNR_' num2str(snr) '_dB_MC_' num2str(N_MC*MC)],'fig');
-    saveas(gcf,[root_save 'cdf_sum_se_star_' chn_type '_M_' sprintf(zero_pad_1,M) '_K_' sprintf(zero_pad_1,K) '_SNR_' num2str(snr) '_dB_MC_' num2str(N_MC*MC)],'png');
-    saveas(gcf,[root_save 'cdf_sum_se_star_' chn_type '_M_' sprintf(zero_pad_1,M) '_K_' sprintf(zero_pad_1,K) '_SNR_' num2str(snr) '_dB_MC_' num2str(N_MC*MC)],'epsc2');
-end
+% set(gcf,'position',[0 0 800 600]);
+% 
+% plot(edg_sum_se{2,1},[cdf_sum_se{2,1} 1],'-','color',colours(1,:),'linewidth',linewidth);
+% hold on;
+% plot(edg_sum_se{3,1},[cdf_sum_se{3,1} 1],'-','color',colours(2,:),'linewidth',linewidth);
+% plot(edg_sum_se{4,1},[cdf_sum_se{4,1} 1],'-','color',colours(3,:),'linewidth',linewidth);
+% plot(edg_sum_se{2,2},[cdf_sum_se{2,2} 1],'--','color',colours(1,:),'linewidth',linewidth);
+% plot(edg_sum_se{3,2},[cdf_sum_se{3,2} 1],'--','color',colours(2,:),'linewidth',linewidth);
+% plot(edg_sum_se{4,2},[cdf_sum_se{4,2} 1],'--','color',colours(3,:),'linewidth',linewidth);
+% plot(edg_sum_se{2,3},[cdf_sum_se{2,3} 1],':','color',colours(1,:),'linewidth',linewidth);
+% plot(edg_sum_se{3,3},[cdf_sum_se{3,3} 1],':','color',colours(2,:),'linewidth',linewidth);
+% plot(edg_sum_se{4,3},[cdf_sum_se{4,3} 1],':','color',colours(3,:),'linewidth',linewidth);
+% 
+% xlabel('Sum-spectral efficiency (b/s/Hz)','fontname',fontname,'fontsize',fontsize);
+% ylabel('Cumulative distribution','fontname',fontname,'fontsize',fontsize);
+% 
+% legend(legend_algo_2,'fontname',fontname,'fontsize',fontsize,'location',location_1);
+% legend box off;
+% 
+% set(gca,'fontname',fontname,'fontsize',fontsize);
+% 
+% switch chn_type
+%     case 'rayleigh'
+%     case 'ur_los'
+%         switch M
+%             case 50
+%                 switch K
+%                     case 10
+%                         xlim([9 13])
+%                         ylim([0 1]);
+%                         
+%                         dim = [0.2 0.2 0.4 0.035];
+%                         annotation('ellipse',dim,'linewidth',linewidth);
+%                         
+%                         axes('position',[.25 .35 .3 .3]);
+%                         box on;
+%                         
+%                         plot(edg_sum_se{2,1},[cdf_sum_se{2,1} 1],'-','color',colours(1,:),'linewidth',linewidth);
+%                         hold on;
+%                         plot(edg_sum_se{3,1},[cdf_sum_se{3,1} 1],'-','color',colours(2,:),'linewidth',linewidth);
+%                         plot(edg_sum_se{4,1},[cdf_sum_se{4,1} 1],'-','color',colours(3,:),'linewidth',linewidth);
+%                         plot(edg_sum_se{2,2},[cdf_sum_se{2,2} 1],'--','color',colours(1,:),'linewidth',linewidth);
+%                         plot(edg_sum_se{3,2},[cdf_sum_se{3,2} 1],'--','color',colours(2,:),'linewidth',linewidth);
+%                         plot(edg_sum_se{4,2},[cdf_sum_se{4,2} 1],'--','color',colours(3,:),'linewidth',linewidth);
+%                         plot(edg_sum_se{2,3},[cdf_sum_se{2,3} 1],':','color',colours(1,:),'linewidth',linewidth);
+%                         plot(edg_sum_se{3,3},[cdf_sum_se{3,3} 1],':','color',colours(2,:),'linewidth',linewidth);
+%                         plot(edg_sum_se{4,3},[cdf_sum_se{4,3} 1],':','color',colours(3,:),'linewidth',linewidth);
+%                         
+%                         set(gca,'fontname',fontname,'fontsize',fontsize);
+%                         
+%                         xlim([9.5 11]);
+%                         ylim([0.01 0.05]);
+%                     case 25
+%                         xlim([13 16.5]);
+%                         ylim([0 1]);
+%                         
+%                         dim = [0.225 0.2 0.35 0.035];
+%                         annotation('ellipse',dim,'linewidth',linewidth);
+%                         
+%                         axes('position',[.25 .35 .3 .3]);
+%                         box on;
+%                         
+%                         plot(edg_sum_se{2,1},[cdf_sum_se{2,1} 1],'-','color',colours(1,:),'linewidth',linewidth);
+%                         hold on;
+%                         plot(edg_sum_se{3,1},[cdf_sum_se{3,1} 1],'-','color',colours(2,:),'linewidth',linewidth);
+%                         plot(edg_sum_se{4,1},[cdf_sum_se{4,1} 1],'-','color',colours(3,:),'linewidth',linewidth);
+%                         plot(edg_sum_se{2,2},[cdf_sum_se{2,2} 1],'--','color',colours(1,:),'linewidth',linewidth);
+%                         plot(edg_sum_se{3,2},[cdf_sum_se{3,2} 1],'--','color',colours(2,:),'linewidth',linewidth);
+%                         plot(edg_sum_se{4,2},[cdf_sum_se{4,2} 1],'--','color',colours(3,:),'linewidth',linewidth);
+%                         plot(edg_sum_se{2,3},[cdf_sum_se{2,3} 1],':','color',colours(1,:),'linewidth',linewidth);
+%                         plot(edg_sum_se{3,3},[cdf_sum_se{3,3} 1],':','color',colours(2,:),'linewidth',linewidth);
+%                         plot(edg_sum_se{4,3},[cdf_sum_se{4,3} 1],':','color',colours(3,:),'linewidth',linewidth);
+%                         
+%                         set(gca,'fontname',fontname,'fontsize',fontsize);
+%                         
+%                         xlim([13.5 15]);
+%                         ylim([0.03 0.05]);
+%                     case 50
+%                         xlim([15 18.2]);
+%                         ylim([0 1]);
+%                         
+%                         dim = [0.375 0.2 0.3 0.035];
+%                         annotation('ellipse',dim,'linewidth',linewidth);
+%                         
+%                         axes('position',[.275 .35 .3 .3]);
+%                         box on;
+%                         
+%                         plot(edg_sum_se{2,1},[cdf_sum_se{2,1} 1],'-','color',colours(1,:),'linewidth',linewidth);
+%                         hold on;
+%                         plot(edg_sum_se{3,1},[cdf_sum_se{3,1} 1],'-','color',colours(2,:),'linewidth',linewidth);
+%                         plot(edg_sum_se{4,1},[cdf_sum_se{4,1} 1],'-','color',colours(3,:),'linewidth',linewidth);
+%                         plot(edg_sum_se{2,2},[cdf_sum_se{2,2} 1],'--','color',colours(1,:),'linewidth',linewidth);
+%                         plot(edg_sum_se{3,2},[cdf_sum_se{3,2} 1],'--','color',colours(2,:),'linewidth',linewidth);
+%                         plot(edg_sum_se{4,2},[cdf_sum_se{4,2} 1],'--','color',colours(3,:),'linewidth',linewidth);
+%                         plot(edg_sum_se{2,3},[cdf_sum_se{2,3} 1],':','color',colours(1,:),'linewidth',linewidth);
+%                         plot(edg_sum_se{3,3},[cdf_sum_se{3,3} 1],':','color',colours(2,:),'linewidth',linewidth);
+%                         plot(edg_sum_se{4,3},[cdf_sum_se{4,3} 1],':','color',colours(3,:),'linewidth',linewidth);
+%                         
+%                         set(gca,'fontname',fontname,'fontsize',fontsize);
+%                         
+%                         xlim([16 17.3]);
+%                         ylim([0.03 0.05]);
+%                     case 75
+%                         xlim([15.5 19]);
+%                         ylim([0 1]);
+%                         
+%                         dim = [0.425 0.2 0.275 0.035];
+%                         annotation('ellipse',dim,'linewidth',linewidth);
+%                         
+%                         axes('position',[.25 .35 .3 .3]);
+%                         box on;
+%                         
+%                         plot(edg_sum_se{2,1},[cdf_sum_se{2,1} 1],'-','color',colours(1,:),'linewidth',linewidth);
+%                         hold on;
+%                         plot(edg_sum_se{3,1},[cdf_sum_se{3,1} 1],'-','color',colours(2,:),'linewidth',linewidth);
+%                         plot(edg_sum_se{4,1},[cdf_sum_se{4,1} 1],'-','color',colours(3,:),'linewidth',linewidth);
+%                         plot(edg_sum_se{2,2},[cdf_sum_se{2,2} 1],'--','color',colours(1,:),'linewidth',linewidth);
+%                         plot(edg_sum_se{3,2},[cdf_sum_se{3,2} 1],'--','color',colours(2,:),'linewidth',linewidth);
+%                         plot(edg_sum_se{4,2},[cdf_sum_se{4,2} 1],'--','color',colours(3,:),'linewidth',linewidth);
+%                         plot(edg_sum_se{2,3},[cdf_sum_se{2,3} 1],':','color',colours(1,:),'linewidth',linewidth);
+%                         plot(edg_sum_se{3,3},[cdf_sum_se{3,3} 1],':','color',colours(2,:),'linewidth',linewidth);
+%                         plot(edg_sum_se{4,3},[cdf_sum_se{4,3} 1],':','color',colours(3,:),'linewidth',linewidth);
+%                         
+%                         set(gca,'fontname',fontname,'fontsize',fontsize);
+%                         
+%                         xlim([17.2 18]);
+%                         ylim([0.03 0.05]);
+%                 end
+%             case 100
+%                 switch K
+%                     case 10
+%                         xlim([14 20])
+%                         ylim([0 1]);
+%                         
+%                         dim = [0.3 0.2 0.2 0.035];
+%                         annotation('ellipse',dim,'linewidth',linewidth);
+%                         
+%                         axes('position',[.25 .35 .3 .3]);
+%                         box on;
+%                         
+%                         plot(edg_sum_se{2,1},[cdf_sum_se{2,1} 1],'-','color',colours(1,:),'linewidth',linewidth);
+%                         hold on;
+%                         plot(edg_sum_se{3,1},[cdf_sum_se{3,1} 1],'-','color',colours(2,:),'linewidth',linewidth);
+%                         plot(edg_sum_se{4,1},[cdf_sum_se{4,1} 1],'-','color',colours(3,:),'linewidth',linewidth);
+%                         plot(edg_sum_se{2,2},[cdf_sum_se{2,2} 1],'--','color',colours(1,:),'linewidth',linewidth);
+%                         plot(edg_sum_se{3,2},[cdf_sum_se{3,2} 1],'--','color',colours(2,:),'linewidth',linewidth);
+%                         plot(edg_sum_se{4,2},[cdf_sum_se{4,2} 1],'--','color',colours(3,:),'linewidth',linewidth);
+%                         plot(edg_sum_se{2,3},[cdf_sum_se{2,3} 1],':','color',colours(1,:),'linewidth',linewidth);
+%                         plot(edg_sum_se{3,3},[cdf_sum_se{3,3} 1],':','color',colours(2,:),'linewidth',linewidth);
+%                         plot(edg_sum_se{4,3},[cdf_sum_se{4,3} 1],':','color',colours(3,:),'linewidth',linewidth);
+%                         
+%                         set(gca,'fontname',fontname,'fontsize',fontsize);
+%                         
+%                         xlim([15 16.4]);
+%                         ylim([0.03 0.05]);
+%                     case 25
+%                         xlim([22 28]);
+%                         ylim([0 1]);
+%                         
+%                         dim = [0.225 0.2 0.35 0.035];
+%                         annotation('ellipse',dim,'linewidth',linewidth);
+%                         
+%                         axes('position',[.25 .35 .3 .3]);
+%                         box on;
+%                         
+%                         plot(edg_sum_se{2,1},[cdf_sum_se{2,1} 1],'-','color',colours(1,:),'linewidth',linewidth);
+%                         hold on;
+%                         plot(edg_sum_se{3,1},[cdf_sum_se{3,1} 1],'-','color',colours(2,:),'linewidth',linewidth);
+%                         plot(edg_sum_se{4,1},[cdf_sum_se{4,1} 1],'-','color',colours(3,:),'linewidth',linewidth);
+%                         plot(edg_sum_se{2,2},[cdf_sum_se{2,2} 1],'--','color',colours(1,:),'linewidth',linewidth);
+%                         plot(edg_sum_se{3,2},[cdf_sum_se{3,2} 1],'--','color',colours(2,:),'linewidth',linewidth);
+%                         plot(edg_sum_se{4,2},[cdf_sum_se{4,2} 1],'--','color',colours(3,:),'linewidth',linewidth);
+%                         plot(edg_sum_se{2,3},[cdf_sum_se{2,3} 1],':','color',colours(1,:),'linewidth',linewidth);
+%                         plot(edg_sum_se{3,3},[cdf_sum_se{3,3} 1],':','color',colours(2,:),'linewidth',linewidth);
+%                         plot(edg_sum_se{4,3},[cdf_sum_se{4,3} 1],':','color',colours(3,:),'linewidth',linewidth);
+%                         
+%                         set(gca,'fontname',fontname,'fontsize',fontsize);
+%                         
+%                         xlim([23 24.6]);
+%                         ylim([0.03 0.05]);
+%                     case 50
+%                         xlim([28 33]);
+%                         ylim([0 1]);
+%                         
+%                         dim = [0.275 0.2 0.275 0.035];
+%                         annotation('ellipse',dim,'linewidth',linewidth);
+%                         
+%                         axes('position',[.25 .35 .3 .3]);
+%                         box on;
+%                         
+%                         plot(edg_sum_se{2,1},[cdf_sum_se{2,1} 1],'-','color',colours(1,:),'linewidth',linewidth);
+%                         hold on;
+%                         plot(edg_sum_se{3,1},[cdf_sum_se{3,1} 1],'-','color',colours(2,:),'linewidth',linewidth);
+%                         plot(edg_sum_se{4,1},[cdf_sum_se{4,1} 1],'-','color',colours(3,:),'linewidth',linewidth);
+%                         plot(edg_sum_se{2,2},[cdf_sum_se{2,2} 1],'--','color',colours(1,:),'linewidth',linewidth);
+%                         plot(edg_sum_se{3,2},[cdf_sum_se{3,2} 1],'--','color',colours(2,:),'linewidth',linewidth);
+%                         plot(edg_sum_se{4,2},[cdf_sum_se{4,2} 1],'--','color',colours(3,:),'linewidth',linewidth);
+%                         plot(edg_sum_se{2,3},[cdf_sum_se{2,3} 1],':','color',colours(1,:),'linewidth',linewidth);
+%                         plot(edg_sum_se{3,3},[cdf_sum_se{3,3} 1],':','color',colours(2,:),'linewidth',linewidth);
+%                         plot(edg_sum_se{4,3},[cdf_sum_se{4,3} 1],':','color',colours(3,:),'linewidth',linewidth);
+%                         
+%                         set(gca,'fontname',fontname,'fontsize',fontsize);
+%                         
+%                         xlim([29 30.4]);
+%                         ylim([0.03 0.05]);
+%                     case 75
+%                         xlim([30 35]);
+%                         ylim([0 1]);
+%                         
+%                         dim = [0.425 0.2 0.2 0.035];
+%                         annotation('ellipse',dim,'linewidth',linewidth);
+%                         
+%                         axes('position',[.25 .35 .3 .3]);
+%                         box on;
+%                         
+%                         plot(edg_sum_se{2,1},[cdf_sum_se{2,1} 1],'-','color',colours(1,:),'linewidth',linewidth);
+%                         hold on;
+%                         plot(edg_sum_se{3,1},[cdf_sum_se{3,1} 1],'-','color',colours(2,:),'linewidth',linewidth);
+%                         plot(edg_sum_se{4,1},[cdf_sum_se{4,1} 1],'-','color',colours(3,:),'linewidth',linewidth);
+%                         plot(edg_sum_se{2,2},[cdf_sum_se{2,2} 1],'--','color',colours(1,:),'linewidth',linewidth);
+%                         plot(edg_sum_se{3,2},[cdf_sum_se{3,2} 1],'--','color',colours(2,:),'linewidth',linewidth);
+%                         plot(edg_sum_se{4,2},[cdf_sum_se{4,2} 1],'--','color',colours(3,:),'linewidth',linewidth);
+%                         plot(edg_sum_se{2,3},[cdf_sum_se{2,3} 1],':','color',colours(1,:),'linewidth',linewidth);
+%                         plot(edg_sum_se{3,3},[cdf_sum_se{3,3} 1],':','color',colours(2,:),'linewidth',linewidth);
+%                         plot(edg_sum_se{4,3},[cdf_sum_se{4,3} 1],':','color',colours(3,:),'linewidth',linewidth);
+%                         
+%                         set(gca,'fontname',fontname,'fontsize',fontsize);
+%                         
+%                         xlim([31.8 33.2]);
+%                         ylim([0.03 0.05]);
+%                     case 100
+%                         xlim([31.5 36.3]);
+%                         ylim([0 1]);
+%                         
+%                         dim = [0.425 0.2 0.225 0.035];
+%                         annotation('ellipse',dim,'linewidth',linewidth);
+%                         
+%                         axes('position',[.25 .35 .3 .3]);
+%                         box on;
+%                         
+%                         plot(edg_sum_se{2,1},[cdf_sum_se{2,1} 1],'-','color',colours(1,:),'linewidth',linewidth);
+%                         hold on;
+%                         plot(edg_sum_se{3,1},[cdf_sum_se{3,1} 1],'-','color',colours(2,:),'linewidth',linewidth);
+%                         plot(edg_sum_se{4,1},[cdf_sum_se{4,1} 1],'-','color',colours(3,:),'linewidth',linewidth);
+%                         plot(edg_sum_se{2,2},[cdf_sum_se{2,2} 1],'--','color',colours(1,:),'linewidth',linewidth);
+%                         plot(edg_sum_se{3,2},[cdf_sum_se{3,2} 1],'--','color',colours(2,:),'linewidth',linewidth);
+%                         plot(edg_sum_se{4,2},[cdf_sum_se{4,2} 1],'--','color',colours(3,:),'linewidth',linewidth);
+%                         plot(edg_sum_se{2,3},[cdf_sum_se{2,3} 1],':','color',colours(1,:),'linewidth',linewidth);
+%                         plot(edg_sum_se{3,3},[cdf_sum_se{3,3} 1],':','color',colours(2,:),'linewidth',linewidth);
+%                         plot(edg_sum_se{4,3},[cdf_sum_se{4,3} 1],':','color',colours(3,:),'linewidth',linewidth);
+%                         
+%                         set(gca,'fontname',fontname,'fontsize',fontsize);
+%                         
+%                         xlim([33.3 34.7]);
+%                         ylim([0.03 0.05]);
+%                     case 150
+%                         xlim([32 37.7]);
+%                         ylim([0 1]);
+%                         
+%                         dim = [0.475 0.2 0.275 0.035];
+%                         annotation('ellipse',dim,'linewidth',linewidth);
+%                         
+%                         axes('position',[.25 .35 .3 .3]);
+%                         box on;
+%                         
+%                         plot(edg_sum_se{2,1},[cdf_sum_se{2,1} 1],'-','color',colours(1,:),'linewidth',linewidth);
+%                         hold on;
+%                         plot(edg_sum_se{3,1},[cdf_sum_se{3,1} 1],'-','color',colours(2,:),'linewidth',linewidth);
+%                         plot(edg_sum_se{4,1},[cdf_sum_se{4,1} 1],'-','color',colours(3,:),'linewidth',linewidth);
+%                         plot(edg_sum_se{2,2},[cdf_sum_se{2,2} 1],'--','color',colours(1,:),'linewidth',linewidth);
+%                         plot(edg_sum_se{3,2},[cdf_sum_se{3,2} 1],'--','color',colours(2,:),'linewidth',linewidth);
+%                         plot(edg_sum_se{4,2},[cdf_sum_se{4,2} 1],'--','color',colours(3,:),'linewidth',linewidth);
+%                         plot(edg_sum_se{2,3},[cdf_sum_se{2,3} 1],':','color',colours(1,:),'linewidth',linewidth);
+%                         plot(edg_sum_se{3,3},[cdf_sum_se{3,3} 1],':','color',colours(2,:),'linewidth',linewidth);
+%                         plot(edg_sum_se{4,3},[cdf_sum_se{4,3} 1],':','color',colours(3,:),'linewidth',linewidth);
+%                         
+%                         set(gca,'fontname',fontname,'fontsize',fontsize);
+%                         
+%                         xlim([34.6 36.4]);
+%                         ylim([0.03 0.05]);
+%                 end
+%             case 200
+%                 switch K
+%                     case 10
+%                         xlim([22 27.5]);
+%                         ylim([0 1]);
+%                         
+%                         dim = [0.275 0.2 0.35 0.035];
+%                         annotation('ellipse',dim,'linewidth',linewidth);
+%                         
+%                         axes('position',[.25 .35 .3 .3]);
+%                         box on;
+%                         
+%                         plot(edg_sum_se{2,1},[cdf_sum_se{2,1} 1],'-','color',colours(1,:),'linewidth',linewidth);
+%                         hold on;
+%                         plot(edg_sum_se{3,1},[cdf_sum_se{3,1} 1],'-','color',colours(2,:),'linewidth',linewidth);
+%                         plot(edg_sum_se{4,1},[cdf_sum_se{4,1} 1],'-','color',colours(3,:),'linewidth',linewidth);
+%                         plot(edg_sum_se{2,2},[cdf_sum_se{2,2} 1],'--','color',colours(1,:),'linewidth',linewidth);
+%                         plot(edg_sum_se{3,2},[cdf_sum_se{3,2} 1],'--','color',colours(2,:),'linewidth',linewidth);
+%                         plot(edg_sum_se{4,2},[cdf_sum_se{4,2} 1],'--','color',colours(3,:),'linewidth',linewidth);
+%                         plot(edg_sum_se{2,3},[cdf_sum_se{2,3} 1],':','color',colours(1,:),'linewidth',linewidth);
+%                         plot(edg_sum_se{3,3},[cdf_sum_se{3,3} 1],':','color',colours(2,:),'linewidth',linewidth);
+%                         plot(edg_sum_se{4,3},[cdf_sum_se{4,3} 1],':','color',colours(3,:),'linewidth',linewidth);
+%                         
+%                         set(gca,'fontname',fontname,'fontsize',fontsize);
+%                         
+%                         xlim([23 25.5]);
+%                         ylim([0.015 0.05]);
+%                     case 25
+%                         xlim([35 44]);
+%                         ylim([0 1]);
+%                         
+%                         dim = [0.225 0.2 0.2 0.035];
+%                         annotation('ellipse',dim,'linewidth',linewidth);
+%                         
+%                         axes('position',[.25 .375 .3 .3]);
+%                         box on;
+%                         
+%                         plot(edg_sum_se{2,1},[cdf_sum_se{2,1} 1],'-','color',colours(1,:),'linewidth',linewidth);
+%                         hold on;
+%                         plot(edg_sum_se{3,1},[cdf_sum_se{3,1} 1],'-','color',colours(2,:),'linewidth',linewidth);
+%                         plot(edg_sum_se{4,1},[cdf_sum_se{4,1} 1],'-','color',colours(3,:),'linewidth',linewidth);
+%                         plot(edg_sum_se{2,2},[cdf_sum_se{2,2} 1],'--','color',colours(1,:),'linewidth',linewidth);
+%                         plot(edg_sum_se{3,2},[cdf_sum_se{3,2} 1],'--','color',colours(2,:),'linewidth',linewidth);
+%                         plot(edg_sum_se{4,2},[cdf_sum_se{4,2} 1],'--','color',colours(3,:),'linewidth',linewidth);
+%                         plot(edg_sum_se{2,3},[cdf_sum_se{2,3} 1],':','color',colours(1,:),'linewidth',linewidth);
+%                         plot(edg_sum_se{3,3},[cdf_sum_se{3,3} 1],':','color',colours(2,:),'linewidth',linewidth);
+%                         plot(edg_sum_se{4,3},[cdf_sum_se{4,3} 1],':','color',colours(3,:),'linewidth',linewidth);
+%                         
+%                         set(gca,'fontname',fontname,'fontsize',fontsize);
+%                         
+%                         xlim([36 38]);
+%                         ylim([0.015 0.05]);
+%                     case 50
+%                         xlim([47 55.5]);
+%                         ylim([0 1]);
+%                         
+%                         dim = [0.225 0.175 0.225 0.035];
+%                         annotation('ellipse',dim,'linewidth',linewidth);
+%                         
+%                         axes('position',[.25 .35 .3 .3]);
+%                         box on;
+%                         
+%                         plot(edg_sum_se{2,1},[cdf_sum_se{2,1} 1],'-','color',colours(1,:),'linewidth',linewidth);
+%                         hold on;
+%                         plot(edg_sum_se{3,1},[cdf_sum_se{3,1} 1],'-','color',colours(2,:),'linewidth',linewidth);
+%                         plot(edg_sum_se{4,1},[cdf_sum_se{4,1} 1],'-','color',colours(3,:),'linewidth',linewidth);
+%                         plot(edg_sum_se{2,2},[cdf_sum_se{2,2} 1],'--','color',colours(1,:),'linewidth',linewidth);
+%                         plot(edg_sum_se{3,2},[cdf_sum_se{3,2} 1],'--','color',colours(2,:),'linewidth',linewidth);
+%                         plot(edg_sum_se{4,2},[cdf_sum_se{4,2} 1],'--','color',colours(3,:),'linewidth',linewidth);
+%                         plot(edg_sum_se{2,3},[cdf_sum_se{2,3} 1],':','color',colours(1,:),'linewidth',linewidth);
+%                         plot(edg_sum_se{3,3},[cdf_sum_se{3,3} 1],':','color',colours(2,:),'linewidth',linewidth);
+%                         plot(edg_sum_se{4,3},[cdf_sum_se{4,3} 1],':','color',colours(3,:),'linewidth',linewidth);
+%                         
+%                         set(gca,'fontname',fontname,'fontsize',fontsize);
+%                         
+%                         xlim([48 51.5]);
+%                         ylim([0.02 0.05]);
+%                     case 75
+%                         xlim([55 61.8]);
+%                         ylim([0 1]);
+%                         
+%                         dim = [0.15 0.175 0.225 0.035];
+%                         annotation('ellipse',dim,'linewidth',linewidth);
+%                         
+%                         axes('position',[.25 .35 .3 .3]);
+%                         box on;
+%                         
+%                         plot(edg_sum_se{2,1},[cdf_sum_se{2,1} 1],'-','color',colours(1,:),'linewidth',linewidth);
+%                         hold on;
+%                         plot(edg_sum_se{3,1},[cdf_sum_se{3,1} 1],'-','color',colours(2,:),'linewidth',linewidth);
+%                         plot(edg_sum_se{4,1},[cdf_sum_se{4,1} 1],'-','color',colours(3,:),'linewidth',linewidth);
+%                         plot(edg_sum_se{2,2},[cdf_sum_se{2,2} 1],'--','color',colours(1,:),'linewidth',linewidth);
+%                         plot(edg_sum_se{3,2},[cdf_sum_se{3,2} 1],'--','color',colours(2,:),'linewidth',linewidth);
+%                         plot(edg_sum_se{4,2},[cdf_sum_se{4,2} 1],'--','color',colours(3,:),'linewidth',linewidth);
+%                         plot(edg_sum_se{2,3},[cdf_sum_se{2,3} 1],':','color',colours(1,:),'linewidth',linewidth);
+%                         plot(edg_sum_se{3,3},[cdf_sum_se{3,3} 1],':','color',colours(2,:),'linewidth',linewidth);
+%                         plot(edg_sum_se{4,3},[cdf_sum_se{4,3} 1],':','color',colours(3,:),'linewidth',linewidth);
+%                         
+%                         set(gca,'fontname',fontname,'fontsize',fontsize);
+%                         
+%                         xlim([55 57.5]);
+%                         ylim([0.02 0.05]);
+%                     case 100
+%                         xlim([59 65.5]);
+%                         ylim([0 1]);
+%                         
+%                         dim = [0.25 0.175 0.225 0.035];
+%                         annotation('ellipse',dim,'linewidth',linewidth);
+%                         
+%                         axes('position',[.25 .35 .3 .3]);
+%                         box on;
+%                         
+%                         plot(edg_sum_se{2,1},[cdf_sum_se{2,1} 1],'-','color',colours(1,:),'linewidth',linewidth);
+%                         hold on;
+%                         plot(edg_sum_se{3,1},[cdf_sum_se{3,1} 1],'-','color',colours(2,:),'linewidth',linewidth);
+%                         plot(edg_sum_se{4,1},[cdf_sum_se{4,1} 1],'-','color',colours(3,:),'linewidth',linewidth);
+%                         plot(edg_sum_se{2,2},[cdf_sum_se{2,2} 1],'--','color',colours(1,:),'linewidth',linewidth);
+%                         plot(edg_sum_se{3,2},[cdf_sum_se{3,2} 1],'--','color',colours(2,:),'linewidth',linewidth);
+%                         plot(edg_sum_se{4,2},[cdf_sum_se{4,2} 1],'--','color',colours(3,:),'linewidth',linewidth);
+%                         plot(edg_sum_se{2,3},[cdf_sum_se{2,3} 1],':','color',colours(1,:),'linewidth',linewidth);
+%                         plot(edg_sum_se{3,3},[cdf_sum_se{3,3} 1],':','color',colours(2,:),'linewidth',linewidth);
+%                         plot(edg_sum_se{4,3},[cdf_sum_se{4,3} 1],':','color',colours(3,:),'linewidth',linewidth);
+%                         
+%                         set(gca,'fontname',fontname,'fontsize',fontsize);
+%                         
+%                         xlim([60 61.8]);
+%                         ylim([0.02 0.05]);
+%                     case 150
+%                         xlim([62 70]);
+%                         ylim([0 1]);
+%                         
+%                         dim = [0.3 0.175 0.3 0.035];
+%                         annotation('ellipse',dim,'linewidth',linewidth);
+%                         
+%                         axes('position',[.25 .375 .3 .3]);
+%                         box on;
+%                         
+%                         plot(edg_sum_se{2,1},[cdf_sum_se{2,1} 1],'-','color',colours(1,:),'linewidth',linewidth);
+%                         hold on;
+%                         plot(edg_sum_se{3,1},[cdf_sum_se{3,1} 1],'-','color',colours(2,:),'linewidth',linewidth);
+%                         plot(edg_sum_se{4,1},[cdf_sum_se{4,1} 1],'-','color',colours(3,:),'linewidth',linewidth);
+%                         plot(edg_sum_se{2,2},[cdf_sum_se{2,2} 1],'--','color',colours(1,:),'linewidth',linewidth);
+%                         plot(edg_sum_se{3,2},[cdf_sum_se{3,2} 1],'--','color',colours(2,:),'linewidth',linewidth);
+%                         plot(edg_sum_se{4,2},[cdf_sum_se{4,2} 1],'--','color',colours(3,:),'linewidth',linewidth);
+%                         plot(edg_sum_se{2,3},[cdf_sum_se{2,3} 1],':','color',colours(1,:),'linewidth',linewidth);
+%                         plot(edg_sum_se{3,3},[cdf_sum_se{3,3} 1],':','color',colours(2,:),'linewidth',linewidth);
+%                         plot(edg_sum_se{4,3},[cdf_sum_se{4,3} 1],':','color',colours(3,:),'linewidth',linewidth);
+%                         
+%                         set(gca,'fontname',fontname,'fontsize',fontsize);
+%                         
+%                         xlim([64 67]);
+%                         ylim([0.02 0.05]);
+%                     case 200
+%                     case 250
+%                 end
+%         end
+%     otherwise
+% end
+% 
+% if (savefig == 1)
+%     saveas(gcf,[root_save 'cdf_sum_se_star_' chn_type '_M_' sprintf(zero_pad_1,M) '_K_' sprintf(zero_pad_1,K) '_SNR_' num2str(snr) '_dB_MC_' num2str(N_MC*MC)],'fig');
+%     saveas(gcf,[root_save 'cdf_sum_se_star_' chn_type '_M_' sprintf(zero_pad_1,M) '_K_' sprintf(zero_pad_1,K) '_SNR_' num2str(snr) '_dB_MC_' num2str(N_MC*MC)],'png');
+%     saveas(gcf,[root_save 'cdf_sum_se_star_' chn_type '_M_' sprintf(zero_pad_1,M) '_K_' sprintf(zero_pad_1,K) '_SNR_' num2str(snr) '_dB_MC_' num2str(N_MC*MC)],'epsc2');
+% end

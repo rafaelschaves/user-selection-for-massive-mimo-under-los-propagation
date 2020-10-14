@@ -3,7 +3,7 @@ addpath('./functions/')
 % Cheking deirectory
 
 dir_save  = './results/scheduling/downlink/';
-root_save = [dir_save 'spectral_efficiency_all_L_'];
+root_save = [dir_save 'spectral_efficiency_all_L_clustered_'];
 
 if ~exist(dir_save,'dir')
     mkdir(dir_save);
@@ -16,24 +16,34 @@ if ~exist('MC','var')
 end
 
 if ~exist('M','var')
-    M = 200;                                                               % Number of antennas at the base station
+    M = 50;                                                                % Number of antennas at the base station
 end
 
 if ~exist('K','var')
-    K = 20;                                                                % Number of users at the cell
+    K = 75;                                                                % Number of users at the cell
 end
 
-err = [0 pi/(6*M) pi/(3*M) pi/(2*M)];
+% if ~exist('L','var')
+%     L = ceil(K/5);                                                         % Number of selected users
+% end
+
+if ~exist('theta_mid','var')
+    theta_mid = 0;
+end
+
+if ~exist('theta_step','var')
+    theta_step = pi/18;
+end
 
 N_ALG = 3;
 N_PRE = 3;
-N_ERR = length(err);
 
 commcell.nAntennas       = M;                                              % Number of Antennas
 commcell.nUsers          = K;                                              % Number of Users
 commcell.radius          = 500;                                            % Cell's raidus (circumradius) in meters
 commcell.bsHeight        = 32;                                             % Height of base station in meters
 commcell.userHeight      = [1 2];                                          % Height of user terminals in meters ([min max])
+commcell.nPaths          = 30;                                             % Number of Multipaths
 commcell.frequency       = 1.9e9;                                          % Carrier frequency in Hz
 commcell.meanShadowFad   = 0;                                              % Shadow fading mean in dB
 commcell.stdDevShadowFad = 8;                                              % Shadow fading standard deviation in dB
@@ -46,6 +56,10 @@ linkprop.AntennaGainUser = 0;                                              % in 
 linkprop.noiseFigureBS   = 9;                                              % in dB
 linkprop.noiseFigureUser = 9 ;                                             % in dB
 linkprop.bandwidth       = 20e6;                                           % in Hz
+
+r = sqrt(3)/2*commcell.radius;
+
+theta_0 = theta_mid - theta_step/2;
 
 channel_type = 'ur-los';
 
@@ -67,41 +81,43 @@ else
     L_max = K-1;
 end
 
-se            = zeros(K,N_PRE,N_ERR,MC);
-se_s_all_L    = zeros(L_max,L_max,N_PRE,N_ALG,N_ERR,MC);
-S_set         = zeros(K,L_max,N_ALG,N_ERR,MC);
-pos_and_theta = zeros(K,3);
+se            = zeros(K,N_PRE,MC);
+se_s_all_L    = zeros(L_max,L_max,N_PRE,N_ALG,MC);
+S_set         = zeros(K,L_max,N_ALG,MC);
 
 for mc = 1:MC
     mc
     
-    [H,~,pos_and_theta] = massiveMIMOChannel(commcell,channel_type);
+    radius = r*sqrt(rand(K,1));
+    theta  = theta_0 +  theta_step*rand(K,1);
     
-    for err_idx = 1:N_ERR
-        H_hat = urlosChannelEstimate(commcell,pos_and_theta(:,3),err(err_idx));
-        
-        [se(:,1,err_idx,mc),se(:,2,err_idx,mc),se(:,3,err_idx,mc)] = DLspectralEfficiency(H,beta,snr,1/K,H_hat);                                      % No Selection
-        
-        for L = 1:L_max                                                                                                                               % Number of selected users
-            for alg_idx = 1:N_ALG
-                [H_s, S_set_aux] = userSelector(H_hat,beta,snr,algorithm_type{alg_idx},'fixed',L,[]);
+    coordinate.x_user = radius.*cos(theta);
+    coordinate.y_user = radius.*sin(theta);
+    
+    [H,~] = massiveMIMOChannel(commcell,channel_type,coordinate);
+    
+    [se(:,1,mc),se(:,2,mc),se(:,3,mc)] = DLspectralEfficiency(H,beta,snr,1/K,H);  % No Selection
+    
+    for L = 1:L_max
+        for alg_idx = 1:N_ALG
+            [H_s, S_set_aux] = userSelector(H,beta,snr,algorithm_type{alg_idx},'fixed',L,[]);
+            
+            %         if alg_idx == 1
+            %             beta_s = [beta(S_set(:,1)) beta(S_set(:,2))];
+            %         else
+            %             beta_s = beta(S_set);
+            %         end
+
+            S_set(S_set_aux,L,alg_idx,mc) = 1;
                 
-                %         if alg_idx == 1
-                %             beta_s = [beta(S_set(:,1)) beta(S_set(:,2))];
-                %         else
-                %             beta_s = beta(S_set);
-                %         end
+            [se_s_mf,se_s_zf,se_s_mmse] = DLspectralEfficiency(H_s,beta,snr,1/L);
                 
-                S_set(S_set_aux,L,alg_idx,err_idx,mc) = 1;
-                
-                [se_s_mf,se_s_zf,se_s_mmse] = DLspectralEfficiency(H_s,beta,snr,1/L);
-                
-                se_s_all_L(:,L,1,alg_idx,err_idx,mc) = [se_s_mf; zeros(L_max-L,1)];
-                se_s_all_L(:,L,2,alg_idx,err_idx,mc) = [se_s_zf; zeros(L_max-L,1)];
-                se_s_all_L(:,L,3,alg_idx,err_idx,mc) = [se_s_mmse; zeros(L_max-L,1)];
-            end
+            se_s_all_L(:,L,1,alg_idx,mc) = [se_s_mf; zeros(L_max-L,1)];
+            se_s_all_L(:,L,2,alg_idx,mc) = [se_s_zf; zeros(L_max-L,1)];
+            se_s_all_L(:,L,3,alg_idx,mc) = [se_s_mmse; zeros(L_max-L,1)];
         end
     end
 end
 
-save([root_save strrep(channel_type,'-','_') '_M_' num2str(M) '_K_' num2str(K) '_SNR_' num2str(snr_eff) '_dB_MC_' num2str(MC) '.mat'],'se','se_s_all_L','S_set');
+save([root_save 'M_' num2str(M) '_K_' num2str(K) '_theta_mid_' num2str(180*theta_mid/pi) '_theta_step_' num2str(180*theta_step/pi) ...
+      '_SNR_' num2str(snr_eff) '_dB_MC_' num2str(MC) '.mat'],'se','se_s_all_L','S_set');
