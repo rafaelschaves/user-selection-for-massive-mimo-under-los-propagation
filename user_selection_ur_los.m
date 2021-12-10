@@ -3,7 +3,7 @@ addpath('./functions/')
 % Cheking deirectory
 
 dir_save  = './results/scheduling/downlink/';
-root_save = [dir_save 'spectral_efficiency_all_L_'];
+root_save = [dir_save 'se_all_L_'];
 
 if ~exist(dir_save,'dir')
     mkdir(dir_save);
@@ -23,11 +23,12 @@ if ~exist('K','var')
     K = 20;                                                                % Number of users at the cell
 end
 
-err = [0 pi/(6*M) pi/(3*M) pi/(2*M)];
+% err = [0 pi/(6*M) pi/(3*M) pi/(2*M)];
+var_err = [0 1e-3 1e-2 1e-1 1];
 
 N_ALG = 3;
 N_PRE = 3;
-N_ERR = length(err);
+N_ERR = length(var_err);
 
 commcell.nAntennas       = M;                                              % Number of Antennas
 commcell.nUsers          = K;                                              % Number of Users
@@ -67,7 +68,6 @@ else
     L_max = K-1;
 end
 
-
 se            = zeros(K,N_PRE,N_ERR,MC);
 se_s_all_L    = zeros(L_max,L_max,N_PRE,N_ALG,N_ERR,MC);
 S_set         = zeros(K,L_max,N_ALG,N_ERR,MC);
@@ -81,7 +81,7 @@ for mc = 1:MC
     for err_idx = 1:N_ERR
         err_idx
         
-        H_hat = urlosChannelEstimate(commcell,pos_and_theta(:,3),err(err_idx));
+        H_hat = urlosChannelEstimate(commcell,H,var_err(err_idx));
         
         [se(:,1,err_idx,mc),se(:,2,err_idx,mc),se(:,3,err_idx,mc)] = DLspectralEfficiency(H,beta,snr,1/K,H_hat);                                      % No Selection
         
