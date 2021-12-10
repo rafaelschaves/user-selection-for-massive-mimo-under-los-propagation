@@ -79,13 +79,9 @@ for mc = 1:MC
     [H,~,pos_and_theta] = massiveMIMOChannel(commcell,channel_type);
     
     for err_idx = 1:N_ERR
-<<<<<<< HEAD
         err_idx
         
         H_hat = urlosChannelEstimate(commcell,H,var_err(err_idx));
-=======
-        H_hat = urlosChannelEstimate(commcell,pos_and_theta(:,3),err(err_idx));
->>>>>>> f3cbfc255096b547f744ae3295841f92e75e42f0
         
         [se(:,1,err_idx,mc),se(:,2,err_idx,mc),se(:,3,err_idx,mc)] = DLspectralEfficiency(H,beta,snr,1/K,H_hat);                                      % No Selection
         
