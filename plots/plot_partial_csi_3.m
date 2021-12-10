@@ -4,11 +4,19 @@ clc;
 
 % Macros
 
+<<<<<<< HEAD
 MC   = 1000;                                                              % Size of the monte-carlo ensemble
 N_MC = 2;
 
 M = 50;                                                                   % Number of antennas at base station
 K = 75;                                                                   % Number of users at the cell 
+=======
+MC   = 500;                                                              % Size of the monte-carlo ensemble
+N_MC = 10;
+
+M = 100;                                                                   % Number of antennas at base station
+K = 100;                                                                   % Number of users at the cell 
+>>>>>>> f3cbfc255096b547f744ae3295841f92e75e42f0
 
 % M = 50  & K = [50  75]
 % M = 100 & K = [100 150]
@@ -23,8 +31,12 @@ N_ERR = length(err);
 
 % Roots
 
+<<<<<<< HEAD
 % root_load = '../../../../Google Drive/UFRJ/PhD/Codes/user-scheduling-massive-mimo/Results/Selection/Downlink/';
 root_load = 'D:\PhD\user-selection\Partial CSI\';
+=======
+root_load = '../../../../Google Drive/UFRJ/PhD/Codes/user-scheduling-massive-mimo/Results/Selection/Downlink/';
+>>>>>>> f3cbfc255096b547f744ae3295841f92e75e42f0
 root_save = '../../../../Google Drive/UFRJ/PhD/Codes/user-scheduling-massive-mimo/Figures/Selection/Downlink/';
 
 zero_pad_1 = '%03d';
@@ -121,12 +133,22 @@ linestyle = {'-','--',':'};
 
 savefig = 1;
 
+<<<<<<< HEAD
+=======
+% NS - No selection
+>>>>>>> f3cbfc255096b547f744ae3295841f92e75e42f0
 % SOS - Semi-orthogonal selection
 % CBS - Correlation-based selection
 % ICIBS - ICI-based selection
 
+<<<<<<< HEAD
 legend_algo            = {'SOS','CBS','ICIBS'};
 legend_algo_plus_theta = {'SOS','CBS','ICIBS','$\theta_{\varepsilon} = \pi/6M$','$\theta_{\varepsilon} = \pi/3M$','$\theta_{\varepsilon} = \pi/2M$'};
+=======
+legend_prec   = {'MRT','ZF','MMSE'};
+legend_algo   = {'NS','SOS','CBS','ICIBS'};
+legend_algo_2 = {'SOS','CBS','ICIBS'};
+>>>>>>> f3cbfc255096b547f744ae3295841f92e75e42f0
 
 location_1 = 'northwest';
 location_2 = 'northeast';
@@ -139,19 +161,27 @@ colours = [0.0000 0.4470 0.7410;
            0.4940 0.1840 0.5560;
            0.4660 0.6740 0.1880;
            0.3010 0.7450 0.9330;
+<<<<<<< HEAD
            0.6350 0.0780 0.1840;
            0.0000 0.0000 0.0000];
+=======
+           0.6350 0.0780 0.1840];
+>>>>>>> f3cbfc255096b547f744ae3295841f92e75e42f0
 
 figure;
        
 set(gcf,'position',[0 0 800 600]);
 
 if K > M
+<<<<<<< HEAD
     % Plot for user selection legends
+=======
+>>>>>>> f3cbfc255096b547f744ae3295841f92e75e42f0
     plot(1:L_max,prob_sel(:,1,2),linestyle{1},'color',colours(1,:),'linewidth',linewidth);
     hold on;
     plot(1:L_max,prob_sel(:,2,2),linestyle{1},'color',colours(2,:),'linewidth',linewidth);
     plot(1:L_max,prob_sel(:,3,2),linestyle{1},'color',colours(3,:),'linewidth',linewidth);
+<<<<<<< HEAD
     % Plot for maximum error legends
     plot(1:L_max,prob_sel(:,1,2),linestyle{1},'color',colours(8,:),'linewidth',linewidth);
     plot(1:L_max,prob_sel(:,1,3),linestyle{2},'color',colours(8,:),'linewidth',linewidth);
@@ -160,6 +190,8 @@ if K > M
     plot(1:L_max,prob_sel(:,1,2),linestyle{1},'color',colours(1,:),'linewidth',linewidth);
     plot(1:L_max,prob_sel(:,2,2),linestyle{1},'color',colours(2,:),'linewidth',linewidth);
     plot(1:L_max,prob_sel(:,3,2),linestyle{1},'color',colours(3,:),'linewidth',linewidth);
+=======
+>>>>>>> f3cbfc255096b547f744ae3295841f92e75e42f0
     plot(1:L_max,prob_sel(:,1,3),linestyle{2},'color',colours(1,:),'linewidth',linewidth);
     plot(1:L_max,prob_sel(:,2,3),linestyle{2},'color',colours(2,:),'linewidth',linewidth);
     plot(1:L_max,prob_sel(:,3,3),linestyle{2},'color',colours(3,:),'linewidth',linewidth);
@@ -167,11 +199,15 @@ if K > M
     plot(1:L_max,prob_sel(:,2,4),linestyle{3},'color',colours(2,:),'linewidth',linewidth);
     plot(1:L_max,prob_sel(:,3,4),linestyle{3},'color',colours(3,:),'linewidth',linewidth);
 else
+<<<<<<< HEAD
     % Plot for user selection legends
+=======
+>>>>>>> f3cbfc255096b547f744ae3295841f92e75e42f0
     plot(1:K,[prob_sel(:,1,2)' 0],linestyle{1},'color',colours(1,:),'linewidth',linewidth);
     hold on;
     plot(1:K,[prob_sel(:,2,2)' 0],linestyle{1},'color',colours(2,:),'linewidth',linewidth);
     plot(1:K,[prob_sel(:,3,2)' 0],linestyle{1},'color',colours(3,:),'linewidth',linewidth);
+<<<<<<< HEAD
     % Plot for maximum error legends
     plot(1:K,[prob_sel(:,1,2)' 0],linestyle{1},'color',colours(8,:),'linewidth',linewidth);
     plot(1:K,[prob_sel(:,1,3)' 0],linestyle{2},'color',colours(8,:),'linewidth',linewidth);
@@ -180,6 +216,8 @@ else
     plot(1:K,[prob_sel(:,1,2)' 0],linestyle{1},'color',colours(1,:),'linewidth',linewidth);
     plot(1:K,[prob_sel(:,2,2)' 0],linestyle{1},'color',colours(2,:),'linewidth',linewidth);
     plot(1:K,[prob_sel(:,3,2)' 0],linestyle{1},'color',colours(3,:),'linewidth',linewidth);
+=======
+>>>>>>> f3cbfc255096b547f744ae3295841f92e75e42f0
     plot(1:K,[prob_sel(:,1,3)' 0],linestyle{2},'color',colours(1,:),'linewidth',linewidth);
     plot(1:K,[prob_sel(:,2,3)' 0],linestyle{2},'color',colours(2,:),'linewidth',linewidth);
     plot(1:K,[prob_sel(:,3,3)' 0],linestyle{2},'color',colours(3,:),'linewidth',linewidth);
@@ -191,12 +229,20 @@ end
 xlabel('Number of selected users','fontname',fontname,'fontsize',fontsize);
 ylabel('$\textrm{Pr}\{\cal{S_{\varepsilon}} \neq \cal{S}\}$','fontname',fontname,'fontsize',fontsize,'interpreter','latex');
 
+<<<<<<< HEAD
 legend(legend_algo_plus_theta,'fontname',fontname,'fontsize',28,'location',location_2,'interpreter','latex','numcolumns',2);
+=======
+legend(legend_algo_2,'fontname',fontname,'fontsize',fontsize,'location',location_2,'interpreter','latex');
+>>>>>>> f3cbfc255096b547f744ae3295841f92e75e42f0
 legend box off;
 
 set(gca,'fontname',fontname,'fontsize',fontsize);
 
+<<<<<<< HEAD
 xlim([1 L_max]);
+=======
+xlim([1 K]);
+>>>>>>> f3cbfc255096b547f744ae3295841f92e75e42f0
 ylim([0 1]);
 
 if (savefig == 1)

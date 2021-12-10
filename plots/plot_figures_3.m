@@ -77,7 +77,7 @@ marker = {'o','s','^'};
 
 linestyle = {'-','--',':'};
 
-savefig = 1;
+savefig = 0;
 
 legend_pre = {'MRT','ZF','MMSE'};
 legend_alg = {'SOS','CBS', 'ICIBS'};
@@ -106,6 +106,7 @@ figure;
 
 set(gcf,'position',[0 0 800 600]);
 
+<<<<<<< HEAD
 plot(K(1:4),20*0.5*sum_se(1:4,1,1,1),'-o' ,'color',colours(1,:),'linewidth',linewidth,'markersize',markersize);
 hold on;
 plot(K     ,20*0.5*sum_se(:,1,2,1)  ,'-s' ,'color',colours(2,:),'linewidth',linewidth,'markersize',markersize);
@@ -116,6 +117,18 @@ plot(K(1:5),20*0.5*sum_se(1:5,1,2,3),':s' ,'color',colours(2,:),'linewidth',line
 
 xlabel('Number of users','fontname',fontname,'fontsize',fontsize);
 ylabel('Average throughput (Mbps)','fontname',fontname,'fontsize',fontsize);
+=======
+plot(K(1:4),sum_se(1:4,1,1,1),'-o' ,'color',colours(1,:),'linewidth',linewidth,'markersize',markersize);
+hold on;
+plot(K     ,sum_se(:,1,2,1)  ,'-s' ,'color',colours(2,:),'linewidth',linewidth,'markersize',markersize);
+plot(K(1:3),sum_se(1:3,1,1,2),'--o','color',colours(1,:),'linewidth',linewidth,'markersize',markersize);
+plot(K(1:5),sum_se(1:5,1,2,2),'--s','color',colours(2,:),'linewidth',linewidth,'markersize',markersize);
+plot(K(1:3),sum_se(1:3,1,1,3),':o' ,'color',colours(1,:),'linewidth',linewidth,'markersize',markersize);
+plot(K(1:5),sum_se(1:5,1,2,3),':s' ,'color',colours(2,:),'linewidth',linewidth,'markersize',markersize);
+
+xlabel('Number of users','fontname',fontname,'fontsize',fontsize);
+ylabel('Sum-spectral efficiency','fontname',fontname,'fontsize',fontsize);
+>>>>>>> f3cbfc255096b547f744ae3295841f92e75e42f0
 
 legend(legend_M,'fontname',fontname,'fontsize',fontsize,'interpreter','latex','location',location_1);
 legend box off;
@@ -123,7 +136,11 @@ legend box off;
 set(gca,'fontname',fontname,'fontsize',fontsize);
 
 xlim([10 150]);
+<<<<<<< HEAD
 ylim([0 400]);
+=======
+ylim([0 40]);
+>>>>>>> f3cbfc255096b547f744ae3295841f92e75e42f0
 
 if (savefig == 1)
     saveas(gcf,[root_save 'NS_sum_se'],'fig');

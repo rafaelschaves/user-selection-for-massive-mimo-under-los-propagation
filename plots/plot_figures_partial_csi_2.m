@@ -33,8 +33,12 @@ err = 0:ERR_STE:MAX_ERR;
 
 % Roots
 
+<<<<<<< HEAD
 %root_load = '../../../../Google Drive/UFRJ/PhD/Codes/user-scheduling-massive-mimo/Results/Selection/Downlink/';
 root_load = 'D:\PhD\user-selection\Partial CSI\';
+=======
+root_load = '../../../../Google Drive/UFRJ/PhD/Codes/user-scheduling-massive-mimo/Results/Selection/Downlink/';
+>>>>>>> f3cbfc255096b547f744ae3295841f92e75e42f0
 root_save = '../../../../Google Drive/UFRJ/PhD/Codes/user-scheduling-massive-mimo/Figures/Selection/Downlink/';
 
 zero_pad_1 = '%03d';

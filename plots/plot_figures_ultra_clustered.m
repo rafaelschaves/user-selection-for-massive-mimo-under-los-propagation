@@ -4,11 +4,19 @@ clc;
 
 % Macros
 
+<<<<<<< HEAD
 MC   = 500;                                                                                                                                           % Size of the monte-carlo ensemble
 N_MC = 4;
 
 M = 50;                                                                                                                                               % Number of antennas at base station
 K = 75;                                                                                                                                               % Number of users at the cell
+=======
+MC   = 500;                                                              % Size of the monte-carlo ensemble
+N_MC = 3;
+
+M = 50;                                                                  % Number of antennas at base station
+K = 75;                                                                  % Number of users at the cell 
+>>>>>>> f3cbfc255096b547f744ae3295841f92e75e42f0
 
 L = [ceil(K/5) ceil(K/2)];
 
@@ -24,6 +32,7 @@ end
 
 snr = -5;
 
+<<<<<<< HEAD
 theta_mid   = 45;
 theta_step  = 10:5:50;
 
@@ -31,14 +40,25 @@ bandwidth   = 20e6;
 dl_ul_ratio = 0.5;
 
 N_ALG = 3;                                                                                                                                            % Number of algorithms for perform user scheduling
+=======
+theta_mid = 0;
+
+theta_step = 10:5:50;
+
+N_ALG = 3;                                                               % Number of algorithms for perform user scheduling
+>>>>>>> f3cbfc255096b547f744ae3295841f92e75e42f0
 N_PRE = 3;
 N_STP = length(theta_step);
 N_L   = length(L);
 
 % Roots
 
+<<<<<<< HEAD
 % root_load = '../../../../Google Drive/UFRJ/PhD/Codes/user-scheduling-massive-mimo/Results/Selection/Downlink/';
 root_load = 'D:\PhD\user-selection\Ultra Clustered\';
+=======
+root_load = '../../../../Google Drive/UFRJ/PhD/Codes/user-scheduling-massive-mimo/Results/Selection/Downlink/';
+>>>>>>> f3cbfc255096b547f744ae3295841f92e75e42f0
 root_save = '../../../../Google Drive/UFRJ/PhD/Codes/user-scheduling-massive-mimo/Figures/Selection/Downlink/';
 
 zero_pad_1 = '%03d';
@@ -63,8 +83,13 @@ for stp_idx = 1:N_STP
         idx_ini = (n_mc - 1)*MC + 1;
         idx_end = n_mc*MC;
         
+<<<<<<< HEAD
         se_all_mc(:,:,stp_idx,idx_ini:idx_end)         = bandwidth*dl_ul_ratio*se;
         se_s_L_all_mc(:,:,:,:,stp_idx,idx_ini:idx_end) = bandwidth*dl_ul_ratio*se_s_all_L; 
+=======
+        se_all_mc(:,:,stp_idx,idx_ini:idx_end)         = se;
+        se_s_L_all_mc(:,:,:,:,stp_idx,idx_ini:idx_end) = se_s_all_L; 
+>>>>>>> f3cbfc255096b547f744ae3295841f92e75e42f0
         
         clear se se_s_all_L;
     end
@@ -90,6 +115,10 @@ N_BIN = 100;
 cdf_sum_se_s = cell(N_PRE,N_ALG,N_STP,2);
 edg_sum_se_s = cell(N_PRE,N_ALG,N_STP,2);
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> f3cbfc255096b547f744ae3295841f92e75e42f0
 for l_idx = 1:N_L
     for stp_idx = 1:N_STP
         for alg_idx = 1:N_ALG
@@ -107,6 +136,7 @@ markersize = 10;
 fontname   = 'Times New Roman';
 fontsize   = 30;
 
+<<<<<<< HEAD
 marker    = {'o','s','^'};
 linestyle = {'-','--',':'};
 
@@ -118,6 +148,13 @@ if M == 50
 elseif M == 100
     OM = 1e-6;
 end
+=======
+marker = {'o','s','^'};
+
+linestyle = {'-','--',':'};
+
+savefig = 1;
+>>>>>>> f3cbfc255096b547f744ae3295841f92e75e42f0
 
 % SOS - Semi-orthogonal selection
 % CBS - Correlation-based selection
@@ -127,8 +164,11 @@ legend_alg_plus_pre     = {'SOS','CBS','ICIBS','MRT','ZF','MMSE'};
 legend_alg_plus_pre_2   = {'SOS','CBS','ICIBS','MRT','MMSE'};
 legend_section_plus_alg = {'$\Delta\theta = 1^{\circ}$','$\Delta\theta = 2.5^{\circ}$','$\Delta\theta = 5^{\circ}$','SOS','CBS','ICIBS'};
 
+<<<<<<< HEAD
 um = {'(kbps)','(Mbps)','(Gbps)'};
 
+=======
+>>>>>>> f3cbfc255096b547f744ae3295841f92e75e42f0
 location_1 = 'northwest';
 location_2 = 'northeast';
 location_3 = 'southwest';
@@ -143,6 +183,7 @@ colours = [0.0000 0.4470 0.7410;
            0.6350 0.0780 0.1840;
            0.0000 0.0000 0.0000];
 
+<<<<<<< HEAD
 figure;
 
 set(gcf,'position',[0 0 800 600]);
@@ -277,12 +318,124 @@ for stp_idx = 2
             saveas(gcf,[root_save 'throughput_all_L_clustered_M_' sprintf(zero_pad_1,M) '_K_' sprintf(zero_pad_1,K) '_theta_mid_' sprintf(zero_pad_2,theta_mid) '_theta_step_' num2str(theta_step(stp_idx)) '_SNR_' num2str(snr) '_dB_MC_' num2str(N_MC*MC)],'epsc2');
         end
     end
+=======
+% figure;
+% 
+% set(gcf,'position',[0 0 800 600]);
+% 
+% % Plots for user selection algorihtm legends
+% plot(theta_step/10,per_user_se_s(:,1,1),'-' ,'color',colours(1,:),'linewidth',linewidth);
+% hold on;
+% plot(theta_step/10,per_user_se_s(:,1,2),'-' ,'color',colours(2,:),'linewidth',linewidth);
+% plot(theta_step/10,per_user_se_s(:,1,3),'-' ,'color',colours(3,:),'linewidth',linewidth);
+% % Plots for precoding algorithm legends
+% plot(theta_step/10,per_user_se_s(:,1,1),'-' ,'color',colours(8,:),'linewidth',linewidth);
+% plot(theta_step/10,per_user_se_s(:,2,1),'--','color',colours(8,:),'linewidth',linewidth);
+% plot(theta_step/10,per_user_se_s(:,3,1),':' ,'color',colours(8,:),'linewidth',linewidth);
+% % Plots for results
+% plot(theta_step/10,per_user_se_s(:,1,1),'-' ,'color',colours(1,:),'linewidth',linewidth);
+% plot(theta_step/10,per_user_se_s(:,1,2),'-' ,'color',colours(2,:),'linewidth',linewidth);
+% plot(theta_step/10,per_user_se_s(:,1,3),'-' ,'color',colours(3,:),'linewidth',linewidth);
+% plot(theta_step/10,per_user_se_s(:,2,1),'--','color',colours(1,:),'linewidth',linewidth);
+% plot(theta_step/10,per_user_se_s(:,2,2),'--','color',colours(2,:),'linewidth',linewidth);
+% plot(theta_step/10,per_user_se_s(:,2,3),'--','color',colours(3,:),'linewidth',linewidth);
+% plot(theta_step/10,per_user_se_s(:,3,1),':' ,'color',colours(1,:),'linewidth',linewidth);
+% plot(theta_step/10,per_user_se_s(:,3,2),':' ,'color',colours(2,:),'linewidth',linewidth);
+% plot(theta_step/10,per_user_se_s(:,3,3),':' ,'color',colours(3,:),'linewidth',linewidth);
+% 
+% xlabel('$\Delta\theta$ (in degrees)','fontname',fontname,'fontsize',fontsize,'interpreter','latex');
+% ylabel('Average per-user SE','fontname',fontname,'fontsize',fontsize);
+% 
+% legend(legend_alg_plus_pre,'fontname',fontname,'fontsize',fontsize,'location',location_1,'numcolumns',2);
+% legend box off;
+%     
+% % xticks([1 2 3 4 5]);
+% % xticklabels({'1^{\circ}','2^{\circ}','3^{\circ}','4^{\circ}','5^{\circ}'})                       
+% 
+% set(gca,'fontname',fontname,'fontsize',fontsize);
+% 
+% ylim([0 0.5]);
+% 
+% if (savefig == 1)
+%     saveas(gcf,[root_save 'per_user_se_dtheta_clustered_M_' sprintf(zero_pad_1,M) '_K_' sprintf(zero_pad_1,K) '_theta_mid_' sprintf(zero_pad_2,theta_mid) '_SNR_' num2str(snr) '_dB_MC_' num2str(N_MC*MC)],'fig');
+%     saveas(gcf,[root_save 'per_user_se_dtheta_clustered_M_' sprintf(zero_pad_1,M) '_K_' sprintf(zero_pad_1,K) '_theta_mid_' sprintf(zero_pad_2,theta_mid) '_SNR_' num2str(snr) '_dB_MC_' num2str(N_MC*MC)],'png');
+%     saveas(gcf,[root_save 'per_user_se_dtheta_clustered_M_' sprintf(zero_pad_1,M) '_K_' sprintf(zero_pad_1,K) '_theta_mid_' sprintf(zero_pad_2,theta_mid) '_SNR_' num2str(snr) '_dB_MC_' num2str(N_MC*MC)],'epsc2');
+% end
+
+for stp_idx = 1:N_STP
+%     figure;
+%     
+%     set(gcf,'position',[0 0 800 600]);
+%     
+%     if K <= M
+%         % Plots for user selection algorithm legends
+%         plot(1:K,[avg_sum_se_s(:,1,1,stp_idx); avg_sum_se(1,stp_idx)],'-' ,'color',colours(1,:),'linewidth',linewidth);
+%         hold on;
+%         plot(1:K,[avg_sum_se_s(:,1,2,stp_idx); avg_sum_se(1,stp_idx)],'-' ,'color',colours(2,:),'linewidth',linewidth);
+%         plot(1:K,[avg_sum_se_s(:,1,3,stp_idx); avg_sum_se(1,stp_idx)],'-' ,'color',colours(3,:),'linewidth',linewidth);
+%         % Plots for precoding algorithm legends
+%         plot(1:K,[avg_sum_se_s(:,1,1,stp_idx); avg_sum_se(1,stp_idx)],'-' ,'color',colours(8,:),'linewidth',linewidth);
+%         plot(1:K,[avg_sum_se_s(:,2,1,stp_idx); avg_sum_se(2,stp_idx)],'--','color',colours(8,:),'linewidth',linewidth);
+%         plot(1:K,[avg_sum_se_s(:,3,1,stp_idx); avg_sum_se(3,stp_idx)],':' ,'color',colours(8,:),'linewidth',linewidth);
+%         % Plots for results
+%         plot(1:K,[avg_sum_se_s(:,1,1,stp_idx); avg_sum_se(1,stp_idx)],'-' ,'color',colours(1,:),'linewidth',linewidth);
+%         plot(1:K,[avg_sum_se_s(:,1,2,stp_idx); avg_sum_se(1,stp_idx)],'-' ,'color',colours(2,:),'linewidth',linewidth);
+%         plot(1:K,[avg_sum_se_s(:,1,3,stp_idx); avg_sum_se(1,stp_idx)],'-' ,'color',colours(3,:),'linewidth',linewidth);
+%         plot(1:K,[avg_sum_se_s(:,2,1,stp_idx); avg_sum_se(2,stp_idx)],'--','color',colours(1,:),'linewidth',linewidth);
+%         plot(1:K,[avg_sum_se_s(:,2,2,stp_idx); avg_sum_se(2,stp_idx)],'--','color',colours(2,:),'linewidth',linewidth);
+%         plot(1:K,[avg_sum_se_s(:,2,3,stp_idx); avg_sum_se(2,stp_idx)],'--','color',colours(3,:),'linewidth',linewidth);
+%         plot(1:K,[avg_sum_se_s(:,3,1,stp_idx); avg_sum_se(3,stp_idx)],':' ,'color',colours(1,:),'linewidth',linewidth);
+%         plot(1:K,[avg_sum_se_s(:,3,2,stp_idx); avg_sum_se(3,stp_idx)],':' ,'color',colours(2,:),'linewidth',linewidth);
+%         plot(1:K,[avg_sum_se_s(:,3,3,stp_idx); avg_sum_se(3,stp_idx)],':' ,'color',colours(3,:),'linewidth',linewidth);
+%     else
+%         % Plots for user selection algorithms legend
+%         plot(1:L_max,avg_sum_se_s(:,1,1,stp_idx),'-' ,'color',colours(1,:),'linewidth',linewidth);
+%         hold on;
+%         plot(1:L_max,avg_sum_se_s(:,1,2,stp_idx),'-' ,'color',colours(2,:),'linewidth',linewidth);
+%         plot(1:L_max,avg_sum_se_s(:,1,3,stp_idx),'-' ,'color',colours(3,:),'linewidth',linewidth);
+%         % Plots for precoding algorithms legend
+%         plot(1:L_max,avg_sum_se_s(:,1,1,stp_idx),'-' ,'color',colours(8,:),'linewidth',linewidth);
+%         plot(1:L_max,avg_sum_se_s(:,2,1,stp_idx),'--','color',colours(8,:),'linewidth',linewidth);
+%         plot(1:L_max,avg_sum_se_s(:,3,1,stp_idx),':' ,'color',colours(8,:),'linewidth',linewidth);
+%         % Plots for result
+%         plot(1:L_max,avg_sum_se_s(:,1,1,stp_idx),'-' ,'color',colours(1,:),'linewidth',linewidth);
+%         plot(1:L_max,avg_sum_se_s(:,1,2,stp_idx),'-' ,'color',colours(2,:),'linewidth',linewidth);
+%         plot(1:L_max,avg_sum_se_s(:,1,3,stp_idx),'-' ,'color',colours(3,:),'linewidth',linewidth);
+%         plot(1:L_max,avg_sum_se_s(:,2,1,stp_idx),'--','color',colours(1,:),'linewidth',linewidth);
+%         plot(1:L_max,avg_sum_se_s(:,2,2,stp_idx),'--','color',colours(2,:),'linewidth',linewidth);
+%         plot(1:L_max,avg_sum_se_s(:,2,3,stp_idx),'--','color',colours(3,:),'linewidth',linewidth);
+%         plot(1:L_max,avg_sum_se_s(:,3,1,stp_idx),':' ,'color',colours(1,:),'linewidth',linewidth);
+%         plot(1:L_max,avg_sum_se_s(:,3,2,stp_idx),':' ,'color',colours(2,:),'linewidth',linewidth);
+%         plot(1:L_max,avg_sum_se_s(:,3,3,stp_idx),':' ,'color',colours(3,:),'linewidth',linewidth);
+%     end
+%     
+%     xlabel('Number of selected users','fontname',fontname,'fontsize',fontsize);
+%     ylabel('Sum-spectral efficiency','fontname',fontname,'fontsize',fontsize);
+%     
+%     legend(legend_alg_plus_pre,'fontname',fontname,'fontsize',fontsize,'location',location_2,'numcolumns',2);
+%     legend box off;
+%     
+%     set(gca,'fontname',fontname,'fontsize',fontsize);
+%     
+%     if K <= M
+%         xlim([1 K]);
+%     else
+%         xlim([1 L_max]);
+%     end
+%     
+%     if (savefig == 1)
+%         saveas(gcf,[root_save 'sum_se_all_L_clustered_M_' sprintf(zero_pad_1,M) '_K_' sprintf(zero_pad_1,K) '_theta_mid_' sprintf(zero_pad_2,theta_mid) '_theta_step_' num2str(theta_step(stp_idx)) '_SNR_' num2str(snr) '_dB_MC_' num2str(N_MC*MC)],'fig');
+%         saveas(gcf,[root_save 'sum_se_all_L_clustered_M_' sprintf(zero_pad_1,M) '_K_' sprintf(zero_pad_1,K) '_theta_mid_' sprintf(zero_pad_2,theta_mid) '_theta_step_' num2str(theta_step(stp_idx)) '_SNR_' num2str(snr) '_dB_MC_' num2str(N_MC*MC)],'png');
+%         saveas(gcf,[root_save 'sum_se_all_L_clustered_M_' sprintf(zero_pad_1,M) '_K_' sprintf(zero_pad_1,K) '_theta_mid_' sprintf(zero_pad_2,theta_mid) '_theta_step_' num2str(theta_step(stp_idx)) '_SNR_' num2str(snr) '_dB_MC_' num2str(N_MC*MC)],'epsc2');
+%     end
+>>>>>>> f3cbfc255096b547f744ae3295841f92e75e42f0
     
     for l_idx = 1:N_L
         figure;
         
         set(gcf,'position',[0 0 800 600]);
         
+<<<<<<< HEAD
         % Plots for user selection algorihtm legends
         plot(OM*edg_sum_se_s{1,1,stp_idx,l_idx},[cdf_sum_se_s{1,1,stp_idx,l_idx} 1],'-' ,'color',colours(1,:),'linewidth',linewidth);
         hold on;
@@ -315,11 +468,37 @@ for stp_idx = 2
             legend(legend_alg_plus_pre_2,'fontname',fontname,'fontsize',fontsize,'location',location_1,'numcolumns',1);
             legend box off;
         %end
+=======
+        plot(edg_sum_se_s{1,1,stp_idx,l_idx},[cdf_sum_se_s{1,1,stp_idx,l_idx} 1],'-' ,'color',colours(1,:),'linewidth',linewidth);
+        hold on;
+        plot(edg_sum_se_s{1,2,stp_idx,l_idx},[cdf_sum_se_s{1,2,stp_idx,l_idx} 1],'-' ,'color',colours(2,:),'linewidth',linewidth);
+        plot(edg_sum_se_s{1,3,stp_idx,l_idx},[cdf_sum_se_s{1,3,stp_idx,l_idx} 1],'-' ,'color',colours(3,:),'linewidth',linewidth);
+        
+        plot(edg_sum_se_s{1,1,stp_idx,l_idx},[cdf_sum_se_s{1,1,stp_idx,l_idx} 1],'-' ,'color',colours(8,:),'linewidth',linewidth);
+        plot(edg_sum_se_s{3,1,stp_idx,l_idx},[cdf_sum_se_s{3,1,stp_idx,l_idx} 1],':' ,'color',colours(8,:),'linewidth',linewidth);
+        
+        plot(edg_sum_se_s{1,1,stp_idx,l_idx},[cdf_sum_se_s{1,1,stp_idx,l_idx} 1],'-' ,'color',colours(1,:),'linewidth',linewidth);
+        plot(edg_sum_se_s{1,2,stp_idx,l_idx},[cdf_sum_se_s{1,2,stp_idx,l_idx} 1],'-' ,'color',colours(2,:),'linewidth',linewidth);
+        plot(edg_sum_se_s{1,3,stp_idx,l_idx},[cdf_sum_se_s{1,3,stp_idx,l_idx} 1],'-' ,'color',colours(3,:),'linewidth',linewidth);
+        % plot(edg_sum_se_s{2,1,stp_idx,l_idx},[cdf_sum_se_s{2,1,stp_idx,l_idx} 1],'--','color',colours(1,:),'linewidth',linewidth);
+        % plot(edg_sum_se_s{2,2,stp_idx,l_idx},[cdf_sum_se_s{2,2,stp_idx,l_idx} 1],'--','color',colours(2,:),'linewidth',linewidth);
+        % plot(edg_sum_se_s{2,3,stp_idx,l_idx},[cdf_sum_se_s{2,3,stp_idx,l_idx} 1],'--','color',colours(3,:),'linewidth',linewidth);
+        plot(edg_sum_se_s{3,1,stp_idx,l_idx},[cdf_sum_se_s{3,1,stp_idx,l_idx} 1],':' ,'color',colours(1,:),'linewidth',linewidth);
+        plot(edg_sum_se_s{3,2,stp_idx,l_idx},[cdf_sum_se_s{3,2,stp_idx,l_idx} 1],':' ,'color',colours(2,:),'linewidth',linewidth);
+        plot(edg_sum_se_s{3,3,stp_idx,l_idx},[cdf_sum_se_s{3,3,stp_idx,l_idx} 1],':' ,'color',colours(3,:),'linewidth',linewidth);
+        
+        xlabel('Sum-spectral efficiency (b/s/Hz)','fontname',fontname,'fontsize',fontsize);
+        ylabel('Cumulative distribution','fontname',fontname,'fontsize',fontsize);
+        
+        legend(legend_alg_plus_pre_2,'fontname',fontname,'fontsize',fontsize,'location',location_1,'numcolumns',2);
+        legend box off;
+>>>>>>> f3cbfc255096b547f744ae3295841f92e75e42f0
         
         set(gca,'fontname',fontname,'fontsize',fontsize);
         
         if stp_idx == 2
             if l_idx == 1
+<<<<<<< HEAD
                 xlim([0 30]);
             elseif l_idx == 2
                 xlim([0 25]);
@@ -339,6 +518,20 @@ for stp_idx = 2
                 saveas(gcf,[root_save 'cdf_throughput_clustered_M_' sprintf(zero_pad_1,M) '_K_' sprintf(zero_pad_1,K) '_L_' sprintf(zero_pad_2,L(l_idx)) '_theta_mid_' sprintf(zero_pad_2,theta_mid) '_theta_step_' num2str(theta_step(stp_idx)) '_SNR_' num2str(snr) '_dB_MC_' num2str(N_MC*MC)],'png');
                 saveas(gcf,[root_save 'cdf_throughput_clustered_M_' sprintf(zero_pad_1,M) '_K_' sprintf(zero_pad_1,K) '_L_' sprintf(zero_pad_2,L(l_idx)) '_theta_mid_' sprintf(zero_pad_2,theta_mid) '_theta_step_' num2str(theta_step(stp_idx)) '_SNR_' num2str(snr) '_dB_MC_' num2str(N_MC*MC)],'epsc2');
             end
+=======
+                xlim([1 2.5]);
+            elseif l_idx == 2
+                xlim([0.5 2]);
+            end
+        end
+        
+        ylim([0 1]);
+        
+        if (savefig == 1)
+            saveas(gcf,[root_save 'cdf_sum_se_clustered_M_' sprintf(zero_pad_1,M) '_K_' sprintf(zero_pad_1,K) '_L_' sprintf(zero_pad_2,L(l_idx)) '_theta_mid_' sprintf(zero_pad_2,theta_mid) '_theta_step_' num2str(theta_step(stp_idx)) '_SNR_' num2str(snr) '_dB_MC_' num2str(N_MC*MC)],'fig');
+            saveas(gcf,[root_save 'cdf_sum_se_clustered_M_' sprintf(zero_pad_1,M) '_K_' sprintf(zero_pad_1,K) '_L_' sprintf(zero_pad_2,L(l_idx)) '_theta_mid_' sprintf(zero_pad_2,theta_mid) '_theta_step_' num2str(theta_step(stp_idx)) '_SNR_' num2str(snr) '_dB_MC_' num2str(N_MC*MC)],'png');
+            saveas(gcf,[root_save 'cdf_sum_se_clustered_M_' sprintf(zero_pad_1,M) '_K_' sprintf(zero_pad_1,K) '_L_' sprintf(zero_pad_2,L(l_idx)) '_theta_mid_' sprintf(zero_pad_2,theta_mid) '_theta_step_' num2str(theta_step(stp_idx)) '_SNR_' num2str(snr) '_dB_MC_' num2str(N_MC*MC)],'epsc2');
+>>>>>>> f3cbfc255096b547f744ae3295841f92e75e42f0
         end
     end
 end

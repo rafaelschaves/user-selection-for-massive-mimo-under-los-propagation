@@ -4,11 +4,19 @@ clc;
 
 % Macros
 
+<<<<<<< HEAD
 MC   = 1000;                                                                                                                                          % Size of the monte-carlo ensemble
 N_MC = 2;
 
 M = 100;                                                                                                                                              % Number of antennas at base station
 K = 10;                                                                                                                                              % Number of users at the cell 
+=======
+MC   = 1000;                                                              % Size of the monte-carlo ensemble
+N_MC = 1;
+
+M = 50;                                                                  % Number of antennas at base station
+K = 75;                                                                   % Number of users at the cell 
+>>>>>>> f3cbfc255096b547f744ae3295841f92e75e42f0
 
 % M = 50  & K = [10 25 50 75]
 % M = 100 & K = [10 25 50 75 100 150] 
@@ -20,6 +28,7 @@ else
     L_max = K-1;
 end
 
+<<<<<<< HEAD
 N_ALG = 3;                                                                                                                                            % Number of algorithms for perform user scheduling
 N_PRE = 3;
 
@@ -32,6 +41,16 @@ dl_ul_ratio = 0.5;
 
 %root_load = '../../../../Google Drive/UFRJ/PhD/Codes/user-scheduling-massive-mimo/Results/Selection/Downlink/';
 root_load = 'D:\PhD\user-selection\Perfect CSI\';
+=======
+snr = -5;
+
+N_ALG = 3;                                                                 % Number of algorithms for perform user scheduling
+N_PRE = 3;
+
+% Roots
+
+root_load = '../../../../Google Drive/UFRJ/PhD/Codes/user-scheduling-massive-mimo/Results/Selection/Downlink/';
+>>>>>>> f3cbfc255096b547f744ae3295841f92e75e42f0
 root_save = '../../../../Google Drive/UFRJ/PhD/Codes/user-scheduling-massive-mimo/Figures/Selection/Downlink/';
 
 zero_pad_1 = '%03d';
@@ -41,6 +60,7 @@ chn_type = 'ur_los';
 
 % Loading data
 
+<<<<<<< HEAD
 se_all_mc     = zeros(K,N_PRE,MC*N_MC);    
 se_s_L_all_mc = zeros(L_max,L_max,N_PRE,N_ALG,MC*N_MC);
 sum_se_s      = zeros(L_max,N_PRE,N_ALG,MC*N_MC);
@@ -48,30 +68,54 @@ sum_se_s      = zeros(L_max,N_PRE,N_ALG,MC*N_MC);
 for n_mc = 1:N_MC
     load([root_load 'spectral_efficiency_all_L_' chn_type '_M_' sprintf(zero_pad_1,M) '_K_' sprintf(zero_pad_1,K) '_SNR_' num2str(snr) '_dB_MC_' ...
           num2str(MC) '_' sprintf(zero_pad_2,n_mc) '.mat']);
+=======
+se_all_mc   = zeros(K,N_PRE,MC*N_MC);    
+se_s_L_all_mc = zeros(L_max,L_max,N_PRE,N_ALG,MC*N_MC);
+
+sum_se_s      = zeros(L_max,N_PRE,N_ALG,MC*N_MC);
+
+for n_mc = 1:N_MC
+    load([root_load 'spectral_efficiency_all_L_' chn_type '_M_' sprintf(zero_pad_1,M) '_K_' sprintf(zero_pad_1,K) '_SNR_' num2str(snr) '_dB_MC_' num2str(MC) '_' sprintf(zero_pad_2,n_mc) '.mat']);
+>>>>>>> f3cbfc255096b547f744ae3295841f92e75e42f0
      
     idx_ini = (n_mc - 1)*MC + 1;
     idx_end = n_mc*MC;
         
+<<<<<<< HEAD
     se_all_mc(:,:,idx_ini:idx_end)         = bandwidth*dl_ul_ratio*se;
     se_s_L_all_mc(:,:,:,:,idx_ini:idx_end) = bandwidth*dl_ul_ratio*se_s_all_L;
+=======
+    se_all_mc(:,:,idx_ini:idx_end)         = se;
+    se_s_L_all_mc(:,:,:,:,idx_ini:idx_end) = se_s_all_L;
+>>>>>>> f3cbfc255096b547f744ae3295841f92e75e42f0
     
     clear se se_s_all_L;
 end
 
 sum_se = reshape(sum(se_all_mc,1),N_PRE,MC*N_MC);
 
+<<<<<<< HEAD
 for l = 1:L_max
     sum_se_s(l,:,:,:) = sum(se_s_L_all_mc(:,l,:,:,:),1);
+=======
+for L = 1:L_max
+    sum_se_s(L,:,:,:) = sum(se_s_L_all_mc(:,L,:,:,:),1);
+>>>>>>> f3cbfc255096b547f744ae3295841f92e75e42f0
 end
 
 avg_sum_se   = mean(sum_se,2);
 avg_sum_se_s = mean(sum_se_s,4);
 
+<<<<<<< HEAD
 [max_sum_se_s,L_star] = max(avg_sum_se_s,[],1); 
+=======
+[max_sum_se_s,L_star] = max(avg_sum_se_s,[],1);
+>>>>>>> f3cbfc255096b547f744ae3295841f92e75e42f0
 
 max_sum_se_s = reshape(max_sum_se_s,N_PRE,N_ALG)';
 L_star       = reshape(L_star,N_PRE,N_ALG)';
 
+<<<<<<< HEAD
 L = ceil(K/2);
 
 N_BIN = 100;
@@ -83,6 +127,26 @@ for n_alg = 1:N_ALG
     for n_pre = 1:N_PRE
         % [cdf_sum_se{n_pre,n_alg},edg_sum_se{n_pre,n_alg}] = histcounts(sum_se_s(L_star(n_alg,n_pre),n_pre,n_alg,:),N_BIN,'normalization','cdf');
         [cdf_sum_se{n_pre,n_alg},edg_sum_se{n_pre,n_alg}] = histcounts(sum_se_s(L,n_pre,n_alg,:),N_BIN,'normalization','cdf');
+=======
+% L_star = 80*ones(3,3);
+
+for n_alg = 1:N_ALG
+    for n_pre = 1:N_PRE
+        sum_se_s_star(:,n_pre,n_alg) = sum_se_s(L_star(n_alg,n_pre),n_pre,n_alg,:);
+    end    
+end
+
+N_BIN = 100;
+
+cdf_sum_se = cell(N_ALG+1,N_PRE);
+edg_sum_se = cell(N_ALG+1,N_PRE);
+
+for n_pre = 1:N_PRE
+    [cdf_sum_se{1,n_pre},edg_sum_se{1,n_pre}] = histcounts(sum_se(n_pre,:),N_BIN,'normalization','cdf');
+
+    for n_alg = 1:N_ALG
+        [cdf_sum_se{n_alg+1,n_pre},edg_sum_se{n_alg+1,n_pre}] = histcounts(sum_se_s_star(:,n_pre,n_alg),N_BIN,'normalization','cdf');
+>>>>>>> f3cbfc255096b547f744ae3295841f92e75e42f0
     end
 end
 
@@ -93,6 +157,7 @@ markersize = 10;
 fontname   = 'Times New Roman';
 fontsize   = 30;
 
+<<<<<<< HEAD
 marker    = {'o','s','^'};
 linestyle = {'-','--',':'};
 
@@ -105,14 +170,28 @@ elseif M == 100
     OM = 1e-6;
 end
 
+=======
+marker = {'o','s','^'};
+
+linestyle = {'-','--',':'};
+
+savefig = 0;
+
+% NS - No selection
+>>>>>>> f3cbfc255096b547f744ae3295841f92e75e42f0
 % SOS - Semi-orthogonal selection
 % CBS - Correlation-based selection
 % ICIBS - ICI-based selection
 
+<<<<<<< HEAD
 legend_algo           = {'SOS','CBS','ICIBS'};
 legend_algo_plus_prec = {'SOS','CBS','ICIBS','MRT','ZF','MMSE'};
 
 um = {'(kbps)','(Mbps)','(Gbps)'};
+=======
+legend_algo   = {'NS','SOS','CBS','ICIBS'};
+legend_algo_2 = {'SOS','CBS','ICIBS'};
+>>>>>>> f3cbfc255096b547f744ae3295841f92e75e42f0
 
 location_1 = 'northwest';
 location_2 = 'northeast';
@@ -125,8 +204,12 @@ colours = [0.0000 0.4470 0.7410;
            0.4940 0.1840 0.5560;
            0.4660 0.6740 0.1880;
            0.3010 0.7450 0.9330;
+<<<<<<< HEAD
            0.6350 0.0780 0.1840;
            0.0000 0.0000 0.0000];
+=======
+           0.6350 0.0780 0.1840];
+>>>>>>> f3cbfc255096b547f744ae3295841f92e75e42f0
 
 figure;
        
@@ -161,6 +244,7 @@ set(gcf,'position',[0 0 800 600]);
 % end
 
 if K <= M
+<<<<<<< HEAD
     % Plot for user selection algorithm legends
     plot(1:K,OM*[avg_sum_se_s(:,1,1); avg_sum_se(1)],'-' ,'color',colours(1,:),'linewidth',linewidth);
     hold on;
@@ -212,6 +296,36 @@ end
 
 if M == 50 && K == 10
     legend(legend_algo_plus_prec,'fontname',fontname,'fontsize',fontsize,'location',location_4,'numcolumns',2);
+=======
+    plot(1:K,[avg_sum_se_s(:,1,1); avg_sum_se(1)],'-' ,'color',colours(1,:),'linewidth',linewidth);
+    hold on;
+    plot(1:K,[avg_sum_se_s(:,1,2); avg_sum_se(1)],'-' ,'color',colours(2,:),'linewidth',linewidth);
+    plot(1:K,[avg_sum_se_s(:,1,3); avg_sum_se(1)],'-' ,'color',colours(3,:),'linewidth',linewidth);
+    plot(1:K,[avg_sum_se_s(:,2,1); avg_sum_se(2)],'--','color',colours(1,:),'linewidth',linewidth);
+    plot(1:K,[avg_sum_se_s(:,2,2); avg_sum_se(2)],'--','color',colours(2,:),'linewidth',linewidth);
+    plot(1:K,[avg_sum_se_s(:,2,3); avg_sum_se(2)],'--','color',colours(3,:),'linewidth',linewidth);
+    plot(1:K,[avg_sum_se_s(:,3,1); avg_sum_se(3)],':' ,'color',colours(1,:),'linewidth',linewidth);
+    plot(1:K,[avg_sum_se_s(:,3,2); avg_sum_se(3)],':' ,'color',colours(2,:),'linewidth',linewidth);
+    plot(1:K,[avg_sum_se_s(:,3,3); avg_sum_se(3)],':' ,'color',colours(3,:),'linewidth',linewidth);
+else
+    plot(1:L_max,avg_sum_se_s(:,1,1),'-' ,'color',colours(1,:),'linewidth',linewidth);
+    hold on;
+    plot(1:L_max,avg_sum_se_s(:,1,2),'-' ,'color',colours(2,:),'linewidth',linewidth);
+    plot(1:L_max,avg_sum_se_s(:,1,3),'-' ,'color',colours(3,:),'linewidth',linewidth);
+    plot(1:L_max,avg_sum_se_s(:,2,1),'--','color',colours(1,:),'linewidth',linewidth);
+    plot(1:L_max,avg_sum_se_s(:,2,2),'--','color',colours(2,:),'linewidth',linewidth);
+    plot(1:L_max,avg_sum_se_s(:,2,3),'--','color',colours(3,:),'linewidth',linewidth);
+    plot(1:L_max,avg_sum_se_s(:,3,1),':' ,'color',colours(1,:),'linewidth',linewidth);
+    plot(1:L_max,avg_sum_se_s(:,3,2),':' ,'color',colours(2,:),'linewidth',linewidth);
+    plot(1:L_max,avg_sum_se_s(:,3,3),':' ,'color',colours(3,:),'linewidth',linewidth);
+end
+
+xlabel('Number of selected users','fontname',fontname,'fontsize',fontsize);
+ylabel('Sum-spectral efficiency','fontname',fontname,'fontsize',fontsize);
+
+if K == 10
+    legend(legend_algo_2,'fontname',fontname,'fontsize',fontsize,'location',location_4);
+>>>>>>> f3cbfc255096b547f744ae3295841f92e75e42f0
     legend box off;
 end
 
@@ -228,11 +342,15 @@ switch chn_type
     case 'ur_los'
         switch M
             case 50
+<<<<<<< HEAD
                 if plotse == 1
                     ylim([0 20]);
                 else
                     ylim([0 OM*bandwidth*dl_ul_ratio*20]);
                 end
+=======
+                ylim([0 20]);
+>>>>>>> f3cbfc255096b547f744ae3295841f92e75e42f0
                 
                 switch K
                     case 10                        
@@ -242,6 +360,7 @@ switch chn_type
                         axes('position',[.24 .585 .3 .3]);
                         box on;
                             
+<<<<<<< HEAD
                         plot(1:K,OM*[avg_sum_se_s(:,1,1); avg_sum_se(1)],'-' ,'color',colours(1,:),'linewidth',linewidth);
                         hold on;
                         plot(1:K,OM*[avg_sum_se_s(:,1,2); avg_sum_se(1)],'-' ,'color',colours(2,:),'linewidth',linewidth);
@@ -252,6 +371,18 @@ switch chn_type
                         plot(1:K,OM*[avg_sum_se_s(:,3,1); avg_sum_se(3)],':' ,'color',colours(1,:),'linewidth',linewidth);
                         plot(1:K,OM*[avg_sum_se_s(:,3,2); avg_sum_se(3)],':' ,'color',colours(2,:),'linewidth',linewidth);
                         plot(1:K,OM*[avg_sum_se_s(:,3,3); avg_sum_se(3)],':' ,'color',colours(3,:),'linewidth',linewidth);
+=======
+                        plot(1:K,[avg_sum_se_s(:,1,1); avg_sum_se(1)],'-' ,'color',colours(1,:),'linewidth',linewidth);
+                        hold on;
+                        plot(1:K,[avg_sum_se_s(:,1,2); avg_sum_se(1)],'-' ,'color',colours(2,:),'linewidth',linewidth);
+                        plot(1:K,[avg_sum_se_s(:,1,3); avg_sum_se(1)],'-' ,'color',colours(3,:),'linewidth',linewidth);
+                        plot(1:K,[avg_sum_se_s(:,2,1); avg_sum_se(2)],'--','color',colours(1,:),'linewidth',linewidth);
+                        plot(1:K,[avg_sum_se_s(:,2,2); avg_sum_se(2)],'--','color',colours(2,:),'linewidth',linewidth);
+                        plot(1:K,[avg_sum_se_s(:,2,3); avg_sum_se(2)],'--','color',colours(3,:),'linewidth',linewidth);
+                        plot(1:K,[avg_sum_se_s(:,3,1); avg_sum_se(3)],':' ,'color',colours(1,:),'linewidth',linewidth);
+                        plot(1:K,[avg_sum_se_s(:,3,2); avg_sum_se(3)],':' ,'color',colours(2,:),'linewidth',linewidth);
+                        plot(1:K,[avg_sum_se_s(:,3,3); avg_sum_se(3)],':' ,'color',colours(3,:),'linewidth',linewidth);
+>>>>>>> f3cbfc255096b547f744ae3295841f92e75e42f0
                         
                         % xticks([7 10]);
                         % xticklabels({'0','1.25','2.5'})
@@ -259,14 +390,19 @@ switch chn_type
                         set(gca,'fontname',fontname,'fontsize',fontsize);
                         
                         xlim([7 10]);
+<<<<<<< HEAD
                         
                         if plotse == 1
                             ylim([12 12.5]);
                         end
+=======
+                        ylim([12 12.5]);
+>>>>>>> f3cbfc255096b547f744ae3295841f92e75e42f0
                     case 25
                         dim = [0.56 0.725 0.2 0.07];
                         annotation('ellipse',dim,'linewidth',linewidth);
                         
+<<<<<<< HEAD
                         axes('position',[.4 .275 .3 .3]);
                         box on;
                         
@@ -280,18 +416,38 @@ switch chn_type
                         plot(1:L_max,OM*avg_sum_se_s(:,3,1),':' ,'color',colours(1,:),'linewidth',linewidth);
                         plot(1:L_max,OM*avg_sum_se_s(:,3,2),':' ,'color',colours(2,:),'linewidth',linewidth);
                         plot(1:L_max,OM*avg_sum_se_s(:,3,3),':' ,'color',colours(3,:),'linewidth',linewidth);
+=======
+                        axes('position',[.35 .275 .3 .3]);
+                        box on;
+                        
+                        plot(1:L_max,avg_sum_se_s(:,1,1),'-' ,'color',colours(1,:),'linewidth',linewidth);
+                        hold on;
+                        plot(1:L_max,avg_sum_se_s(:,1,2),'-' ,'color',colours(2,:),'linewidth',linewidth);
+                        plot(1:L_max,avg_sum_se_s(:,1,3),'-' ,'color',colours(3,:),'linewidth',linewidth);
+                        plot(1:L_max,avg_sum_se_s(:,2,1),'--','color',colours(1,:),'linewidth',linewidth);
+                        plot(1:L_max,avg_sum_se_s(:,2,2),'--','color',colours(2,:),'linewidth',linewidth);
+                        plot(1:L_max,avg_sum_se_s(:,2,3),'--','color',colours(3,:),'linewidth',linewidth);
+                        plot(1:L_max,avg_sum_se_s(:,3,1),':' ,'color',colours(1,:),'linewidth',linewidth);
+                        plot(1:L_max,avg_sum_se_s(:,3,2),':' ,'color',colours(2,:),'linewidth',linewidth);
+                        plot(1:L_max,avg_sum_se_s(:,3,3),':' ,'color',colours(3,:),'linewidth',linewidth);
+>>>>>>> f3cbfc255096b547f744ae3295841f92e75e42f0
                         
                         set(gca,'fontname',fontname,'fontsize',fontsize);
                         
                         xlim([15 20]);
+<<<<<<< HEAD
                         
                         if plotse == 1
                             ylim([15.5 16]);
                         end
+=======
+                        ylim([15.5 16]);
+>>>>>>> f3cbfc255096b547f744ae3295841f92e75e42f0
                     case 50
                         dim = [0.425 0.8 0.175 0.07];
                         annotation('ellipse',dim,'linewidth',linewidth);
                         
+<<<<<<< HEAD
                         axes('position',[.325 .275 .3 .3]);
                         box on;
                         
@@ -305,14 +461,33 @@ switch chn_type
                         plot(1:L_max,OM*avg_sum_se_s(:,3,1),':' ,'color',colours(1,:),'linewidth',linewidth);
                         plot(1:L_max,OM*avg_sum_se_s(:,3,2),':' ,'color',colours(2,:),'linewidth',linewidth);
                         plot(1:L_max,OM*avg_sum_se_s(:,3,3),':' ,'color',colours(3,:),'linewidth',linewidth);
+=======
+                        axes('position',[.275 .275 .3 .3]);
+                        box on;
+                        
+                        plot(1:L_max,avg_sum_se_s(:,1,1),'-' ,'color',colours(1,:),'linewidth',linewidth);
+                        hold on;
+                        plot(1:L_max,avg_sum_se_s(:,1,2),'-' ,'color',colours(2,:),'linewidth',linewidth);
+                        plot(1:L_max,avg_sum_se_s(:,1,3),'-' ,'color',colours(3,:),'linewidth',linewidth);
+                        plot(1:L_max,avg_sum_se_s(:,2,1),'--','color',colours(1,:),'linewidth',linewidth);
+                        plot(1:L_max,avg_sum_se_s(:,2,2),'--','color',colours(2,:),'linewidth',linewidth);
+                        plot(1:L_max,avg_sum_se_s(:,2,3),'--','color',colours(3,:),'linewidth',linewidth);
+                        plot(1:L_max,avg_sum_se_s(:,3,1),':' ,'color',colours(1,:),'linewidth',linewidth);
+                        plot(1:L_max,avg_sum_se_s(:,3,2),':' ,'color',colours(2,:),'linewidth',linewidth);
+                        plot(1:L_max,avg_sum_se_s(:,3,3),':' ,'color',colours(3,:),'linewidth',linewidth);
+>>>>>>> f3cbfc255096b547f744ae3295841f92e75e42f0
                         
                         set(gca,'fontname',fontname,'fontsize',fontsize);
                         
                         xlim([20 30]);
+<<<<<<< HEAD
                         
                         if plotse == 1
                             ylim([17 18]);
                         end
+=======
+                        ylim([17 18]);
+>>>>>>> f3cbfc255096b547f744ae3295841f92e75e42f0
                     case 75
                         dim = [0.5 0.825 0.2 0.07];
                         annotation('ellipse',dim,'linewidth',linewidth);
@@ -320,6 +495,7 @@ switch chn_type
                         axes('position',[.3 .275 .3 .3]);
                         box on;
                         
+<<<<<<< HEAD
                         plot(1:L_max,OM*avg_sum_se_s(:,1,1),'-' ,'color',colours(1,:),'linewidth',linewidth);
                         hold on;
                         plot(1:L_max,OM*avg_sum_se_s(:,1,2),'-' ,'color',colours(2,:),'linewidth',linewidth);
@@ -330,10 +506,23 @@ switch chn_type
                         plot(1:L_max,OM*avg_sum_se_s(:,3,1),':' ,'color',colours(1,:),'linewidth',linewidth);
                         plot(1:L_max,OM*avg_sum_se_s(:,3,2),':' ,'color',colours(2,:),'linewidth',linewidth);
                         plot(1:L_max,OM*avg_sum_se_s(:,3,3),':' ,'color',colours(3,:),'linewidth',linewidth);
+=======
+                        plot(1:L_max,avg_sum_se_s(:,1,1),'-','color',colours(1,:),'linewidth',linewidth);
+                        hold on;
+                        plot(1:L_max,avg_sum_se_s(:,1,2),'-','color',colours(2,:),'linewidth',linewidth);
+                        plot(1:L_max,avg_sum_se_s(:,1,3),'-','color',colours(3,:),'linewidth',linewidth);
+                        plot(1:L_max,avg_sum_se_s(:,2,1),'--','color',colours(1,:),'linewidth',linewidth);
+                        plot(1:L_max,avg_sum_se_s(:,2,2),'--','color',colours(2,:),'linewidth',linewidth);
+                        plot(1:L_max,avg_sum_se_s(:,2,3),'--','color',colours(3,:),'linewidth',linewidth);
+                        plot(1:L_max,avg_sum_se_s(:,3,1),':','color',colours(1,:),'linewidth',linewidth);
+                        plot(1:L_max,avg_sum_se_s(:,3,2),':','color',colours(2,:),'linewidth',linewidth);
+                        plot(1:L_max,avg_sum_se_s(:,3,3),':','color',colours(3,:),'linewidth',linewidth);
+>>>>>>> f3cbfc255096b547f744ae3295841f92e75e42f0
                         
                         set(gca,'fontname',fontname,'fontsize',fontsize);
                         
                         xlim([25 36]);
+<<<<<<< HEAD
                         
                         if plotse == 1
                             ylim([17.5 18.55]);
@@ -345,6 +534,12 @@ switch chn_type
                 else
                     ylim([0 OM*bandwidth*dl_ul_ratio*40]);
                 end
+=======
+                        ylim([17.5 18.55]);
+                end
+            case 100
+                ylim([0 40]);
+>>>>>>> f3cbfc255096b547f744ae3295841f92e75e42f0
                 
                 switch K
                     case 10                        
@@ -354,6 +549,7 @@ switch chn_type
                         axes('position',[.25 .575 .3 .3]);
                         box on;
                         
+<<<<<<< HEAD
                         plot(1:K,OM*[avg_sum_se_s(:,1,1); avg_sum_se(1)],'-' ,'color',colours(1,:),'linewidth',linewidth);
                         hold on;
                         plot(1:K,OM*[avg_sum_se_s(:,1,2); avg_sum_se(1)],'-' ,'color',colours(2,:),'linewidth',linewidth);
@@ -364,18 +560,35 @@ switch chn_type
                         plot(1:K,OM*[avg_sum_se_s(:,3,1); avg_sum_se(3)],':' ,'color',colours(1,:),'linewidth',linewidth);
                         plot(1:K,OM*[avg_sum_se_s(:,3,2); avg_sum_se(3)],':' ,'color',colours(2,:),'linewidth',linewidth);
                         plot(1:K,OM*[avg_sum_se_s(:,3,3); avg_sum_se(3)],':' ,'color',colours(3,:),'linewidth',linewidth);
+=======
+                        plot(1:K,[avg_sum_se_s(:,1,1); avg_sum_se(1)],'-' ,'color',colours(1,:),'linewidth',linewidth);
+                        hold on;
+                        plot(1:K,[avg_sum_se_s(:,1,2); avg_sum_se(1)],'-' ,'color',colours(2,:),'linewidth',linewidth);
+                        plot(1:K,[avg_sum_se_s(:,1,3); avg_sum_se(1)],'-' ,'color',colours(3,:),'linewidth',linewidth);
+                        plot(1:K,[avg_sum_se_s(:,2,1); avg_sum_se(2)],'--','color',colours(1,:),'linewidth',linewidth);
+                        plot(1:K,[avg_sum_se_s(:,2,2); avg_sum_se(2)],'--','color',colours(2,:),'linewidth',linewidth);
+                        plot(1:K,[avg_sum_se_s(:,2,3); avg_sum_se(2)],'--','color',colours(3,:),'linewidth',linewidth);
+                        plot(1:K,[avg_sum_se_s(:,3,1); avg_sum_se(3)],':' ,'color',colours(1,:),'linewidth',linewidth);
+                        plot(1:K,[avg_sum_se_s(:,3,2); avg_sum_se(3)],':' ,'color',colours(2,:),'linewidth',linewidth);
+                        plot(1:K,[avg_sum_se_s(:,3,3); avg_sum_se(3)],':' ,'color',colours(3,:),'linewidth',linewidth);
+>>>>>>> f3cbfc255096b547f744ae3295841f92e75e42f0
                         
                         set(gca,'fontname',fontname,'fontsize',fontsize);
                         
                         xlim([7 10]);
+<<<<<<< HEAD
                         
                         if plotse == 1
                             ylim([18 19.5]);
                         end
+=======
+                        ylim([18 19.5]);
+>>>>>>> f3cbfc255096b547f744ae3295841f92e75e42f0
                     case 25                 
                         dim = [0.7 0.65 0.15 0.05];
                         annotation('ellipse',dim,'linewidth',linewidth);
                         
+<<<<<<< HEAD
                         axes('position',[.575 .275 .3 .3]);
                         box on;
                         
@@ -389,14 +602,33 @@ switch chn_type
                         plot(1:L_max,OM*avg_sum_se_s(:,3,1),':' ,'color',colours(1,:),'linewidth',linewidth);
                         plot(1:L_max,OM*avg_sum_se_s(:,3,2),':' ,'color',colours(2,:),'linewidth',linewidth);
                         plot(1:L_max,OM*avg_sum_se_s(:,3,3),':' ,'color',colours(3,:),'linewidth',linewidth);
+=======
+                        axes('position',[.55 .275 .3 .3]);
+                        box on;
+                        
+                        plot(1:L_max,avg_sum_se_s(:,1,1),'-','color',colours(1,:),'linewidth',linewidth);
+                        hold on;
+                        plot(1:L_max,avg_sum_se_s(:,1,2),'-','color',colours(2,:),'linewidth',linewidth);
+                        plot(1:L_max,avg_sum_se_s(:,1,3),'-','color',colours(3,:),'linewidth',linewidth);
+                        plot(1:L_max,avg_sum_se_s(:,2,1),'--','color',colours(1,:),'linewidth',linewidth);
+                        plot(1:L_max,avg_sum_se_s(:,2,2),'--','color',colours(2,:),'linewidth',linewidth);
+                        plot(1:L_max,avg_sum_se_s(:,2,3),'--','color',colours(3,:),'linewidth',linewidth);
+                        plot(1:L_max,avg_sum_se_s(:,3,1),':','color',colours(1,:),'linewidth',linewidth);
+                        plot(1:L_max,avg_sum_se_s(:,3,2),':','color',colours(2,:),'linewidth',linewidth);
+                        plot(1:L_max,avg_sum_se_s(:,3,3),':','color',colours(3,:),'linewidth',linewidth);
+>>>>>>> f3cbfc255096b547f744ae3295841f92e75e42f0
                         
                         set(gca,'fontname',fontname,'fontsize',fontsize);
                         
                         xlim([18 22]);
+<<<<<<< HEAD
                         
                         if plotse == 1
                             ylim([26 27]);
                         end
+=======
+                        ylim([26 27]);
+>>>>>>> f3cbfc255096b547f744ae3295841f92e75e42f0
                     case 50   
                         dim = [0.6 0.75 0.15 0.05];
                         annotation('ellipse',dim,'linewidth',linewidth);
@@ -404,6 +636,7 @@ switch chn_type
                         axes('position',[.45 .275 .3 .3]);
                         box on;
                         
+<<<<<<< HEAD
                         plot(1:L_max,OM*avg_sum_se_s(:,1,1),'-' ,'color',colours(1,:),'linewidth',linewidth);
                         hold on;
                         plot(1:L_max,OM*avg_sum_se_s(:,1,2),'-' ,'color',colours(2,:),'linewidth',linewidth);
@@ -414,18 +647,35 @@ switch chn_type
                         plot(1:L_max,OM*avg_sum_se_s(:,3,1),':' ,'color',colours(1,:),'linewidth',linewidth);
                         plot(1:L_max,OM*avg_sum_se_s(:,3,2),':' ,'color',colours(2,:),'linewidth',linewidth);
                         plot(1:L_max,OM*avg_sum_se_s(:,3,3),':' ,'color',colours(3,:),'linewidth',linewidth);
+=======
+                        plot(1:L_max,avg_sum_se_s(:,1,1),'-','color',colours(1,:),'linewidth',linewidth);
+                        hold on;
+                        plot(1:L_max,avg_sum_se_s(:,1,2),'-','color',colours(2,:),'linewidth',linewidth);
+                        plot(1:L_max,avg_sum_se_s(:,1,3),'-','color',colours(3,:),'linewidth',linewidth);
+                        plot(1:L_max,avg_sum_se_s(:,2,1),'--','color',colours(1,:),'linewidth',linewidth);
+                        plot(1:L_max,avg_sum_se_s(:,2,2),'--','color',colours(2,:),'linewidth',linewidth);
+                        plot(1:L_max,avg_sum_se_s(:,2,3),'--','color',colours(3,:),'linewidth',linewidth);
+                        plot(1:L_max,avg_sum_se_s(:,3,1),':','color',colours(1,:),'linewidth',linewidth);
+                        plot(1:L_max,avg_sum_se_s(:,3,2),':','color',colours(2,:),'linewidth',linewidth);
+                        plot(1:L_max,avg_sum_se_s(:,3,3),':','color',colours(3,:),'linewidth',linewidth);
+>>>>>>> f3cbfc255096b547f744ae3295841f92e75e42f0
                         
                         set(gca,'fontname',fontname,'fontsize',fontsize);
                         
                         xlim([31 37]);
+<<<<<<< HEAD
                         
                         if plotse == 1
                             ylim([31 32]);
                         end
+=======
+                        ylim([31 32]);
+>>>>>>> f3cbfc255096b547f744ae3295841f92e75e42f0
                     case 75
                         dim = [0.525 0.775 0.15 0.05];
                         annotation('ellipse',dim,'linewidth',linewidth);
                         
+<<<<<<< HEAD
                         axes('position',[.35 .275 .3 .3]);
                         box on;
                         
@@ -439,14 +689,33 @@ switch chn_type
                         plot(1:L_max,OM*avg_sum_se_s(:,3,1),':' ,'color',colours(1,:),'linewidth',linewidth);
                         plot(1:L_max,OM*avg_sum_se_s(:,3,2),':' ,'color',colours(2,:),'linewidth',linewidth);
                         plot(1:L_max,OM*avg_sum_se_s(:,3,3),':' ,'color',colours(3,:),'linewidth',linewidth);
+=======
+                        axes('position',[.275 .275 .3 .3]);
+                        box on;
+                        
+                        plot(1:L_max,avg_sum_se_s(:,1,1),'-','color',colours(1,:),'linewidth',linewidth);
+                        hold on;
+                        plot(1:L_max,avg_sum_se_s(:,1,2),'-','color',colours(2,:),'linewidth',linewidth);
+                        plot(1:L_max,avg_sum_se_s(:,1,3),'-','color',colours(3,:),'linewidth',linewidth);
+                        plot(1:L_max,avg_sum_se_s(:,2,1),'--','color',colours(1,:),'linewidth',linewidth);
+                        plot(1:L_max,avg_sum_se_s(:,2,2),'--','color',colours(2,:),'linewidth',linewidth);
+                        plot(1:L_max,avg_sum_se_s(:,2,3),'--','color',colours(3,:),'linewidth',linewidth);
+                        plot(1:L_max,avg_sum_se_s(:,3,1),':','color',colours(1,:),'linewidth',linewidth);
+                        plot(1:L_max,avg_sum_se_s(:,3,2),':','color',colours(2,:),'linewidth',linewidth);
+                        plot(1:L_max,avg_sum_se_s(:,3,3),':','color',colours(3,:),'linewidth',linewidth);
+>>>>>>> f3cbfc255096b547f744ae3295841f92e75e42f0
                         
                         set(gca,'fontname',fontname,'fontsize',fontsize);
                         
                         xlim([35 50]);
+<<<<<<< HEAD
                         
                         if plotse == 1
                             ylim([33 34.3]);
                         end
+=======
+                        ylim([33 34.3]);
+>>>>>>> f3cbfc255096b547f744ae3295841f92e75e42f0
                     case 100
                         dim = [0.45 0.8 0.15 0.05];
                         annotation('ellipse',dim,'linewidth',linewidth);
@@ -454,6 +723,7 @@ switch chn_type
                         axes('position',[.325 .275 .3 .3]);
                         box on;
                         
+<<<<<<< HEAD
                         plot(1:L_max,OM*avg_sum_se_s(:,1,1),'-' ,'color',colours(1,:),'linewidth',linewidth);
                         hold on;
                         plot(1:L_max,OM*avg_sum_se_s(:,1,2),'-' ,'color',colours(2,:),'linewidth',linewidth);
@@ -464,18 +734,35 @@ switch chn_type
                         plot(1:L_max,OM*avg_sum_se_s(:,3,1),':' ,'color',colours(1,:),'linewidth',linewidth);
                         plot(1:L_max,OM*avg_sum_se_s(:,3,2),':' ,'color',colours(2,:),'linewidth',linewidth);
                         plot(1:L_max,OM*avg_sum_se_s(:,3,3),':' ,'color',colours(3,:),'linewidth',linewidth);
+=======
+                        plot(1:L_max,avg_sum_se_s(:,1,1),'-','color',colours(1,:),'linewidth',linewidth);
+                        hold on;
+                        plot(1:L_max,avg_sum_se_s(:,1,2),'-','color',colours(2,:),'linewidth',linewidth);
+                        plot(1:L_max,avg_sum_se_s(:,1,3),'-','color',colours(3,:),'linewidth',linewidth);
+                        plot(1:L_max,avg_sum_se_s(:,2,1),'--','color',colours(1,:),'linewidth',linewidth);
+                        plot(1:L_max,avg_sum_se_s(:,2,2),'--','color',colours(2,:),'linewidth',linewidth);
+                        plot(1:L_max,avg_sum_se_s(:,2,3),'--','color',colours(3,:),'linewidth',linewidth);
+                        plot(1:L_max,avg_sum_se_s(:,3,1),':','color',colours(1,:),'linewidth',linewidth);
+                        plot(1:L_max,avg_sum_se_s(:,3,2),':','color',colours(2,:),'linewidth',linewidth);
+                        plot(1:L_max,avg_sum_se_s(:,3,3),':','color',colours(3,:),'linewidth',linewidth);
+>>>>>>> f3cbfc255096b547f744ae3295841f92e75e42f0
                         
                         set(gca,'fontname',fontname,'fontsize',fontsize);
                         
                         xlim([45 60]);
+<<<<<<< HEAD
                         
                         if plotse == 1
                             ylim([34.2 35.6]);
                         end
+=======
+                        ylim([34.2 35.6]);
+>>>>>>> f3cbfc255096b547f744ae3295841f92e75e42f0
                     case 150
                         dim = [0.5 0.825 0.225 0.05];
                         annotation('ellipse',dim,'linewidth',linewidth);
                         
+<<<<<<< HEAD
                         axes('position',[.35 .3 .3 .3]);
                         box on;
                         
@@ -489,14 +776,33 @@ switch chn_type
                         plot(1:L_max,OM*avg_sum_se_s(:,3,1),':' ,'color',colours(1,:),'linewidth',linewidth);
                         plot(1:L_max,OM*avg_sum_se_s(:,3,2),':' ,'color',colours(2,:),'linewidth',linewidth);
                         plot(1:L_max,OM*avg_sum_se_s(:,3,3),':' ,'color',colours(3,:),'linewidth',linewidth);
+=======
+                        axes('position',[.3 .3 .3 .3]);
+                        box on;
+                        
+                        plot(1:L_max,avg_sum_se_s(:,1,1),'-','color',colours(1,:),'linewidth',linewidth);
+                        hold on;
+                        plot(1:L_max,avg_sum_se_s(:,1,2),'-','color',colours(2,:),'linewidth',linewidth);
+                        plot(1:L_max,avg_sum_se_s(:,1,3),'-','color',colours(3,:),'linewidth',linewidth);
+                        plot(1:L_max,avg_sum_se_s(:,2,1),'--','color',colours(1,:),'linewidth',linewidth);
+                        plot(1:L_max,avg_sum_se_s(:,2,2),'--','color',colours(2,:),'linewidth',linewidth);
+                        plot(1:L_max,avg_sum_se_s(:,2,3),'--','color',colours(3,:),'linewidth',linewidth);
+                        plot(1:L_max,avg_sum_se_s(:,3,1),':','color',colours(1,:),'linewidth',linewidth);
+                        plot(1:L_max,avg_sum_se_s(:,3,2),':','color',colours(2,:),'linewidth',linewidth);
+                        plot(1:L_max,avg_sum_se_s(:,3,3),':','color',colours(3,:),'linewidth',linewidth);
+>>>>>>> f3cbfc255096b547f744ae3295841f92e75e42f0
                         
                         set(gca,'fontname',fontname,'fontsize',fontsize);
                         
                         xlim([55 76]);
+<<<<<<< HEAD
                         
                         if plotse == 1
                             ylim([35 37.1]);
                         end
+=======
+                        ylim([35 37.1]);
+>>>>>>> f3cbfc255096b547f744ae3295841f92e75e42f0
                 end
             case 200
                 switch K
@@ -510,6 +816,7 @@ switch chn_type
                         axes('position',[.475 .3 .3 .3]);
                         box on;
                         
+<<<<<<< HEAD
                         plot(1:L_max,OM*avg_sum_se_s(:,1,1),'-' ,'color',colours(1,:),'linewidth',linewidth);
                         hold on;
                         plot(1:L_max,OM*avg_sum_se_s(:,1,2),'-' ,'color',colours(2,:),'linewidth',linewidth);
@@ -520,14 +827,30 @@ switch chn_type
                         plot(1:L_max,OM*avg_sum_se_s(:,3,1),':' ,'color',colours(1,:),'linewidth',linewidth);
                         plot(1:L_max,OM*avg_sum_se_s(:,3,2),':' ,'color',colours(2,:),'linewidth',linewidth);
                         plot(1:L_max,OM*avg_sum_se_s(:,3,3),':' ,'color',colours(3,:),'linewidth',linewidth);
+=======
+                        plot(1:L_max,avg_sum_se_s(:,1,1),'-','color',colours(1,:),'linewidth',linewidth);
+                        hold on;
+                        plot(1:L_max,avg_sum_se_s(:,1,2),'-','color',colours(2,:),'linewidth',linewidth);
+                        plot(1:L_max,avg_sum_se_s(:,1,3),'-','color',colours(3,:),'linewidth',linewidth);
+                        plot(1:L_max,avg_sum_se_s(:,2,1),'--','color',colours(1,:),'linewidth',linewidth);
+                        plot(1:L_max,avg_sum_se_s(:,2,2),'--','color',colours(2,:),'linewidth',linewidth);
+                        plot(1:L_max,avg_sum_se_s(:,2,3),'--','color',colours(3,:),'linewidth',linewidth);
+                        plot(1:L_max,avg_sum_se_s(:,3,1),':','color',colours(1,:),'linewidth',linewidth);
+                        plot(1:L_max,avg_sum_se_s(:,3,2),':','color',colours(2,:),'linewidth',linewidth);
+                        plot(1:L_max,avg_sum_se_s(:,3,3),':','color',colours(3,:),'linewidth',linewidth);
+>>>>>>> f3cbfc255096b547f744ae3295841f92e75e42f0
                         
                         set(gca,'fontname',fontname,'fontsize',fontsize);
                         
                         xlim([20 23]);
+<<<<<<< HEAD
                         
                         if plotse == 1
                             ylim([41.5 42.6]);
                         end
+=======
+                        ylim([41.5 42.6]);
+>>>>>>> f3cbfc255096b547f744ae3295841f92e75e42f0
                     case 50
                         ylim([5 55]);
                         
@@ -537,6 +860,7 @@ switch chn_type
                         axes('position',[.45 .275 .3 .3]);
                         box on;
                         
+<<<<<<< HEAD
                         plot(1:L_max,OM*avg_sum_se_s(:,1,1),'-' ,'color',colours(1,:),'linewidth',linewidth);
                         hold on;
                         plot(1:L_max,OM*avg_sum_se_s(:,1,2),'-' ,'color',colours(2,:),'linewidth',linewidth);
@@ -547,14 +871,30 @@ switch chn_type
                         plot(1:L_max,OM*avg_sum_se_s(:,3,1),':' ,'color',colours(1,:),'linewidth',linewidth);
                         plot(1:L_max,OM*avg_sum_se_s(:,3,2),':' ,'color',colours(2,:),'linewidth',linewidth);
                         plot(1:L_max,OM*avg_sum_se_s(:,3,3),':' ,'color',colours(3,:),'linewidth',linewidth);
+=======
+                        plot(1:L_max,avg_sum_se_s(:,1,1),'-','color',colours(1,:),'linewidth',linewidth);
+                        hold on;
+                        plot(1:L_max,avg_sum_se_s(:,1,2),'-','color',colours(2,:),'linewidth',linewidth);
+                        plot(1:L_max,avg_sum_se_s(:,1,3),'-','color',colours(3,:),'linewidth',linewidth);
+                        plot(1:L_max,avg_sum_se_s(:,2,1),'--','color',colours(1,:),'linewidth',linewidth);
+                        plot(1:L_max,avg_sum_se_s(:,2,2),'--','color',colours(2,:),'linewidth',linewidth);
+                        plot(1:L_max,avg_sum_se_s(:,2,3),'--','color',colours(3,:),'linewidth',linewidth);
+                        plot(1:L_max,avg_sum_se_s(:,3,1),':','color',colours(1,:),'linewidth',linewidth);
+                        plot(1:L_max,avg_sum_se_s(:,3,2),':','color',colours(2,:),'linewidth',linewidth);
+                        plot(1:L_max,avg_sum_se_s(:,3,3),':','color',colours(3,:),'linewidth',linewidth);
+>>>>>>> f3cbfc255096b547f744ae3295841f92e75e42f0
                         
                         set(gca,'fontname',fontname,'fontsize',fontsize);
                         
                         xlim([36 42]);
+<<<<<<< HEAD
                         
                         if plotse == 1
                             ylim([52.5 54]);
                         end
+=======
+                        ylim([52.5 54]);
+>>>>>>> f3cbfc255096b547f744ae3295841f92e75e42f0
                     case 75
                         ylim([5 60]);
                         
@@ -564,6 +904,7 @@ switch chn_type
                         axes('position',[.45 .275 .3 .3]);
                         box on;
                         
+<<<<<<< HEAD
                         plot(1:L_max,OM*avg_sum_se_s(:,1,1),'-' ,'color',colours(1,:),'linewidth',linewidth);
                         hold on;
                         plot(1:L_max,OM*avg_sum_se_s(:,1,2),'-' ,'color',colours(2,:),'linewidth',linewidth);
@@ -574,14 +915,30 @@ switch chn_type
                         plot(1:L_max,OM*avg_sum_se_s(:,3,1),':' ,'color',colours(1,:),'linewidth',linewidth);
                         plot(1:L_max,OM*avg_sum_se_s(:,3,2),':' ,'color',colours(2,:),'linewidth',linewidth);
                         plot(1:L_max,OM*avg_sum_se_s(:,3,3),':' ,'color',colours(3,:),'linewidth',linewidth);
+=======
+                        plot(1:L_max,avg_sum_se_s(:,1,1),'-','color',colours(1,:),'linewidth',linewidth);
+                        hold on;
+                        plot(1:L_max,avg_sum_se_s(:,1,2),'-','color',colours(2,:),'linewidth',linewidth);
+                        plot(1:L_max,avg_sum_se_s(:,1,3),'-','color',colours(3,:),'linewidth',linewidth);
+                        plot(1:L_max,avg_sum_se_s(:,2,1),'--','color',colours(1,:),'linewidth',linewidth);
+                        plot(1:L_max,avg_sum_se_s(:,2,2),'--','color',colours(2,:),'linewidth',linewidth);
+                        plot(1:L_max,avg_sum_se_s(:,2,3),'--','color',colours(3,:),'linewidth',linewidth);
+                        plot(1:L_max,avg_sum_se_s(:,3,1),':','color',colours(1,:),'linewidth',linewidth);
+                        plot(1:L_max,avg_sum_se_s(:,3,2),':','color',colours(2,:),'linewidth',linewidth);
+                        plot(1:L_max,avg_sum_se_s(:,3,3),':','color',colours(3,:),'linewidth',linewidth);
+>>>>>>> f3cbfc255096b547f744ae3295841f92e75e42f0
                         
                         set(gca,'fontname',fontname,'fontsize',fontsize);
                         
                         xlim([52 58]);
+<<<<<<< HEAD
                         
                         if plotse == 1
                             ylim([59.5 60.1]);
                         end
+=======
+                        ylim([59.5 60.1]);
+>>>>>>> f3cbfc255096b547f744ae3295841f92e75e42f0
                     case 100
                         ylim([5 64]);
                         
@@ -591,6 +948,7 @@ switch chn_type
                         axes('position',[.45 .275 .3 .3]);
                         box on;
                         
+<<<<<<< HEAD
                         plot(1:L_max,OM*avg_sum_se_s(:,1,1),'-' ,'color',colours(1,:),'linewidth',linewidth);
                         hold on;
                         plot(1:L_max,OM*avg_sum_se_s(:,1,2),'-' ,'color',colours(2,:),'linewidth',linewidth);
@@ -601,14 +959,30 @@ switch chn_type
                         plot(1:L_max,OM*avg_sum_se_s(:,3,1),':' ,'color',colours(1,:),'linewidth',linewidth);
                         plot(1:L_max,OM*avg_sum_se_s(:,3,2),':' ,'color',colours(2,:),'linewidth',linewidth);
                         plot(1:L_max,OM*avg_sum_se_s(:,3,3),':' ,'color',colours(3,:),'linewidth',linewidth);
+=======
+                        plot(1:L_max,avg_sum_se_s(:,1,1),'-','color',colours(1,:),'linewidth',linewidth);
+                        hold on;
+                        plot(1:L_max,avg_sum_se_s(:,1,2),'-','color',colours(2,:),'linewidth',linewidth);
+                        plot(1:L_max,avg_sum_se_s(:,1,3),'-','color',colours(3,:),'linewidth',linewidth);
+                        plot(1:L_max,avg_sum_se_s(:,2,1),'--','color',colours(1,:),'linewidth',linewidth);
+                        plot(1:L_max,avg_sum_se_s(:,2,2),'--','color',colours(2,:),'linewidth',linewidth);
+                        plot(1:L_max,avg_sum_se_s(:,2,3),'--','color',colours(3,:),'linewidth',linewidth);
+                        plot(1:L_max,avg_sum_se_s(:,3,1),':','color',colours(1,:),'linewidth',linewidth);
+                        plot(1:L_max,avg_sum_se_s(:,3,2),':','color',colours(2,:),'linewidth',linewidth);
+                        plot(1:L_max,avg_sum_se_s(:,3,3),':','color',colours(3,:),'linewidth',linewidth);
+>>>>>>> f3cbfc255096b547f744ae3295841f92e75e42f0
                         
                         set(gca,'fontname',fontname,'fontsize',fontsize);
                         
                         xlim([64 72]);
+<<<<<<< HEAD
                         
                         if plotse == 1
                             ylim([62 64]);
                         end
+=======
+                        ylim([62 64]);
+>>>>>>> f3cbfc255096b547f744ae3295841f92e75e42f0
                     case 150
                         ylim([5 69]);
                         
@@ -618,6 +992,7 @@ switch chn_type
                         axes('position',[.4 .3 .3 .3]);
                         box on;
                         
+<<<<<<< HEAD
                         plot(1:L_max,OM*avg_sum_se_s(:,1,1),'-' ,'color',colours(1,:),'linewidth',linewidth);
                         hold on;
                         plot(1:L_max,OM*avg_sum_se_s(:,1,2),'-' ,'color',colours(2,:),'linewidth',linewidth);
@@ -628,14 +1003,30 @@ switch chn_type
                         plot(1:L_max,OM*avg_sum_se_s(:,3,1),':' ,'color',colours(1,:),'linewidth',linewidth);
                         plot(1:L_max,OM*avg_sum_se_s(:,3,2),':' ,'color',colours(2,:),'linewidth',linewidth);
                         plot(1:L_max,OM*avg_sum_se_s(:,3,3),':' ,'color',colours(3,:),'linewidth',linewidth);
+=======
+                        plot(1:L_max,avg_sum_se_s(:,1,1),'-','color',colours(1,:),'linewidth',linewidth);
+                        hold on;
+                        plot(1:L_max,avg_sum_se_s(:,1,2),'-','color',colours(2,:),'linewidth',linewidth);
+                        plot(1:L_max,avg_sum_se_s(:,1,3),'-','color',colours(3,:),'linewidth',linewidth);
+                        plot(1:L_max,avg_sum_se_s(:,2,1),'--','color',colours(1,:),'linewidth',linewidth);
+                        plot(1:L_max,avg_sum_se_s(:,2,2),'--','color',colours(2,:),'linewidth',linewidth);
+                        plot(1:L_max,avg_sum_se_s(:,2,3),'--','color',colours(3,:),'linewidth',linewidth);
+                        plot(1:L_max,avg_sum_se_s(:,3,1),':','color',colours(1,:),'linewidth',linewidth);
+                        plot(1:L_max,avg_sum_se_s(:,3,2),':','color',colours(2,:),'linewidth',linewidth);
+                        plot(1:L_max,avg_sum_se_s(:,3,3),':','color',colours(3,:),'linewidth',linewidth);
+>>>>>>> f3cbfc255096b547f744ae3295841f92e75e42f0
                         
                         set(gca,'fontname',fontname,'fontsize',fontsize);
                         
                         xlim([80 95]);
+<<<<<<< HEAD
                         
                         if plotse == 1
                             ylim([66 69]);
                         end
+=======
+                        ylim([66 69]);
+>>>>>>> f3cbfc255096b547f744ae3295841f92e75e42f0
                     case 200
                     case 250
                 end
@@ -643,6 +1034,7 @@ switch chn_type
     otherwise
 end
 
+<<<<<<< HEAD
 if savefig == 1
     if plotse == 1
         saveas(gcf,[root_save 'sum_se_all_L_' chn_type '_M_' sprintf(zero_pad_1,M) '_K_' sprintf(zero_pad_1,K) '_SNR_' num2str(snr) '_dB_MC_' num2str(N_MC*MC)],'fig');
@@ -791,6 +1183,37 @@ switch chn_type
     otherwise
 end
 
+=======
+if (savefig == 1)
+    saveas(gcf,[root_save 'sum_se_all_L_' chn_type '_M_' sprintf(zero_pad_1,M) '_K_' sprintf(zero_pad_1,K) '_SNR_' num2str(snr) '_dB_MC_' num2str(N_MC*MC)],'fig');
+    saveas(gcf,[root_save 'sum_se_all_L_' chn_type '_M_' sprintf(zero_pad_1,M) '_K_' sprintf(zero_pad_1,K) '_SNR_' num2str(snr) '_dB_MC_' num2str(N_MC*MC)],'png');
+    saveas(gcf,[root_save 'sum_se_all_L_' chn_type '_M_' sprintf(zero_pad_1,M) '_K_' sprintf(zero_pad_1,K) '_SNR_' num2str(snr) '_dB_MC_' num2str(N_MC*MC)],'epsc2');
+end
+
+% figure;
+
+% set(gcf,'position',[0 0 800 600]);
+% 
+% plot(edg_sum_se{2,1},[cdf_sum_se{2,1} 1],'-','color',colours(1,:),'linewidth',linewidth);
+% hold on;
+% plot(edg_sum_se{3,1},[cdf_sum_se{3,1} 1],'-','color',colours(2,:),'linewidth',linewidth);
+% plot(edg_sum_se{4,1},[cdf_sum_se{4,1} 1],'-','color',colours(3,:),'linewidth',linewidth);
+% plot(edg_sum_se{2,2},[cdf_sum_se{2,2} 1],'--','color',colours(1,:),'linewidth',linewidth);
+% plot(edg_sum_se{3,2},[cdf_sum_se{3,2} 1],'--','color',colours(2,:),'linewidth',linewidth);
+% plot(edg_sum_se{4,2},[cdf_sum_se{4,2} 1],'--','color',colours(3,:),'linewidth',linewidth);
+% plot(edg_sum_se{2,3},[cdf_sum_se{2,3} 1],':','color',colours(1,:),'linewidth',linewidth);
+% plot(edg_sum_se{3,3},[cdf_sum_se{3,3} 1],':','color',colours(2,:),'linewidth',linewidth);
+% plot(edg_sum_se{4,3},[cdf_sum_se{4,3} 1],':','color',colours(3,:),'linewidth',linewidth);
+% 
+% xlabel('Sum-spectral efficiency (b/s/Hz)','fontname',fontname,'fontsize',fontsize);
+% ylabel('Cumulative distribution','fontname',fontname,'fontsize',fontsize);
+% 
+% legend(legend_algo_2,'fontname',fontname,'fontsize',fontsize,'location',location_1);
+% legend box off;
+% 
+% set(gca,'fontname',fontname,'fontsize',fontsize);
+% 
+>>>>>>> f3cbfc255096b547f744ae3295841f92e75e42f0
 % switch chn_type
 %     case 'rayleigh'
 %     case 'ur_los'
@@ -1209,6 +1632,7 @@ end
 %         end
 %     otherwise
 % end
+<<<<<<< HEAD
 
 if savefig == 1
     if plotse == 1
@@ -1221,3 +1645,11 @@ if savefig == 1
         saveas(gcf,[root_save 'cdf_throughput_' chn_type '_M_' sprintf(zero_pad_1,M) '_K_' sprintf(zero_pad_1,K) '_L_' sprintf(zero_pad_2,L) '_SNR_' num2str(snr) '_dB_MC_' num2str(N_MC*MC)],'epsc2');
     end
 end
+=======
+% 
+% if (savefig == 1)
+%     saveas(gcf,[root_save 'cdf_sum_se_star_' chn_type '_M_' sprintf(zero_pad_1,M) '_K_' sprintf(zero_pad_1,K) '_SNR_' num2str(snr) '_dB_MC_' num2str(N_MC*MC)],'fig');
+%     saveas(gcf,[root_save 'cdf_sum_se_star_' chn_type '_M_' sprintf(zero_pad_1,M) '_K_' sprintf(zero_pad_1,K) '_SNR_' num2str(snr) '_dB_MC_' num2str(N_MC*MC)],'png');
+%     saveas(gcf,[root_save 'cdf_sum_se_star_' chn_type '_M_' sprintf(zero_pad_1,M) '_K_' sprintf(zero_pad_1,K) '_SNR_' num2str(snr) '_dB_MC_' num2str(N_MC*MC)],'epsc2');
+% end
+>>>>>>> f3cbfc255096b547f744ae3295841f92e75e42f0
