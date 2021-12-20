@@ -20,7 +20,7 @@ if ~exist('MC_ERR','var')
 end
 
 if ~exist('M','var')
-    M = 200;                                                               % Number of antennas at the base station
+    M = 50;                                                               % Number of antennas at the base station
 end
 
 if ~exist('K','var')
@@ -75,7 +75,7 @@ end
 se            = zeros(K,N_PRE,N_ERR,MC_ERR,MC);
 se_s_all_L    = zeros(L_max,L_max,N_PRE,N_ALG,N_ERR,MC_ERR,MC);
 S_set         = zeros(K,L_max,N_ALG,N_ERR,MC_ERR,MC);
-pos_and_theta = zeros(K,3,mc);
+pos_and_theta = zeros(K,3,MC);
 
 for mc = 1:MC
     mc
