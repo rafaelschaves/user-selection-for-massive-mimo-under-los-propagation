@@ -4,7 +4,7 @@ function [H_hat] = urlosChannelEstimate(commcell,H,var_error)
 
 n_antenna = commcell.nAntennas;                                            % Number of transmit antennas at base station
 n_user    = commcell.nUsers;                                               % Number of user terminals
-f_c       = commcell.frequency;                                            % Carrier frequency of the transmitted signal
+% f_c       = commcell.frequency;                                            % Carrier frequency of the transmitted signal
 
 %antenna_spacing = c/(2*f_c);                                               % Antenna spacing of transmitt array
 

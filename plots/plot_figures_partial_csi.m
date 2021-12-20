@@ -4,7 +4,8 @@ clc;
 
 % Macros
 
-MC = 1000;                                                              % Size of the monte-carlo ensemble
+MC = 5;                                                              % Size of the monte-carlo ensemble
+MC_ERR = 100;
 
 M = 50;                                                                   % Number of antennas at base station
 K = 75;                                                                   % Number of users at the cell 
@@ -36,28 +37,33 @@ zero_pad_2 = '%02d';
 
 % Loading data
 
-sum_se_s = zeros(L_max,N_PRE,N_ALG,N_ERR,MC);
+sum_se_s = zeros(L_max,N_PRE,N_ALG,N_ERR,MC_ERR,MC);
 
 load([root_load 'se_all_L_ur_los_M_' sprintf(zero_pad_1,M) '_K_' sprintf(zero_pad_1,K) '_SNR_' num2str(snr) '_dB_MC_' num2str(MC) '.mat']);
     
-sum_se = reshape(sum(se,1),N_PRE,N_ERR,MC);
+sum_se = reshape(sum(se,1),N_PRE,N_ERR,MC_ERR,MC);
 
 for l = 1:L_max
-    sum_se_s(l,:,:,:,:) = sum(se_s_all_L(1:l,l,:,:,:,:),1);
+    sum_se_s(l,:,:,:,:,:) = sum(se_s_all_L(1:l,l,:,:,:,:,:),1);
 end
 
-avg_sum_thrgpt   = bandwidth*dl_ul_ratio*mean(sum_se,3);
-avg_sum_thrgpt_s = bandwidth*dl_ul_ratio*mean(sum_se_s,5);
+avg_sum_thrgpt_eps   = bandwidth*dl_ul_ratio*mean(sum_se,3);
+avg_sum_thrgpt_s_eps = bandwidth*dl_ul_ratio*mean(sum_se_s,5);
 
-[max_sum_thrgpt_s,L_star] = max(avg_sum_thrgpt_s,[],1);
+avg_sum_thrgpt_eps   = reshape(avg_sum_thrgpt_eps,N_PRE,N_ERR,MC);
+avg_sum_thrgpt_s_eps = reshape(avg_sum_thrgpt_s_eps,L_max,N_PRE,N_ALG,N_ERR,MC);
 
-max_sum_thrgpt_s = reshape(max_sum_thrgpt_s,N_PRE,N_ALG,N_ERR);
-L_star           = reshape(L_star,N_PRE,N_ALG,N_ERR);
+[max_sum_thrgpt_s,L_star] = max(avg_sum_thrgpt_s_eps,[],1);
 
-for n_err = 1:N_ERR
-    for n_alg = 1:N_ALG
-        for n_pre = 1:N_PRE
-            sum_thrgpt_s_star(:,n_pre,n_alg,n_err) = avg_sum_thrgpt_s(L_star(n_alg,n_pre),n_pre,n_alg,n_err,:);
+max_sum_thrgpt_s = reshape(max_sum_thrgpt_s,N_PRE,N_ALG,N_ERR,MC);
+L_star           = reshape(L_star,N_PRE,N_ALG,N_ERR,MC);
+
+for mc = 1:MC
+    for n_err = 1:N_ERR
+        for n_alg = 1:N_ALG
+            for n_pre = 1:N_PRE
+                sum_thrgpt_s_star(:,n_pre,n_alg,n_err) = avg_sum_thrgpt_s_eps(L_star(n_alg,n_pre),n_pre,n_alg,n_err,:);
+            end
         end
     end
 end
@@ -128,7 +134,7 @@ figure;
        
 set(gcf,'position',[0 0 800 600]);
 
-semilogx(fliplr(var_err),fliplr(avg_sum_thrgpt(1,:).'),linestyle{1},'color',colours(1,:),'linewidth',linewidth);
+semilogx(fliplr(var_err),OM*fliplr(avg_sum_thrgpt_eps(1,:,1).'),linestyle{1},'color',colours(1,:),'linewidth',linewidth);
 
 xlabel('$\sigma_{\varepsilon}^{2}$','fontname',fontname,'fontsize',fontsize,'interpreter','latex');
 ylabel(['Throughput ' um{abs(log10(OM))/3}],'fontname',fontname,'fontsize',fontsize);
@@ -142,12 +148,12 @@ for pre_idx = 1:N_PRE
 
     set(gcf,'position',[0 0 800 600]);
 
-    plot(1:L_max,OM*avg_sum_thrgpt_s(:,pre_idx,alg_idx,1),'-' ,'color',colours(1,:),'linewidth',linewidth);
+    plot(1:L_max,OM*avg_sum_thrgpt_s_eps(:,pre_idx,alg_idx,1,1),'-' ,'color',colours(1,:),'linewidth',linewidth);
     hold on;
-    plot(1:L_max,OM*avg_sum_thrgpt_s(:,pre_idx,alg_idx,2),'-' ,'color',colours(2,:),'linewidth',linewidth);
-    plot(1:L_max,OM*avg_sum_thrgpt_s(:,pre_idx,alg_idx,3),'-' ,'color',colours(3,:),'linewidth',linewidth);
-    plot(1:L_max,OM*avg_sum_thrgpt_s(:,pre_idx,alg_idx,4),'-' ,'color',colours(4,:),'linewidth',linewidth);
-    plot(1:L_max,OM*avg_sum_thrgpt_s(:,pre_idx,alg_idx,5),'-' ,'color',colours(5,:),'linewidth',linewidth);
+    plot(1:L_max,OM*avg_sum_thrgpt_s_eps(:,pre_idx,alg_idx,2,1),'-' ,'color',colours(2,:),'linewidth',linewidth);
+    plot(1:L_max,OM*avg_sum_thrgpt_s_eps(:,pre_idx,alg_idx,3,1),'-' ,'color',colours(3,:),'linewidth',linewidth);
+    plot(1:L_max,OM*avg_sum_thrgpt_s_eps(:,pre_idx,alg_idx,4,1),'-' ,'color',colours(4,:),'linewidth',linewidth);
+    plot(1:L_max,OM*avg_sum_thrgpt_s_eps(:,pre_idx,alg_idx,5,1),'-' ,'color',colours(5,:),'linewidth',linewidth);
 
     xlabel('Number of selected users','fontname',fontname,'fontsize',fontsize);
     ylabel(['Throughput ' um{abs(log10(OM))/3}],'fontname',fontname,'fontsize',fontsize);
@@ -169,10 +175,10 @@ for pre_idx = 1:N_PRE
 
     set(gcf,'position',[0 0 800 600]);
 
-    semilogx(var_err,reshape(L_star(pre_idx,1,:),1,[]),'-' ,'color',colours(1,:),'linewidth',linewidth);
+    semilogx(var_err,reshape(L_star(pre_idx,1,:,1),1,[]),'-' ,'color',colours(1,:),'linewidth',linewidth);
     hold on;
-    semilogx(var_err,reshape(L_star(pre_idx,2,:),1,[]),'-' ,'color',colours(2,:),'linewidth',linewidth);
-    semilogx(var_err,reshape(L_star(pre_idx,3,:),1,[]),'-' ,'color',colours(3,:),'linewidth',linewidth);
+    semilogx(var_err,reshape(L_star(pre_idx,2,:,1),1,[]),'-' ,'color',colours(2,:),'linewidth',linewidth);
+    semilogx(var_err,reshape(L_star(pre_idx,3,:,1),1,[]),'-' ,'color',colours(3,:),'linewidth',linewidth);
     
     xlabel('$\sigma_{\varepsilon}^{2}$','fontname',fontname,'fontsize',fontsize,'interpreter','latex');
     ylabel('$L^{\star}$','fontname',fontname,'fontsize',fontsize,'interpreter','latex');

@@ -16,7 +16,7 @@ if ~exist('MC','var')
 end
 
 if ~exist('MC_ERR','var')
-    MC_ERR = 5;
+    MC_ERR = 10;
 end
 
 if ~exist('M','var')
@@ -24,7 +24,7 @@ if ~exist('M','var')
 end
 
 if ~exist('K','var')
-    K = 20;                                                                % Number of users at the cell
+    K = 75;                                                                % Number of users at the cell
 end
 
 % err = [0 pi/(6*M) pi/(3*M) pi/(2*M)];
