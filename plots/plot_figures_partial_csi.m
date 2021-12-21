@@ -30,7 +30,7 @@ N_ERR = length(var_err);
 % Roots
 
 root_load = 'G:\My Drive\UFRJ\PhD\Codes\user-scheduling-massive-mimo\Results\Selection\Downlink\';
-root_save = 'G:\My Drive\UFRJ\PhD\Codes\user-scheduling-massive-mimo\Results\Figures\Downlink\';
+root_save = 'G:\My Drive\UFRJ\PhD\Codes\user-scheduling-massive-mimo\Figures\Selection\Downlink\';
 
 zero_pad_1 = '%03d';
 zero_pad_2 = '%02d';
@@ -71,6 +71,7 @@ end
 avg_sum_thrgpt   = mean(avg_sum_thrgpt_eps,3);
 avg_sum_thrgpt_s = mean(avg_sum_thrgpt_s_eps,5);
 
+avg_max_sum_thrgpt_s = mean(max_sum_thrgpt_s,4);
 avg_L_star = mean(L_star,4);
 
 % N_BIN = 100;
@@ -99,7 +100,7 @@ marker = {'o','s','^'};
 
 linestyle = {'-','--',':'};
 
-savefig = 0;
+savefig = 1;
 
 if M == 50
     OM = 1e-6;
@@ -134,39 +135,72 @@ colours = [0.0000 0.4470 0.7410;
            0.3010 0.7450 0.9330;
            0.6350 0.0780 0.1840;
            0.0000 0.0000 0.0000];
+  
+for alg = 1:N_ALG
+    for pre = 1:N_PRE
+        figure;
+        
+        set(gcf,'position',[0 0 800 600]);
+        
+        plot(1:L_max,OM*avg_sum_thrgpt_s(:,pre,alg,1),'-' ,'color',colours(1,:),'linewidth',linewidth);
+        hold on;
+        plot(1:L_max,OM*avg_sum_thrgpt_s(:,pre,alg,2),'-' ,'color',colours(2,:),'linewidth',linewidth);
+        plot(1:L_max,OM*avg_sum_thrgpt_s(:,pre,alg,3),'-' ,'color',colours(3,:),'linewidth',linewidth);
+        plot(1:L_max,OM*avg_sum_thrgpt_s(:,pre,alg,4),'-' ,'color',colours(4,:),'linewidth',linewidth);
+        plot(1:L_max,OM*avg_sum_thrgpt_s(:,pre,alg,5),'-' ,'color',colours(5,:),'linewidth',linewidth);
+        
+        xlabel('Number of selected users','fontname',fontname,'fontsize',fontsize);
+        ylabel(['Throughput ' um{abs(log10(OM))/3}],'fontname',fontname,'fontsize',fontsize);
+        
+        if pre == 1
+            legend(legend_err,'fontname',fontname,'fontsize',fontsize,'interpreter','latex','location',location_4,'numcolumns',2);
+            legend box off;
+        end
 
-alg = 3;
+        set(gca,'fontname',fontname,'fontsize',fontsize);
+        
+        if K <= M
+            xlim([1 K]);
+        else
+            xlim([1 L_max]);
+        end
+        
+        if savefig == 1
+            saveas(gcf,[root_save 'throughput_pcsi_all_L_ur_los_M_' sprintf(zero_pad_1,M) '_K_' sprintf(zero_pad_1,K) '_SNR_' num2str(snr) '_dB_' legend_pre{pre} '_' legend_alg{alg} '_MC_' num2str(MC)],'fig');
+            saveas(gcf,[root_save 'throughput_pcsi_all_L_ur_los_M_' sprintf(zero_pad_1,M) '_K_' sprintf(zero_pad_1,K) '_SNR_' num2str(snr) '_dB_' legend_pre{pre} '_' legend_alg{alg} '_MC_' num2str(MC)],'png');
+            saveas(gcf,[root_save 'throughput_pcsi_all_L_ur_los_M_' sprintf(zero_pad_1,M) '_K_' sprintf(zero_pad_1,K) '_SNR_' num2str(snr) '_dB_' legend_pre{pre} '_' legend_alg{alg} '_MC_' num2str(MC)],'epsc2');
+        end
+    end
+end
 
 for pre = 1:N_PRE
     figure;
-
+    
     set(gcf,'position',[0 0 800 600]);
-
-    plot(1:L_max,OM*avg_sum_thrgpt_s(:,pre,alg,1),'-' ,'color',colours(1,:),'linewidth',linewidth);
+    
+    semilogx(var_err,reshape(OM*avg_max_sum_thrgpt_s(pre,1,:),1,[]),'-' ,'color',colours(1,:),'linewidth',linewidth);
     hold on;
-    plot(1:L_max,OM*avg_sum_thrgpt_s(:,pre,alg,2),'-' ,'color',colours(2,:),'linewidth',linewidth);
-    plot(1:L_max,OM*avg_sum_thrgpt_s(:,pre,alg,3),'-' ,'color',colours(3,:),'linewidth',linewidth);
-    plot(1:L_max,OM*avg_sum_thrgpt_s(:,pre,alg,4),'-' ,'color',colours(4,:),'linewidth',linewidth);
-    plot(1:L_max,OM*avg_sum_thrgpt_s(:,pre,alg,5),'-' ,'color',colours(5,:),'linewidth',linewidth);
-
-    xlabel('Number of selected users','fontname',fontname,'fontsize',fontsize);
+    semilogx(var_err,reshape(OM*avg_max_sum_thrgpt_s(pre,2,:),1,[]),'-' ,'color',colours(2,:),'linewidth',linewidth);
+    semilogx(var_err,reshape(OM*avg_max_sum_thrgpt_s(pre,3,:),1,[]),'-' ,'color',colours(3,:),'linewidth',linewidth);
+    
+    xlabel('$\sigma_{\varepsilon}^{2}$','fontname',fontname,'fontsize',fontsize,'interpreter','latex');
     ylabel(['Throughput ' um{abs(log10(OM))/3}],'fontname',fontname,'fontsize',fontsize);
     
-    legend(legend_err,'fontname',fontname,'fontsize',fontsize,'interpreter','latex','location',location_4,'numcolumns',2);
+    legend(legend_alg,'fontname',fontname,'fontsize',fontsize,'location',location_3,'numcolumns',1);
     legend box off;
-
+    
     set(gca,'fontname',fontname,'fontsize',fontsize);
     
-    if K <= M
-        xlim([1 K]);
-    else
-        xlim([1 L_max]);
+    if savefig == 1
+        saveas(gcf,[root_save 'throughput_star_pcsi_ur_los_M_' sprintf(zero_pad_1,M) '_K_' sprintf(zero_pad_1,K) '_SNR_' num2str(snr) '_dB_' legend_pre{pre} '_MC_' num2str(MC)],'fig');
+        saveas(gcf,[root_save 'throughput_star_pcsi_ur_los_M_' sprintf(zero_pad_1,M) '_K_' sprintf(zero_pad_1,K) '_SNR_' num2str(snr) '_dB_' legend_pre{pre} '_MC_' num2str(MC)],'png');
+        saveas(gcf,[root_save 'throughput_star_pcsi_ur_los_M_' sprintf(zero_pad_1,M) '_K_' sprintf(zero_pad_1,K) '_SNR_' num2str(snr) '_dB_' legend_pre{pre} '_MC_' num2str(MC)],'epsc2');
     end
     
     figure;
-
+    
     set(gcf,'position',[0 0 800 600]);
-
+    
     semilogx(var_err,reshape(avg_L_star(pre,1,:),1,[]),'-' ,'color',colours(1,:),'linewidth',linewidth);
     hold on;
     semilogx(var_err,reshape(avg_L_star(pre,2,:),1,[]),'-' ,'color',colours(2,:),'linewidth',linewidth);
@@ -175,49 +209,18 @@ for pre = 1:N_PRE
     xlabel('$\sigma_{\varepsilon}^{2}$','fontname',fontname,'fontsize',fontsize,'interpreter','latex');
     ylabel('$L^{\star}$','fontname',fontname,'fontsize',fontsize,'interpreter','latex');
     
-    set(gca,'fontname',fontname,'fontsize',fontsize);
-end
-
-mc  = 1;
-alg = 3;
-
-for pre = 1:N_PRE
-    figure;
-
-    set(gcf,'position',[0 0 800 600]);
-
-    plot(1:L_max,OM*avg_sum_thrgpt_s_eps(:,pre,alg,1,1),'-' ,'color',colours(1,:),'linewidth',linewidth);
-    hold on;
-    plot(1:L_max,OM*avg_sum_thrgpt_s_eps(:,pre,alg,2,1),'-' ,'color',colours(2,:),'linewidth',linewidth);
-    plot(1:L_max,OM*avg_sum_thrgpt_s_eps(:,pre,alg,3,1),'-' ,'color',colours(3,:),'linewidth',linewidth);
-    plot(1:L_max,OM*avg_sum_thrgpt_s_eps(:,pre,alg,4,1),'-' ,'color',colours(4,:),'linewidth',linewidth);
-    plot(1:L_max,OM*avg_sum_thrgpt_s_eps(:,pre,alg,5,1),'-' ,'color',colours(5,:),'linewidth',linewidth);
-
-    xlabel('Number of selected users','fontname',fontname,'fontsize',fontsize);
-    ylabel(['Throughput ' um{abs(log10(OM))/3}],'fontname',fontname,'fontsize',fontsize);
-    
-    legend(legend_err,'fontname',fontname,'fontsize',fontsize,'interpreter','latex','location',location_4,'numcolumns',2);
-    legend box off;
-
-    set(gca,'fontname',fontname,'fontsize',fontsize);
-    
-    if K <= M
-        xlim([1 K]);
+    if pre == 1
+        legend(legend_alg,'fontname',fontname,'fontsize',fontsize,'location',location_1,'numcolumns',1);
     else
-        xlim([1 L_max]);
+        legend(legend_alg,'fontname',fontname,'fontsize',fontsize,'location',location_3,'numcolumns',1);
     end
-    
-    figure;
-
-    set(gcf,'position',[0 0 800 600]);
-
-    semilogx(var_err,reshape(L_star(pre,1,:,1),1,[]),'-' ,'color',colours(1,:),'linewidth',linewidth);
-    hold on;
-    semilogx(var_err,reshape(L_star(pre,2,:,1),1,[]),'-' ,'color',colours(2,:),'linewidth',linewidth);
-    semilogx(var_err,reshape(L_star(pre,3,:,1),1,[]),'-' ,'color',colours(3,:),'linewidth',linewidth);
-    
-    xlabel('$\sigma_{\varepsilon}^{2}$','fontname',fontname,'fontsize',fontsize,'interpreter','latex');
-    ylabel('$L^{\star}$','fontname',fontname,'fontsize',fontsize,'interpreter','latex');
+    legend box off;
     
     set(gca,'fontname',fontname,'fontsize',fontsize);
+    
+    if savefig == 1
+        saveas(gcf,[root_save 'L_star_pcsi_ur_los_M_' sprintf(zero_pad_1,M) '_K_' sprintf(zero_pad_1,K) '_SNR_' num2str(snr) '_dB_' legend_pre{pre} '_MC_' num2str(MC)],'fig');
+        saveas(gcf,[root_save 'L_star_pcsi_ur_los_M_' sprintf(zero_pad_1,M) '_K_' sprintf(zero_pad_1,K) '_SNR_' num2str(snr) '_dB_' legend_pre{pre} '_MC_' num2str(MC)],'png');
+        saveas(gcf,[root_save 'L_star_pcsi_ur_los_M_' sprintf(zero_pad_1,M) '_K_' sprintf(zero_pad_1,K) '_SNR_' num2str(snr) '_dB_' legend_pre{pre} '_MC_' num2str(MC)],'epsc2');
+    end
 end
