@@ -27,7 +27,6 @@ if ~exist('K','var')
     K = 75;                                                                % Number of users at the cell
 end
 
-% err = [0 pi/(6*M) pi/(3*M) pi/(2*M)];
 var_err = [0 1e-3 1e-2 1e-1 1];
 
 N_ALG = 3;
@@ -83,12 +82,10 @@ for mc = 1:MC
     [H,~,pos_and_theta(:,:,mc)] = massiveMIMOChannel(commcell,channel_type);
     
     for err_idx = 1:N_ERR
-        err_idx
-        
         for mc_err = 1:MC_ERR
             H_hat = urlosChannelEstimate(commcell,H,var_err(err_idx));
         
-            [se(:,1,err_idx,mc_err,mc),se(:,2,err_idx,mc_err,mc),se(:,3,err_idx,mc_err,mc)] = DLspectralEfficiency(H,beta,snr,1/K,H_hat);                                      % No Selection
+            [se(:,1,err_idx,mc_err,mc),se(:,2,err_idx,mc_err,mc),se(:,3,err_idx,mc_err,mc)] = DLspectralEfficiency(H,beta,snr,1/K,H_hat,var_err(err_idx));                                      % No Selection
         
             for L = 1:L_max                                                                                                                               % Number of selected users
                 for alg_idx = 1:N_ALG
@@ -96,7 +93,7 @@ for mc = 1:MC
                              
                     S_set(S_set_aux,L,alg_idx,err_idx,mc) = 1;
                 
-                    [se_s_mf,se_s_zf,se_s_mmse] = DLspectralEfficiency(H_s,beta,snr,1/L);
+                    [se_s_mf,se_s_zf,se_s_mmse] = DLspectralEfficiency(H_s,beta,snr,1/L,H_s,var_err(err_idx));
                 
                     se_s_all_L(:,L,1,alg_idx,err_idx,mc_err,mc) = [se_s_mf; zeros(L_max-L,1)];
                     se_s_all_L(:,L,2,alg_idx,err_idx,mc_err,mc) = [se_s_zf; zeros(L_max-L,1)];

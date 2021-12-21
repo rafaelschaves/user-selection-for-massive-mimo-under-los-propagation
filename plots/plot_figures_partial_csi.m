@@ -5,7 +5,7 @@ clc;
 % Macros
 
 MC = 5;                                                              % Size of the monte-carlo ensemble
-MC_ERR = 100;
+MC_ERR = 10;
 
 M = 50;                                                                   % Number of antennas at base station
 K = 75;                                                                   % Number of users at the cell 
@@ -21,7 +21,7 @@ snr = -5;
 bandwidth   = 20e6;
 dl_ul_ratio = 0.5;
 
-var_err = [1e-6 1e-3 1e-2 1e-1 1];
+var_err = [0 1e-3 1e-2 1e-1 1];
 
 N_ALG = 3;                                                                 % Number of algorithms for perform user scheduling
 N_PRE = 3;
@@ -68,20 +68,25 @@ for mc = 1:MC
     end
 end
 
-N_BIN = 100;
+avg_sum_thrgpt   = mean(avg_sum_thrgpt_eps,3);
+avg_sum_thrgpt_s = mean(avg_sum_thrgpt_s_eps,5);
 
-cdf_thrgpt_se = cell(N_ALG+1,N_PRE,N_ERR);
-edg_thrgpt_se = cell(N_ALG+1,N_PRE,N_ERR);
+avg_L_star = mean(L_star,4);
 
-for n_err = 1:N_ERR
-    for n_pre = 1:N_PRE
-        [cdf_thrgpt_se{1,n_pre},edg_thrgpt_se{1,n_pre}] = histcounts(sum_se(n_pre,n_err,:),N_BIN,'normalization','cdf');
-        
-        for n_alg = 1:N_ALG
-            [cdf_thrgpt_se{n_alg+1,n_pre,n_err},edg_thrgpt_se{n_alg+1,n_pre,n_err}] = histcounts(sum_thrgpt_s_star(:,n_pre,n_alg,n_err),N_BIN,'normalization','cdf');
-        end
-    end
-end
+% N_BIN = 100;
+% 
+% cdf_thrgpt_se = cell(N_ALG+1,N_PRE,N_ERR);
+% edg_thrgpt_se = cell(N_ALG+1,N_PRE,N_ERR);
+% 
+% for n_err = 1:N_ERR
+%     for n_pre = 1:N_PRE
+%         [cdf_thrgpt_se{1,n_pre},edg_thrgpt_se{1,n_pre}] = histcounts(sum_se(n_pre,n_err,:),N_BIN,'normalization','cdf');
+%         
+%         for n_alg = 1:N_ALG
+%             [cdf_thrgpt_se{n_alg+1,n_pre,n_err},edg_thrgpt_se{n_alg+1,n_pre,n_err}] = histcounts(sum_thrgpt_s_star(:,n_pre,n_alg,n_err),N_BIN,'normalization','cdf');
+%         end
+%     end
+% end
 
 % Ploting Figures
 
@@ -130,30 +135,19 @@ colours = [0.0000 0.4470 0.7410;
            0.6350 0.0780 0.1840;
            0.0000 0.0000 0.0000];
 
-figure;
-       
-set(gcf,'position',[0 0 800 600]);
+alg = 3;
 
-semilogx(fliplr(var_err),OM*fliplr(avg_sum_thrgpt_eps(1,:,1).'),linestyle{1},'color',colours(1,:),'linewidth',linewidth);
-
-xlabel('$\sigma_{\varepsilon}^{2}$','fontname',fontname,'fontsize',fontsize,'interpreter','latex');
-ylabel(['Throughput ' um{abs(log10(OM))/3}],'fontname',fontname,'fontsize',fontsize);
-
-set(gca,'fontname',fontname,'fontsize',fontsize);
-
-alg_idx = 1;
-
-for pre_idx = 1:N_PRE
+for pre = 1:N_PRE
     figure;
 
     set(gcf,'position',[0 0 800 600]);
 
-    plot(1:L_max,OM*avg_sum_thrgpt_s_eps(:,pre_idx,alg_idx,1,1),'-' ,'color',colours(1,:),'linewidth',linewidth);
+    plot(1:L_max,OM*avg_sum_thrgpt_s(:,pre,alg,1),'-' ,'color',colours(1,:),'linewidth',linewidth);
     hold on;
-    plot(1:L_max,OM*avg_sum_thrgpt_s_eps(:,pre_idx,alg_idx,2,1),'-' ,'color',colours(2,:),'linewidth',linewidth);
-    plot(1:L_max,OM*avg_sum_thrgpt_s_eps(:,pre_idx,alg_idx,3,1),'-' ,'color',colours(3,:),'linewidth',linewidth);
-    plot(1:L_max,OM*avg_sum_thrgpt_s_eps(:,pre_idx,alg_idx,4,1),'-' ,'color',colours(4,:),'linewidth',linewidth);
-    plot(1:L_max,OM*avg_sum_thrgpt_s_eps(:,pre_idx,alg_idx,5,1),'-' ,'color',colours(5,:),'linewidth',linewidth);
+    plot(1:L_max,OM*avg_sum_thrgpt_s(:,pre,alg,2),'-' ,'color',colours(2,:),'linewidth',linewidth);
+    plot(1:L_max,OM*avg_sum_thrgpt_s(:,pre,alg,3),'-' ,'color',colours(3,:),'linewidth',linewidth);
+    plot(1:L_max,OM*avg_sum_thrgpt_s(:,pre,alg,4),'-' ,'color',colours(4,:),'linewidth',linewidth);
+    plot(1:L_max,OM*avg_sum_thrgpt_s(:,pre,alg,5),'-' ,'color',colours(5,:),'linewidth',linewidth);
 
     xlabel('Number of selected users','fontname',fontname,'fontsize',fontsize);
     ylabel(['Throughput ' um{abs(log10(OM))/3}],'fontname',fontname,'fontsize',fontsize);
@@ -168,17 +162,59 @@ for pre_idx = 1:N_PRE
     else
         xlim([1 L_max]);
     end
-end
-
-for pre_idx = 1:N_PRE
+    
     figure;
 
     set(gcf,'position',[0 0 800 600]);
 
-    semilogx(var_err,reshape(L_star(pre_idx,1,:,1),1,[]),'-' ,'color',colours(1,:),'linewidth',linewidth);
+    semilogx(var_err,reshape(avg_L_star(pre,1,:),1,[]),'-' ,'color',colours(1,:),'linewidth',linewidth);
     hold on;
-    semilogx(var_err,reshape(L_star(pre_idx,2,:,1),1,[]),'-' ,'color',colours(2,:),'linewidth',linewidth);
-    semilogx(var_err,reshape(L_star(pre_idx,3,:,1),1,[]),'-' ,'color',colours(3,:),'linewidth',linewidth);
+    semilogx(var_err,reshape(avg_L_star(pre,2,:),1,[]),'-' ,'color',colours(2,:),'linewidth',linewidth);
+    semilogx(var_err,reshape(avg_L_star(pre,3,:),1,[]),'-' ,'color',colours(3,:),'linewidth',linewidth);
+    
+    xlabel('$\sigma_{\varepsilon}^{2}$','fontname',fontname,'fontsize',fontsize,'interpreter','latex');
+    ylabel('$L^{\star}$','fontname',fontname,'fontsize',fontsize,'interpreter','latex');
+    
+    set(gca,'fontname',fontname,'fontsize',fontsize);
+end
+
+mc  = 1;
+alg = 3;
+
+for pre = 1:N_PRE
+    figure;
+
+    set(gcf,'position',[0 0 800 600]);
+
+    plot(1:L_max,OM*avg_sum_thrgpt_s_eps(:,pre,alg,1,1),'-' ,'color',colours(1,:),'linewidth',linewidth);
+    hold on;
+    plot(1:L_max,OM*avg_sum_thrgpt_s_eps(:,pre,alg,2,1),'-' ,'color',colours(2,:),'linewidth',linewidth);
+    plot(1:L_max,OM*avg_sum_thrgpt_s_eps(:,pre,alg,3,1),'-' ,'color',colours(3,:),'linewidth',linewidth);
+    plot(1:L_max,OM*avg_sum_thrgpt_s_eps(:,pre,alg,4,1),'-' ,'color',colours(4,:),'linewidth',linewidth);
+    plot(1:L_max,OM*avg_sum_thrgpt_s_eps(:,pre,alg,5,1),'-' ,'color',colours(5,:),'linewidth',linewidth);
+
+    xlabel('Number of selected users','fontname',fontname,'fontsize',fontsize);
+    ylabel(['Throughput ' um{abs(log10(OM))/3}],'fontname',fontname,'fontsize',fontsize);
+    
+    legend(legend_err,'fontname',fontname,'fontsize',fontsize,'interpreter','latex','location',location_4,'numcolumns',2);
+    legend box off;
+
+    set(gca,'fontname',fontname,'fontsize',fontsize);
+    
+    if K <= M
+        xlim([1 K]);
+    else
+        xlim([1 L_max]);
+    end
+    
+    figure;
+
+    set(gcf,'position',[0 0 800 600]);
+
+    semilogx(var_err,reshape(L_star(pre,1,:,1),1,[]),'-' ,'color',colours(1,:),'linewidth',linewidth);
+    hold on;
+    semilogx(var_err,reshape(L_star(pre,2,:,1),1,[]),'-' ,'color',colours(2,:),'linewidth',linewidth);
+    semilogx(var_err,reshape(L_star(pre,3,:,1),1,[]),'-' ,'color',colours(3,:),'linewidth',linewidth);
     
     xlabel('$\sigma_{\varepsilon}^{2}$','fontname',fontname,'fontsize',fontsize,'interpreter','latex');
     ylabel('$L^{\star}$','fontname',fontname,'fontsize',fontsize,'interpreter','latex');

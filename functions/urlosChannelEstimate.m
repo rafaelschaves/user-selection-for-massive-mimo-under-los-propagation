@@ -20,6 +20,8 @@ Epsilon = sqrt(var_error).*Epsilon;
 
 H_hat = H + Epsilon;
 
+H_hat = H_hat*diag(sqrt(n_antenna)./vecnorm(H_hat,2));
+
 end
 
 %function steering_vector = steeringVector(M,theta,d,lambda)
